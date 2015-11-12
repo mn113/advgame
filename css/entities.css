@@ -54,19 +54,12 @@
 }
 .bread {
 	background: url(../img/bread.png);
-	xbackground-position: -224px -192px;
 }
 .slicedbread {
 	background: url(../img/slicedbread.png);
-	xbackground-position: 0px -259px;
 }
 .sandwich {
 	background: url(../img/sandwich.png);
-	xbackground-position: -286px -8px;
-}
-.boots {
-	background: url(../img/items1.png);
-	background-position: -418px -106px;
 }
 .cheese {
 	background: url(../img/items1.png);
@@ -74,21 +67,37 @@
 }
 .chest.closed {
 	background: url(../img/chest.png);
-	xbackground-position: -324px -227px;
 }
 .chest.open {
 	background: url(../img/openchest.png);
-	xbackground-position: -324px -287px;
 }
 .knife {
 	background: url(../img/knife.png);
-	xbackground-position: -290px -237px;
 }
 .key {
 	background: url(../img/items1.png);
 	background-position: 0px -227px;
 }
 
+/* These hover states wil later be done with bg-position shift :*/
+#inventory .bread:hover {
+	background: url(../img/bread_outline.png);
+}
+#inventory .slicedbread:hover {
+	background: url(../img/slicedbread_outline.png);
+}
+#inventory .sandwich:hover {
+	background: url(../img/sandwich_outline.png);
+}
+#inventory .knife:hover {
+	background: url(../img/knife_outline.png);
+}
+#inventory .chest.closed:hover {
+	background: url(../img/chest_outline.png);
+}
+#inventory .chest.open:hover {
+	background: url(../img/openchest_outline.png);
+}
 
 /* CHARACTERS */
 
@@ -107,7 +116,7 @@ clip-path: polygon(78% 16%, 77% 42%, 91% 63%, 77% 69%, 72% 96%, 30% 96%, 28% 70%
 .steve { background: url(../img/steverogers.png); }
 .steve:hover { background: yellow url(../img/steverogers.png); }
 .john { background: url(../img/john.png); }
-.john:hover { background: teal url(../img/john.png); }
+.john:hover { background: lightblue url(../img/john.png); }
 
 .ss { background-position: 0 0 }
 .ww { background-position: 0 -48px }

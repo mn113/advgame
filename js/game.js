@@ -287,7 +287,10 @@ function BaseObj(domNode, name, visible) {
 	this.name = name;				// Everything must have a name
 	this.domNode = domNode;			// Everything must have a domNode
 	this.id = domNode.attr("id");	// Everything must have an id
-	this.visible = visible || true;	// Can start off invisible if we need it later
+	if (visible === undefined) {
+		visible = true;				// Everything is visible by default (debatable...)
+	}
+	this.visible = visible;
 	this.anchorOffset = [0,0];		// Every sprite needs an anchor offset
 	this.descriptions = [];			// Everything can have multiple descriptions
 	this.looks = 0;					// Everything can be looked at 0 or more times
@@ -295,6 +298,11 @@ function BaseObj(domNode, name, visible) {
 	
 	// Store by id in entities hash:
 	MYGAME.entities[this.id] = this;
+
+	// Set visibility:
+	if (!this.visible) {
+		this.domNode.hide();
+	}
 }
 BaseObj.prototype.placeAt = function(coords) {
 	this.domNode.css("left", coords[0] - this.anchorOffset[0]);		// Compensate for anchor point

@@ -46,9 +46,11 @@ build a little delay into the dialogues;
 //droppable characters, items
 //door, room exit point
 //fix inv-item positioning
+//place for hidden/inactive items?
+drag/drop styles
+item drag springback
 inventory sandbox
 different item icons in inventory & stage
-drag/drop styles
 grammar fixes: capitalisation, articles...
 sprite:hover colour outline via Photoshop;
 

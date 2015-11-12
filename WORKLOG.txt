@@ -2,24 +2,18 @@
 3-Nov	created project, html+css+js
 4-Nov	started developing story
 4-Nov	working with 20x20grid.png
-
-5-Nov
-6-Nov
-7-Nov
-
-	switched to html table grid
-	pathfinding
-	svg path display
-	oo structure
+		switched to html table grid
+		pathfinding
+		svg path display
+		oo structure
 
 8-Nov	tested Fipps font
 8-Nov	tool menu created with FontAwesome icons	
 8-Nov	custom cursors
+8-Nov	moved to Dropbox/htdocs with basic version control
 9-Nov	split css to files
 
-	moved to Dropbox/htdocs with basic version control
-	dialogue trees & functions working
-
+10-Nov	dialogue trees & functions working
 10-Nov	gfx	Trialled Aseprite for sprites
 10-Nov	added a bunch more demo sprites
 10-Nov	Player.use(item) function improved
