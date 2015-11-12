@@ -6,23 +6,36 @@
 
 /* UI */
 #inventory {
-	background: #666 url(../img/inventory.png) no-repeat;
-	width: 400px;
-	height: 64px;
+	background: #666;
+	width: 240px;
+	height: 90px;
 	color: white;
 	position: absolute;
 	bottom: 0px;
 }
-#inventory .item {
+#inventory > div {
 	position: relative;
 	float: left;
-	top: 0;
-	left: 0;
+	width: 32px;
+	height: 32px;
+	padding: 4px;
+	margin: 2px;
+	border: 1px solid #999;
+	border-radius: 8px;
+}
+#inventory div .item {
+	top: 4px !important;
+	left: 4px !important;
+}
+#inventory .sortable-placeholder {
+	background: #303;
+	width: 32px;
+	height: 32px;
 }
 
-.drop-hover { border: 2px solid orange; }
-.drop-hover.good { border: 2px solid green; }
-.drop-hover.bad { border: 2px solid red; }
+#foreground .drop-hover { border: 2px solid orange; }
+#foreground .drop-hover.good { border: 2px solid green; }
+#foreground .drop-hover.bad { border: 2px solid red; }
 
 #contextMenu {
 	position: absolute;
@@ -98,7 +111,7 @@
 	height: auto;
 	padding: 3px 4px;
 	position: absolute;
-	bottom: 64px;
+	bottom: 90px;
 	left: 0;
 	z-index: 100;	
 }

@@ -50,7 +50,7 @@
 	width: 32px;
 	height: 32px;
 	position: absolute;
-	z-index: 1;
+	z-index: 100;
 }
 .bread {
 	background: url(../img/bread.png);

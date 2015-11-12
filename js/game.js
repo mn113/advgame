@@ -428,11 +428,9 @@ Item.prototype = Object.create(FixedItem.prototype, {
 Item.prototype.constructor = Item;
 Item.prototype.toInventory = function() {
 	// Move the HTML element:
-	this.domNode.detach().appendTo("#inventory");
-	this.placeAt([16,28]);
-
-	// Make draggable:
-	this.domNode.draggable("option", "disabled", false);
+	var $newdiv = $("<div>");
+	$newdiv.appendTo("#inventory")
+	this.domNode.detach().appendTo($newdiv);
 
 	// Move the logical element:
 	steve.inventory.push(this.id);
@@ -815,7 +813,28 @@ $(function () {
 
 	//jQuery UI block:
 	{
-		// Set up draggable items (in disabled mode):
+		// Set up sortable inventory:
+		$("#inventory").sortable({
+			start: function(event, ui) {
+//				console.log("Reordering item", $(ui.item[0]).children().attr("id"));
+			}
+		});
+
+		// Droppables in the field:
+		$("#foreground div").droppable({
+			drop: function(event, ui) {
+				console.log("Dropped", $(ui.draggable[0]).children().attr("id"), "on", $(this).attr("id"));
+			}
+		});
+
+		// Droppables in the inventory (nested inside sortables):
+		$("#inventory .item").droppable({
+			drop: function(event, ui) {
+				console.log("Dropped", $(ui.draggable[0]).children().attr("id"), "on", $(this).attr("id"));
+			}
+		});
+
+/*		// Set up draggable items (in disabled mode):
 		$(".item").draggable({
 			disabled: true,		// ??
 			cursor: "crosshair",
@@ -840,8 +859,8 @@ $(function () {
 			revertDuration: 200
 
 		});
-
-		// Set up droppable items & characters:
+*/
+/*		// Set up droppable items & characters:
 		$(".item, .scenery, .character").droppable({
 			accept: ".item",							// redundant
 			activeClass: "ui-state-highlight",			// DEFINE CSS
@@ -862,21 +881,21 @@ $(function () {
 					if (!steve.canUse(item, target)) {
 						// Invalid combination, disable the droppable:
 						$(this).droppable("disable");
-						$(this).removeClass("good").addClass("bad");
+//						$(this).removeClass("good").addClass("bad");
 						console.log("No drop, reverting (2).");		// OK
 					}
 				}
 				else {
 					// Invalid combination, disable the droppable:
 					$(this).droppable("disable");
-					$(this).removeClass("good").addClass("bad");
+//					$(this).removeClass("good").addClass("bad");
 					console.log("No drop, reverting (1).");
 				}
 			},
 			out: function(event, ui) {
 				// Reset droppable:
 				$(this).droppable("enable");
-				$(this).removeClass("bad").removeClass("good");
+//				$(this).removeClass("bad").removeClass("good");
 			},
 			drop: function(event, ui) {
 				var dragid = ui.draggable.attr("id"),
@@ -890,22 +909,10 @@ $(function () {
 				console.log("Dropped", item.id, "on", target.id);
 			}
 		});
-
-/*		// Set up sortable inventory:
-		$("#inventory .item").sortable({
-			cursor: "move",
-			delay: 150,
-			distance: 5,
-			forcePlaceholderSize: true,
-			grid: [32,32],
-			opacity: 0.5,
-			placeholder: "sortable-placeholder"		// DEFINE CSS?
-		});
-*/		
+*/
 		//	$("#inventory").tooltip({track: true});		// ERROR
 	}
 
-	
 }); // end jQuery
 
 /**********/

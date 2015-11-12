@@ -52,6 +52,7 @@ build a little delay into the dialogues;
 //item drag springback
 drag/drop styles
 
+	inventory items need containers
 inventory grid positioning
 inventory sandbox
 different item icons in inventory & stage
