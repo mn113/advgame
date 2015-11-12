@@ -1,0 +1,143 @@
+/* SCENERY */
+#background .hole {
+	background: url(../img/terrain_2.png) -585px -69px;
+	width: 80px;
+	height: 80px;
+	position: absolute;
+	top: 80px;
+	left: 60px;
+}
+#background .wall {
+	background: url(../img/dungeon.png) -69px -64px;
+	width: 60px;
+	height: 32px;
+	position: absolute;
+	top: 16px;
+	left: 60px;
+}
+.exit {
+	border: 1px solid blue;
+	width: 24px;
+	height: 32px;
+	position: absolute;
+}
+	
+	
+/* Foreground: */
+.scenery {
+	position: absolute;
+	z-index: 1;	
+}
+.lake {
+	width: 64px;
+	height: 64px;
+}
+.door {
+	height: 32px;
+	width: 32px;
+	top: -25px;
+	left: 90px;	
+}
+.door.open {
+	background: none;
+}
+.door.closed {
+	background: url(../img/city_inside.png) -512px -65px;
+}
+
+/* ITEMS */
+.item {
+	width: 32px;
+	height: 32px;
+	position: absolute;
+	z-index: 1;
+}
+.bread {
+	background: url(../img/bread.png);
+	xbackground-position: -224px -192px;
+}
+.slicedbread {
+	background: url(../img/slicedbread.png);
+	xbackground-position: 0px -259px;
+}
+.sandwich {
+	background: url(../img/sandwich.png);
+	xbackground-position: -286px -8px;
+}
+.boots {
+	background: url(../img/items1.png);
+	background-position: -418px -106px;
+}
+.cheese {
+	background: url(../img/items1.png);
+	background-position: -192px -192px;
+}
+.chest.closed {
+	background: url(../img/chest.png);
+	xbackground-position: -324px -227px;
+}
+.chest.open {
+	background: url(../img/openchest.png);
+	xbackground-position: -324px -287px;
+}
+.knife {
+	background: url(../img/knife.png);
+	xbackground-position: -290px -237px;
+}
+.key {
+	background: url(../img/items1.png);
+	background-position: 0px -227px;
+}
+
+
+/* CHARACTERS */
+
+.character {
+	width: 32px;
+	height: 48px;
+	position: absolute;
+	z-index: 1;
+	-webkit-clip-path: polygon(78% 16%, 77% 42%, 91% 63%, 77% 69%, 72% 96%, 30% 96%, 28% 70%, 10% 65%, 23% 42%, 22% 15%, 50% 0%);
+clip-path: polygon(78% 16%, 77% 42%, 91% 63%, 77% 69%, 72% 96%, 30% 96%, 28% 70%, 10% 65%, 23% 42%, 22% 15%, 50% 0%);
+}
+
+/* Need graceful fallback for IE with its lack of clipping path support */
+.pepper { background: url(../img/pepperpotts.png); }
+.pepper:hover { background: red url(../img/pepperpotts.png); }
+.steve { background: url(../img/steverogers.png); }
+.steve:hover { background: yellow url(../img/steverogers.png); }
+.john { background: url(../img/john.png); }
+.john:hover { background: teal url(../img/john.png); }
+
+.ss { background-position: 0 0 }
+.ww { background-position: 0 -48px }
+.ee { background-position: 0 -96px }
+.nn { background-position: 0 -144px }
+
+.walking.ss { animation: walk-ss .5s 0s steps(4) infinite; }
+.walking.ww { animation: walk-ww .5s 0s steps(4) infinite; }
+.walking.ee { animation: walk-ee .5s 0s steps(4) infinite; }
+.walking.nn { animation: walk-nn .5s 0s steps(4) infinite; }
+
+@keyframes walk-ss {
+	from { background-position: 0px 0px; }
+	to   { background-position: -128px 0px; }
+}
+@keyframes walk-ww {
+	from { background-position: 0px -48px; }
+	to   { background-position: -128px -48px; }
+}
+@keyframes walk-ee {
+	from { background-position: 0px -96px; }
+	to   { background-position: -128px -96px; }
+}
+@keyframes walk-nn {
+	from { background-position: 0px -144px; }
+	to   { background-position: -128px -144px; }
+}
+
+body.debug .character {border: 1px dotted red;}
+body.debug .scenery {border: 1px dotted blue;}
+body.debug .item {border: 1px dotted yellow;}
+body.debug #foreground {border: 1px solid fuchsia;}
+body.debug #background {border: 1px solid teal;}

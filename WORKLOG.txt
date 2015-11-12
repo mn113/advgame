@@ -1,0 +1,33 @@
+2-Nov	searching for artwork
+3-Nov	created project, html+css+js
+4-Nov	started developing story
+4-Nov	working with 20x20grid.png
+
+5-Nov
+6-Nov
+7-Nov
+
+	switched to html table grid
+	pathfinding
+	svg path display
+	oo structure
+
+8-Nov	tested Fipps font
+8-Nov	tool menu created with FontAwesome icons	
+8-Nov	custom cursors
+9-Nov	split css to files
+
+	moved to Dropbox/htdocs with basic version control
+	dialogue trees & functions working
+
+10-Nov	gfx	Trialled Aseprite for sprites
+10-Nov	added a bunch more demo sprites
+10-Nov	Player.use(item) function improved
+
+11-Nov	integrated jQuery UI, drag&drop
+11-Nov	started production diary / worklog
+11-Nov	got Player.use(item, item) fully working
+11-Nov	800 + 200 lojs
+11-Nov	roughly completed requirements of Puzzle 1
+
+12-Nov	git initial commit

@@ -1,0 +1,9 @@
+<svg width="200px" height="200px" viewBox="0 0 200 200"	version="1.1" xmlns="http://www.w3.org/2000/svg">
+	
+	<path fill="none" stroke="black" stroke-width="2"
+		  d="M20,20 H100 V100 l50,50"></path>
+	<path fill="none" stroke="forestgreen" stroke-width="2"
+		  d="M20,20 C170,0 40,90 150,150"></path>
+	<path id="thisway" fill="none" stroke="indianred" stroke-width="2"
+		  d=""></path>
+</svg>

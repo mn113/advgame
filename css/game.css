@@ -1,0 +1,90 @@
+@font-face {
+  font-family: 'DOS437';
+  src: url('../fonts/Perfect-DOS-VGA-437.ttf') format('truetype');
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	z-index: 0;
+}
+
+#gamebox {
+	position: relative;
+	margin: 30px;
+	border: 1px solid black;
+	background: #aaa;
+	width: 400px;
+	height: 360px;
+	overflow: hidden;
+	z-index: 0;
+}
+
+#background {
+	position: absolute;
+	top: 20px;
+	width: 400px;
+	height: 340px;
+	background: url(../img/hill.png) 0 40px no-repeat;
+	z-index: 0;
+}
+#foreground {
+	position: absolute;
+	top: 60px;
+	width: 200px;
+	height: 300px;
+	z-index: 0;	
+}
+
+/* GRID STUFF */
+#tablecloth {
+	display: block;
+	position: absolute;
+	top: 60px;
+	left: 0;
+	border-collapse: collapse;
+	border-spacing: 0;
+	z-index: 2;
+}
+#tablecloth td {
+	height: 19px;
+	width: 19px;
+	margin: 0;
+	padding: 0;
+	border: 1px solid rgba(255,255,0,0.2);
+}
+#tablecloth td.invalid {
+	background: rgba(0,0,0,0.3);
+}
+
+tr, td, table {
+	pointer-events: none;
+}
+
+div.highlight {
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	background: rgba(255,255,255,0.5);
+	z-index: 0.1;
+}
+
+/* DEBUGGING */
+body:not(.debug) #tablecloth, body:not(.debug) #keypress {
+	display: none;
+}
+
+#keypress {
+	display: block;
+	text-align: right;
+	z-index: 500;
+}
+
+#pathsvg {
+	float:right;
+	position: absolute;
+	top: 60px;
+	pointer-events: none;
+	z-index: 50;
+}
+

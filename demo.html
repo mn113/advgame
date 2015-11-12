@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>RPG Game Test</title>
+		<link rel="stylesheet" href="css/game.css">
+		<link rel="stylesheet" href="css/ui.css">
+		<link rel="stylesheet" href="css/entities.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/jquery-ui.css">
+		<link rel="stylesheet" href="css/jquery-ui.structure.css">
+		<link rel="stylesheet" href="css/jquery-ui.theme.css">
+	</head>
+	<body>
+		<div id="gamebox">
+			<div id="background"><!-- purely visual layer -->
+				<div class="hole"></div>
+				<div class="wall"></div>
+				<div class="exit" id="exit1"></div>
+			</div>
+			<div id="foreground"><!-- interactive layer -->
+				<div class="character steve" id="steve"></div>
+				<div class="character pepper" id="pepper"></div>
+				<div class="character john" id="john"></div>
+				<div class="item bread" id="bread"></div>
+				<div class="item slicedbread" id="slicedbread"></div>
+				<div class="item sandwich" id="sandwich"></div>
+				<div class="item boots" id="boots"></div>	
+				<div class="item cheese" id="cheese" title="cheese"></div>					
+				<div class="item knife" id="knife"></div>	
+				<div class="item key" id="key"></div>	
+				<div class="item chest closed" id="chest"></div>	
+				<div class="item chest open" id="openchest"></div>	
+				<div class="scenery lake" id="lake"></div>
+				<div class="scenery door closed" id="door"></div>
+			</div>
+
+			<!-- UI outside the stage: -->
+			<div id="dialogue"></div>
+			<div id="displayChoices"></div>
+			<div id="contextMenu">
+				<ul class="panel">
+					<li><i class="fa fa-fw fa-lg fa-eye fa-inverse"></i><b><u>E</u>xamine</b></li>
+					<li><i class="fa fa-fw fa-lg fa-comment fa-inverse"></i><b><u>T</u>alk to</b></li>
+					<li><i class="fa fa-fw fa-lg fa-hand-grab-o fa-inverse"></i><b><u>P</u>ick up</b></li>
+					<li><i class="fa fa-fw fa-lg fa-wrench fa-inverse"></i><b><u>U</u>se</b></li>
+				</ul>
+			</div>
+			<div id="inventory">
+			</div>
+
+			<div id="keypress" class="debug"></div>
+			<table id="tablecloth" class="debug">
+				<tr>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+			</table>
+			<svg id="pathsvg" width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug">	
+				<path id="walkthisway" fill="none" stroke="indianred" stroke-width="2" d=""></path>
+				<!--path id="cr2b" fill="none" stroke="green" stroke-width="2" d="M50,70 C56.666666666666664,76.66666666666667 83.33333333333333,96.66666666666667 90,110 C96.66666666666667,123.33333333333333 86.66666666666667,140 90,150 C93.33333333333333,160 106.66666666666667,163.33333333333334 110,170 C113.33333333333333,176.66666666666666 110,170 110,190"></path-->
+			</svg>
+		</div>
+	
+		<script src="js/jquery-1.11.3.min.js"></script>
+		<script src="js/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+		<script src="js/astar.js"></script>
+		<script src="js/pathAnimator/js/pathAnimator.js"></script>
+		<script src="js/catmullrom2bezier.js"></script>
+		<script src="js/game.js"></script>
+		<script src="js/dialogues.js"></script>
+	</body>
+</html>

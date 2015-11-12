@@ -1,0 +1,63 @@
+Indiana Jones, MacGyver, Mission Impossible, Jason Bourne, Mr Robot, 1984, Theresa May
+cyber
+corporate
+espionage
+spying
+anti-establishment
+
+CHARACTERS
+Steve
+good boss
+new boss
+coworkers
+girl
+neighbour
+shopkeeper
+government minister
+taxi driver
+
+
+MISSIONS
+guess passwords
+hack email
+gain entry
+sabotage system
+disable cameras
+disguise
+create diversion
+gear-up montage
+evade pursuers
+control robot
+steal
+social engineering
+obtain bitcoins
+send/decrypt encrypted emails
+
+
+LOCATIONS
+home
+street
+junk shop
+office
+book shop
+computer shack
+cocktail bar
+girl's apartment
+subway
+home (burning)
+mother's house
+airport
+riot zone
+forest
+secret facility
+
+
+OPENING GAMBIT (Establish character, learn gameplay)
+
+Chapter 1 - Bad News
+Chapter 2 - Jessica
+Chapter 3 - Hacking In
+Chapter 4 - Boundaries
+Chapter 5 - Going Dark
+Chapter 6 - Off Grid
+Chapter 7 - Showdown

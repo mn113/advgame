@@ -1,0 +1,109 @@
+/* Custom cursors */
+.examine #gamebox { cursor: url('../img/cursor-eye2.png'), zoom-in; }
+.talkto #gamebox { cursor: url('../img/cursor-speech2.png'), help; }
+.pickup #gamebox { cursor: url('../img/cursor-grab2.png'), grab; }
+.use #gamebox { cursor: url('../img/cursor-wrench2.png'), default; }
+
+/* UI */
+#inventory {
+	background: #666 url(../img/inventory.png) no-repeat;
+	width: 400px;
+	height: 64px;
+	color: white;
+	position: absolute;
+	bottom: 0px;
+}
+#inventory .item {
+	position: relative;
+	float: left;
+	top: 0;
+	left: 0;
+}
+
+#contextMenu {
+	position: absolute;
+	width: 80px;
+	height: 96px;
+	top: 50px;
+	right: 0;
+	font: 11px bold Helvetica, Arial, sans-serif;
+	color: white;
+	z-index: 700;
+}
+#contextMenu ul.panel {
+	background: rgba(80,80,80,.7);
+	width: 26px;
+	height: 96px;
+	border-radius: 5px;
+	list-style: none;
+	padding: 0;
+}
+#contextMenu ul.panel li {
+	height: 24px;	
+}
+#contextMenu ul.panel i {
+	height: 24px;
+	width: 24px;
+	margin: 0 1px;
+	position: relative;
+}
+#contextMenu ul.panel i:hover {
+	background: #333;
+	border-radius: 3px;
+}
+#contextMenu ul.panel i + b {
+	visibility: hidden;
+	display: inline-block;
+	position: relative;
+	left: 28px;
+	top: -22px;
+	width: 56px;
+	text-align: left;
+	font-size: 10px;
+}
+#contextMenu ul.panel i:hover + b {
+	visibility: visible;
+	display: inline-block;
+	position: relative;
+	left: 28px;
+	top: -22px;
+	width: 56px;
+	text-align: left;
+	font-size: 10px;
+}
+
+#dialogue {
+	background: rgba(0,0,0,0.5);
+	color: red;
+	font: 16px DOS437, Helvetica;
+	font-weight: bold;
+	width: 400px;
+	padding: 3px 4px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 100;
+}
+
+#displayChoices {
+	background: rgba(0,0,0,0.5);
+	color: yellow;
+	font: 16px DOS437, Helvetica;
+	font-weight: bold;
+	width: 400px;
+	height: auto;
+	padding: 3px 4px;
+	position: absolute;
+	bottom: 64px;
+	left: 0;
+	z-index: 100;	
+}
+
+#displayChoices a {
+	display: block;
+	text-decoration: none;
+	cursor: url('../img/cursor-speech.png'), help; ;
+}
+#displayChoices a:hover {
+	text-decoration: underline;
+}
