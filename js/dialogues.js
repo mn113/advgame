@@ -75,11 +75,11 @@ var dialogues = {
 			disabled: false,
 			permanent: true,
 			responses: {
-				0: "So... hungry. So very... hungry.",
+				0: "So... hungry. So very... hungry."
 			},
 			events: {},
 			options: {
-				0: [1],
+				0: [1]
 			}
 		}
 	}

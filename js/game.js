@@ -291,6 +291,7 @@ function BaseObj(domNode, name, visible) {
 		visible = true;				// Everything is visible by default (debatable...)
 	}
 	this.visible = visible;
+	this.giveable = false;
 	this.anchorOffset = [0,0];		// Every sprite needs an anchor offset
 	this.descriptions = [];			// Everything can have multiple descriptions
 	this.looks = 0;					// Everything can be looked at 0 or more times
@@ -303,13 +304,20 @@ function BaseObj(domNode, name, visible) {
 	if (!this.visible) {
 		this.domNode.hide();
 	}
+	return this;
 }
 BaseObj.prototype.placeAt = function(coords) {
 	this.domNode.css("left", coords[0] - this.anchorOffset[0]);		// Compensate for anchor point
 	this.domNode.css("top", coords[1] - this.anchorOffset[1]);		// being inside sprite
 	this.updateXY();
-//	this.x = coords[0];
-//	this.y = coords[1];	
+	// Update HTML visibility:
+	if (this.visible) {
+		this.domNode.show();
+	}
+	else {
+		this.domNode.hide();
+	}
+	console.log(this.id, "placed @ [" + this.x + ', ' + this.y + "]");
 	return this;
 };
 BaseObj.prototype.updateXY = function() {
@@ -341,6 +349,8 @@ BaseObj.prototype.remove = function() {
 	}
 	// From DOM:
 	this.domNode.remove();	
+
+	console.log(this.id, "removed.");
 };
 
 
@@ -406,6 +416,7 @@ function Item(domNode, name, visible) {
 	FixedItem.call(this, domNode, name, visible);
 
 	// Item-specific properties:
+	this.giveable = true;
 	this.anchorOffset = [16,28];	// corrects for 32x32 sprite
 	this.pickable = true;
 	this.pickedUp = false;
@@ -425,6 +436,7 @@ Item.prototype.toInventory = function() {
 
 	// Move the logical element:
 	steve.inventory.push(this.id);
+	console.log(this.id, "to Inventory.");
 };
 
 
@@ -464,6 +476,7 @@ function Character(domNode, name, colour, visible) {
 	BaseObj.call(this, domNode, name, visible);
 
 	// Character-specific properties:
+	this.giveable = true;
 	this.anchorOffset = [16,44];	// corrects for 32x48 sprite
 	this.looks = 0;
 	this.talks = 0;
@@ -597,40 +610,63 @@ Player.prototype.talkTo = function(character) {
 		dialogueChooser(character, null, true);		// make Player.dialogueChooser ??
 	}
 };
-Player.prototype.use = function(item1, item2) {
-	// Sort item1 & item2 alphabetically, to avoid doubling up on Item.uses:
-	if (item1.id > item2.id) {
-		this.use(item2, item1);
-		return this;
+Player.prototype.canUse = function(item1, item2) {
+	var item2id = (item2) ? item2.id : 'itself';	// This string will be used for looking up in Item.uses
+
+	// 2 items passed:
+	if (item2id !== 'itself') {
+		// Sort item1 & item2 alphabetically, to avoid doubling up on Item.uses:
+		if (item1.id > item2.id) {
+			this.use(item2, item1);
+			return this;
+		}
 	}
 
+	// Use X with Y (or 'itself'), as per Item.uses definition:
+	if (!($.isEmptyObject(item1.uses))) {
+		if (item2id in item1.uses) {
+			if (typeof item1.uses[item2id] === 'function') {
+				return true;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+};
+Player.prototype.use = function(item1, item2) {
 	var item2id = (item2) ? item2.id : 'itself';	// This string will be used for looking up in Item.uses 
 
-	// Pick it up if possible?
-//	if (item1.pickable) {
-//		this.pickUp(item1);
-//	}
+	// 2 items passed:
+	if (item2id !== 'itself') {
+		// Sort item1 & item2 alphabetically, to avoid doubling up on Item.uses:
+		if (item1.id > item2.id) {
+			this.use(item2, item1);
+			return this;
+		}
+	}
 
-	console.log(item2id);		// OK
-	console.log(item1.uses);	// {test: 0}
-	
 	// Use X with Y (or 'itself'), as per Item.uses definition:
-	if (!($.isEmptyObject(item1.uses))) {	// NEVER TRUE
+	if (!($.isEmptyObject(item1.uses))) {
 		if (item2id in item1.uses) {		
 			if (item1.uses[item2id] !== null) {
 				// Execute:
 				item1.uses[item2id]();		// WORKS FOR 'itself', cheese...
+				return true;
 			}
 		}
 		else {
 			this.say("I can't use that here.");	
+			return false;
 		}
 	}
 	else {
 		this.say("I can't use that for anything.");
+		return false;
 	}
-	
-	return this;
 };
 Player.prototype.pickUp = function(item) {
 	if (item.hasOwnProperty('name')) {
@@ -656,6 +692,8 @@ Player.prototype.getItem = function(item) {
 		this.inventory.push(item.id);
 		item.toInventory();
 		item.pickable = false;
+		item.visible = true;
+		item.domNode.show();
 	}
 };
 
@@ -779,16 +817,39 @@ $(function () {
 	{
 		// Set up draggable items (in disabled mode):
 		$(".item").draggable({
-			disabled: true,
+			disabled: true,		// ??
+			cursor: "crosshair",
 			delay: 200,
-			cursor: "crosshair"}
-		);
+			// When dragging starts:
+			start: function(event, ui) {
+				// Store the originating position in HTML5 data attribute:
+				$(this).data("origPos", $(this).position());
+			},
+			// When dragging stops:
+			stop: function(event, ui) {
+				// Snap back to reality (i.e. origPos):
+				var opos = $(this).data("origPos");
+				$(this).animate({"top": opos.top, "left": opos.left}, 500);	// GOOD
+			},
+			// Revert or not?
+			revert: function(event, ui) {	// this fn must evaluate to true or false
+				// Some logic
+				return !event;
+			},
+//			revert: "invalid",	// spring back if not on a droppable
+			revertDuration: 200
+
+		});
 
 		// Set up droppable items & characters:
 		$(".item, .scenery, .character").droppable({
+			accept: ".item",							// redundant
 			activeClass: "ui-state-highlight",			// DEFINE CSS
-			hoverClass: "drop-hover",					// DEFINE CSS
-			drop: function(event, ui) {
+			hoverClass: "drop-hover",				// DEFINE CSS
+			over: function(event, ui) {
+				$(this).removeClass("bad").addClass("good");
+
+				// Test if drop is valid:
 				// Lookup dragged item in Entities:
 				var dragid = ui.draggable.attr("id"),
 					item = MYGAME.entities[dragid];
@@ -796,17 +857,37 @@ $(function () {
 				var dropid = this.id,
 					target = MYGAME.entities[dropid];
 
-				if (item && target) {
-					// On some condition:		// GIVEABLE?
-					if (true) {
-						// Combine them:
-						console.log("Dropped", item.id, "on", target.id);
-						steve.use(item, target);
+				if (item && target && item.giveable) {
+					// See if they fail to combine:
+					if (!steve.canUse(item, target)) {
+						// Invalid combination, disable the droppable:
+						$(this).droppable("disable");
+						$(this).removeClass("good").addClass("bad");
+						console.log("No drop, reverting (2).");		// OK
 					}
 				}
 				else {
-					// spring back?
+					// Invalid combination, disable the droppable:
+					$(this).droppable("disable");
+					$(this).removeClass("good").addClass("bad");
+					console.log("No drop, reverting (1).");
 				}
+			},
+			out: function(event, ui) {
+				// Reset droppable:
+				$(this).droppable("enable");
+				$(this).removeClass("bad").removeClass("good");
+			},
+			drop: function(event, ui) {
+				var dragid = ui.draggable.attr("id"),
+					item = MYGAME.entities[dragid];
+				// Lookup drop target in Entities:
+				var dropid = this.id,
+					target = MYGAME.entities[dropid];
+
+				// Success:
+				steve.use(item, target);
+				console.log("Dropped", item.id, "on", target.id);
 			}
 		});
 

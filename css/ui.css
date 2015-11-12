@@ -20,6 +20,10 @@
 	left: 0;
 }
 
+.drop-hover { border: 2px solid orange; }
+.drop-hover.good { border: 2px solid green; }
+.drop-hover.bad { border: 2px solid red; }
+
 #contextMenu {
 	position: absolute;
 	width: 80px;

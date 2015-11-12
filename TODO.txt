@@ -46,16 +46,19 @@ build a little delay into the dialogues;
 //droppable characters, items
 //door, room exit point
 //fix inv-item positioning
+//handle y < 0 clicks by converting to 0
 //place for hidden/inactive items?
+//sprite:hover colour outline via Photoshop;
+//item drag springback
 drag/drop styles
-item drag springback
+
+inventory grid positioning
 inventory sandbox
 different item icons in inventory & stage
 grammar fixes: capitalisation, articles...
-sprite:hover colour outline via Photoshop;
+walkTo should accept objects
 
 /	add non-gridded backwall area (60px?)
-//handle y < 0 clicks by converting to 0
 fix viewport size (320*200)
 make side-scrolling areas
 parallax backgrounds
@@ -64,7 +67,9 @@ load rooms & contents by ajax: $.load()?
 load the extra items by $.getObject each time?
 
 cutscenes using NPC.say() and NPC.walkTo()
-	
+
+smartphone side-mission
+
 store a session
 
 puzzles object which stores the state of each key step

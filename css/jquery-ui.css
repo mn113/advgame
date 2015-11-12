@@ -140,7 +140,7 @@
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
 	border: 1px solid #444444;
-	background: #222222 url("images/ui-bg_highlight-soft_35_222222_1x100.png") 50% 50% repeat-x;
+	xbackground: #222222 url("images/ui-bg_highlight-soft_35_222222_1x100.png") 50% 50% repeat-x;
 	font-weight: normal;
 	color: #eeeeee;
 }
@@ -157,7 +157,7 @@
 .ui-widget-content .ui-state-focus,
 .ui-widget-header .ui-state-focus {
 	border: 1px solid #0b93d5;
-	background: #003147 url("images/ui-bg_highlight-soft_33_003147_1x100.png") 50% 50% repeat-x;
+	xbackground: #003147 url("images/ui-bg_highlight-soft_33_003147_1x100.png") 50% 50% repeat-x;
 	font-weight: normal;
 	color: #ffffff;
 }
@@ -176,7 +176,7 @@
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
 	border: 1px solid #26b3f7;
-	background: #0972a5 url("images/ui-bg_highlight-hard_20_0972a5_1x100.png") 50% 50% repeat-x;
+	xbackground: #0972a5 url("images/ui-bg_highlight-hard_20_0972a5_1x100.png") 50% 50% repeat-x;
 	font-weight: normal;
 	color: #ffffff;
 }
@@ -193,7 +193,7 @@
 .ui-widget-content .ui-state-highlight,
 .ui-widget-header .ui-state-highlight {
 	border: 1px solid #cccccc;
-	background: #eeeeee url("images/ui-bg_highlight-soft_80_eeeeee_1x100.png") 50% top repeat-x;
+	xbackground: #eeeeee url("images/ui-bg_highlight-soft_80_eeeeee_1x100.png") 50% top repeat-x;
 	color: #2e7db2;
 }
 .ui-state-highlight a,

@@ -11,17 +11,17 @@ var bread = new Item($(".bread"), "bread").placeAt([30,70]);
 var cheese = new Item($(".cheese"), "cheese").placeAt([50,170]);
 var knife = new Item($(".knife"), "knife", false);
 var key = new Item($(".key"), "key", false);
-var slicedbread = new Item($(".slicedbread"), "slicedbread", false).placeAt([300,200]);
-var sandwich = new Item($(".sandwich"), "sandwich", false).placeAt([300,200]);
+var slicedbread = new Item($(".slicedbread"), "slicedbread", false);
+var sandwich = new Item($(".sandwich"), "sandwich", false);
 
 var lake = new FixedItem($(".lake"), "lake").placeAt([68,48]);
 var chest = new FixedItem($(".chest.closed"), "chest").placeAt([140,30]);
-var openchest = new FixedItem($(".chest.open"), "openchest", false).placeAt([300,200]);	// Invisible
+var openchest = new FixedItem($(".chest.open"), "openchest", false);	// Invisible
 var door = new FixedItem($(".door"), "door").placeAt([100,-24]);		// Locked / Unlocked ???
 
 var exit1 = new Exit($(".exit"), "exit1", null, true, false).placeAt([100,0]);	// Visible but inactive
 
-console.log("All vars loaded, including", door, bread, steve, exit1);
+console.log("All vars loaded.");
 
 // All descriptions for entities in this level:
 steve.descriptions = [
@@ -126,8 +126,11 @@ slicedbread.uses = {
 };
 chest.uses = {
 	itself: function() {
-		chest.replaceWith(openchest);
+		chest.remove();
+		openchest.visible = true;
+		openchest.placeAt([140,30]);
 		steve.getItem(knife);
+		steve.say("There was a nice little knife inside!");
 		return true;
 	}
 };
@@ -146,10 +149,11 @@ john.uses = {
 	sandwich: function() {
 		john.say("Oh! Thank you so much!");
 		sandwich.remove();
-		key.placeAt([john.x, john.y]);
 		john.walkTo([90,160]);
+		key.visible = true;
+		key.placeAt([john.x, john.y]);
 	}
-}
+};
 
 console.log("Uses loaded.");
 
