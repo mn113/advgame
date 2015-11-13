@@ -3,7 +3,7 @@
 /*global steve: true, pepper: true */
 
 // Global namespace
-var MYGAME = MYGAME || {};	// "get it or set it"
+var MYGAME = MYGAME || {};	// "get it or set it" --> NEEDS TO GO IN EACH FILE
 
 MYGAME.config = {
 	currentRoom: 'demo',
@@ -495,16 +495,37 @@ Character.prototype = Object.create(BaseObj.prototype, {
 	// Options
 });
 Character.prototype.constructor = Character;
-Character.prototype.say = function(sentence) {
-	if (sentence) {
-		// Add a new div to #dialogue instead of reusing:
-		$("<div class='dia'>").appendTo($("#dialogue"))
-							  .css("color", this.textColour)
-							  .html(sentence).show()
-							  .delay(sentence.length * 60).fadeOut(1500);
-	}
-	else {
-		console.log("???");
+Character.prototype.say = function(sentences) {
+	// Clear out previous lines:
+	$("#dialogue").html('');
+
+	// Got input?
+	if (sentences) {
+		// Put string input into array:
+		if (typeof sentences === 'string') {
+			sentences = [sentences];
+		}
+
+		var me = this;		// Store 'this' (me/Character) to pass to function below
+
+		// Define loop:
+		var i = 0;
+		function loop() {
+			var line = sentences[i],
+				time = line.length * 70;
+			// Add a new div to #dialogue instead of reusing:
+			$("<div class='dia'>").appendTo($("#dialogue"))
+								  .css("color", me.textColour)
+								  .html(line).show()
+								  .delay(time).fadeOut(1500);
+			i++;
+			// Not done? Initiate the next one:
+			if (i < sentences.length) {
+				setTimeout(loop, time);
+			}
+		}
+		// Set first loop iteration going:
+		loop();
 	}
 	return this;
 };
@@ -614,7 +635,7 @@ Player.prototype.examine = function(target) {
 };
 Player.prototype.talkTo = function(character) {
 	if (character.hasOwnProperty('name')) {
-		dialogueChooser(character, null, true);		// make Player.dialogueChooser ??
+		dialogues.choicesFromOpts(character, null, true);
 	}
 };
 Player.prototype.canUse = function(item1, item2) {

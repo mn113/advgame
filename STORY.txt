@@ -22,16 +22,19 @@ guess passwords
 hack email
 gain entry
 sabotage system
-disable cameras
-disguise
 create diversion
 gear-up montage
 evade pursuers
 control robot
 steal
-social engineering
-obtain bitcoins
+social engineering  through dialogue
 send/decrypt encrypted emails
+use smartphone apps
+cover laptop camera with sticky tape
+disable cameras with several different techniques
+use hidden smartphone with auto-answer app to eavesdrop on conversation from across the street
+buy bitcoins in cash from shady bum
+wear a disguise
 
 
 LOCATIONS
@@ -50,6 +53,31 @@ airport
 riot zone
 forest
 secret facility
+
+LUCAS LEVERET - web designer by day, computer hacker by night
+
+
+Someone important has been murdered at work
+One of Lucas's friends/colleagues gets arrested
+The murder appears to have been staged
+A forensic detective seems to want to leak secrets, by accident to Lucas
+Poison - the antidote must be consumed at the right time
+A femme fatale befriends Lucas
+She works in a theatre and needs help but has a dark secret
+A mystery texter starts sending helpful but cryptic messages
+A computer-whizz bike messenger repeatedly evades contact
+Riots are going on in some city
+Someone is on trial for supposed "thought crimes" discovered by electronic surveillance
+A corporation may be behind it all
+Periscopes come up through the toilets
+The plan is to kidnap a politician
+Break into No 10 Downing Street to see the PM's iPad
+A couple of close encounters with the law
+Capture? By inept local offficers. Then escape
+A deal is made with the Chinese to obtain secrets and sell them off
+A computer club thinks they can hack the government's data centre to discover redacted files
+Physical access is needed, at an offshore data centre
+Showdown
 
 
 OPENING GAMBIT (Establish character, learn gameplay)

@@ -35,7 +35,7 @@ $.extend(X.prototype, MyMixins);
 //dialogue bar
 //alternate dialogue colours
 //dialogue chooser
-prevent duplicated dialogue on screen
+//prevent duplicated dialogue on screen
 build a little delay into the dialogues
 //inventory items clickable
 //use inventory item solo
@@ -53,10 +53,11 @@ build a little delay into the dialogues
 //inventory grid positioning
 drag/drop styles
 /	inventory tooltips
+flash new inventory item
+try to have new item appear in same spot as removed one
 inventory sandbox
 different item icons in inventory & stage
 walkTo should accept objects
-entities lookup helper function
 
 /	add non-gridded backwall area (60px?)
 fix viewport size (320*200)
@@ -77,8 +78,8 @@ puzzles object which stores the state of each key step
 puzzles: {act1: {puzzle1: {get_bread_from_pepper: false}}}
 
 PUZZLE 1
-- pick up cheese							// OK
-- talk to pepper -> get bread				// OK
+- pick up bread								// OK
+- talk to pepper -> get cheese				// OK
 - open (use) chest -> get knife				// OK
 - use knife with bread -> sliced bread		// OK
 - use bread with cheese -> sandwich			// OK

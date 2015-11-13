@@ -167,5 +167,6 @@ console.log("Uses loaded.");
 * Pick up
 Push / pull / move		(use)
 Give					(use)
+Open					(use)
 
 */
