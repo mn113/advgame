@@ -9,6 +9,8 @@ var john = new Character($("#john"), "John", "lightblue").placeAt([30,160]).face
 // Initialise stage items:
 var bread = new Item($(".bread"), "bread").placeAt([30,70]);
 var cheese = new Item($(".cheese"), "cheese").placeAt([50,170]);
+// Initialise inventory items:
+var chicken = new Item($(".chicken"), "chicken", true);
 // Initialise hidden items:
 var knife = new Item($(".knife"), "knife", false);
 var key = new Item($(".key"), "key", false);

@@ -76,6 +76,9 @@
 .key {
 	background: url(../img/key.png);
 }
+.chicken {
+	background: url(../img/chicken.png);
+}
 
 /* These hover states wil later be done with bg-position shift :*/
 #inventory .bread:hover {
@@ -101,6 +104,9 @@
 }
 #inventory .key:hover {
 	background: url(../img/key_outline.png);
+}
+#inventory .chicken:hover {
+	background: url(../img/chicken_outline.png);
 }
 
 /* CHARACTERS */

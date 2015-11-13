@@ -165,6 +165,21 @@ MYGAME.UIUtils = {
 			$("body").removeClass().toggleClass(mode);
 		}
 		MYGAME.cursor.mode = mode || 'default';
+	},
+	inventory: {
+		ttRefresh: function() {
+			$("#inventory div div.item").tooltip({
+				content: function() {
+					return $(this).attr("id");
+				},
+				show: {
+					delay: 750	// a reasonable delay makes dragging/dropping/sorting a lot easier
+				},
+				items: "div[id]",
+				tooltipClass: "tt",
+				track: true
+			});
+		}
 	}
 };
 
@@ -438,8 +453,11 @@ Item.prototype.constructor = Item;
 Item.prototype.toInventory = function() {
 	// Move the HTML element:
 	var $newdiv = $("<div>");
-	$newdiv.appendTo("#inventory")
+	$newdiv.appendTo("#inventory");
 	this.domNode.detach().appendTo($newdiv);
+
+	// Redo tooltips:
+	MYGAME.UIUtils.inventory.ttRefresh();
 
 	// Move the logical element:
 	steve.inventory.push(this.id);
@@ -510,7 +528,7 @@ Character.prototype.say = function(sentences) {
 
 		// Define loop:
 		var i = 0;
-		function loop() {
+		var loop = function() {
 			var line = sentences[i],
 				time = line.length * 70;
 			// Add a new div to #dialogue instead of reusing:
@@ -523,7 +541,7 @@ Character.prototype.say = function(sentences) {
 			if (i < sentences.length) {
 				setTimeout(loop, time);
 			}
-		}
+		};
 		// Set first loop iteration going:
 		loop();
 	}
@@ -756,7 +774,7 @@ $(function () {
 
 	// Load level:
 	$.getScript("js/level0.js", function(){
-		alert("Level.js loaded but not necessarily executed.");
+		console.log("Level.js loaded but not necessarily executed.");
 	});
 
 	// Stage click handler:
@@ -841,6 +859,14 @@ $(function () {
 		}
 	});
 
+	// ToolMenu click handler:
+	$("#toolMenu li").on("click", function(event) {
+		// Extract the chosen mode from HTML:
+		var mode = $(event.target).parent("li").attr("name");
+		// Set the mode:
+		MYGAME.UIUtils.toolMode(mode);
+	});
+
 	//jQuery UI block:
 	{
 		// Set up sortable inventory:
@@ -884,10 +910,12 @@ $(function () {
 			}
 		});
 
-		//	$("#inventory").tooltip({track: true});		// ERROR
-	}
+		// Inventory Tooltips:
+		MYGAME.UIUtils.inventory.ttRefresh();
 
-}); // end jQuery
+	}	// end jQuery UI block
+
+}); // end jQuery function
 
 /**********/
 /*! INPUT */

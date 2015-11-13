@@ -25,3 +25,8 @@
 11-Nov	roughly completed requirements of Puzzle 1
 
 12-Nov	git initial commit
+12-Nov	got drag&drop working properly; sortable inventory
+
+13-Nov	fixed say() & dialogue functions
+13-Nov	fixed tooltips
+13-Nov	improved toolMenu

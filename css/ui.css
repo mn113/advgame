@@ -32,12 +32,23 @@
 	width: 32px;
 	height: 32px;
 }
+#inventory .tt, .ui-tooltip {
+	background: #333;
+	border: 1px solid #666;
+	border-radius: 3px;
+	color: #ccc;
+	font: 16px DOS437, Helvetica;
+	padding: 3px 5px;
+	width: auto !important;
+	max-width: 100px !important;
+
+}
 
 #foreground .drop-hover { border: 2px solid orange; }
 #foreground .ui-droppable { border: 2px solid green; }
 #foreground .ui-droppable-disabled { border: 2px solid red; }
 
-#contextMenu {
+#toolMenu {
 	position: absolute;
 	width: 80px;
 	height: 96px;
@@ -47,7 +58,7 @@
 	color: white;
 	z-index: 700;
 }
-#contextMenu ul.panel {
+#toolMenu ul.panel {
 	background: rgba(80,80,80,.7);
 	width: 26px;
 	height: 96px;
@@ -55,20 +66,20 @@
 	list-style: none;
 	padding: 0;
 }
-#contextMenu ul.panel li {
+#toolMenu ul.panel li {
 	height: 24px;	
 }
-#contextMenu ul.panel i {
+#toolMenu ul.panel i {
 	height: 24px;
 	width: 24px;
 	margin: 0 1px;
 	position: relative;
 }
-#contextMenu ul.panel i:hover {
+#toolMenu ul.panel i:hover {
 	background: #333;
 	border-radius: 3px;
 }
-#contextMenu ul.panel i + b {
+#toolMenu ul.panel i + b {
 	visibility: hidden;
 	display: inline-block;
 	position: relative;
@@ -78,7 +89,7 @@
 	text-align: left;
 	font-size: 10px;
 }
-#contextMenu ul.panel i:hover + b {
+#toolMenu ul.panel i:hover + b {
 	visibility: visible;
 	display: inline-block;
 	position: relative;
