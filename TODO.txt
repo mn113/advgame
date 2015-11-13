@@ -36,13 +36,12 @@ $.extend(X.prototype, MyMixins);
 //alternate dialogue colours
 //dialogue chooser
 prevent duplicated dialogue on screen
-build a little delay into the dialogues;
+build a little delay into the dialogues
 //inventory items clickable
 //use inventory item solo
 //use inventory item with other
 //use fixed items
-/	inventory tooltips
-//	drag-n-droppable possessions -> jQueryUI
+//drag-n-droppable possessions -> jQueryUI
 //droppable characters, items
 //door, room exit point
 //fix inv-item positioning
@@ -50,19 +49,20 @@ build a little delay into the dialogues;
 //place for hidden/inactive items?
 //sprite:hover colour outline via Photoshop;
 //item drag springback
+//inventory items need containers
+//inventory grid positioning
 drag/drop styles
-
-	inventory items need containers
-inventory grid positioning
+/	inventory tooltips
 inventory sandbox
 different item icons in inventory & stage
-grammar fixes: capitalisation, articles...
 walkTo should accept objects
+entities lookup helper function
 
 /	add non-gridded backwall area (60px?)
 fix viewport size (320*200)
 make side-scrolling areas
 parallax backgrounds
+grammar fixes: capitalisation, articles...
 
 load rooms & contents by ajax: $.load()?
 load the extra items by $.getObject each time?

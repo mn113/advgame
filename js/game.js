@@ -339,16 +339,25 @@ BaseObj.prototype.reportLoc = function() {
 	console.log("I'm at " + this.x + ', ' + this.y + ': [' + this.gridref() + ']');
 };
 BaseObj.prototype.remove = function() {
-	// From Entities:
-	delete MYGAME.entities[this];
+	var ininv = false,
+		index = steve.inventory.indexOf(this.id);
 	
 	// From Inventory:
-	var index = steve.inventory.indexOf(this.id);
 	if (index > -1) {
+		ininv = true;
 		steve.inventory.splice(index, 1);
 	}
 	// From DOM:
-	this.domNode.remove();	
+	if (ininv) {
+		// Remove it and container div:
+		this.domNode.parent().remove();
+	}
+	else {
+		this.domNode.remove();
+	}
+
+	// From Entities:
+	delete MYGAME.entities[this];
 
 	console.log(this.id, "removed.");
 };
@@ -815,101 +824,45 @@ $(function () {
 	{
 		// Set up sortable inventory:
 		$("#inventory").sortable({
+			helper: "clone",
 			start: function(event, ui) {
-//				console.log("Reordering item", $(ui.item[0]).children().attr("id"));
+				console.log("Reordering...");// item", $(ui.item[0]).children().attr("id"));
 			}
 		});
 
-		// Droppables in the field:
-		$("#foreground div").droppable({
+		// Droppables in the field + inventory:
+		$("#foreground div, #inventory .item").droppable({
+			hoverClass: "drop-hover",		// USE CLASS FOR AN ICON
 			drop: function(event, ui) {
-				console.log("Dropped", $(ui.draggable[0]).children().attr("id"), "on", $(this).attr("id"));
-			}
-		});
-
-		// Droppables in the inventory (nested inside sortables):
-		$("#inventory .item").droppable({
-			drop: function(event, ui) {
-				console.log("Dropped", $(ui.draggable[0]).children().attr("id"), "on", $(this).attr("id"));
-			}
-		});
-
-/*		// Set up draggable items (in disabled mode):
-		$(".item").draggable({
-			disabled: true,		// ??
-			cursor: "crosshair",
-			delay: 200,
-			// When dragging starts:
-			start: function(event, ui) {
-				// Store the originating position in HTML5 data attribute:
-				$(this).data("origPos", $(this).position());
-			},
-			// When dragging stops:
-			stop: function(event, ui) {
-				// Snap back to reality (i.e. origPos):
-				var opos = $(this).data("origPos");
-				$(this).animate({"top": opos.top, "left": opos.left}, 500);	// GOOD
-			},
-			// Revert or not?
-			revert: function(event, ui) {	// this fn must evaluate to true or false
-				// Some logic
-				return !event;
-			},
-//			revert: "invalid",	// spring back if not on a droppable
-			revertDuration: 200
-
-		});
-*/
-/*		// Set up droppable items & characters:
-		$(".item, .scenery, .character").droppable({
-			accept: ".item",							// redundant
-			activeClass: "ui-state-highlight",			// DEFINE CSS
-			hoverClass: "drop-hover",				// DEFINE CSS
-			over: function(event, ui) {
-				$(this).removeClass("bad").addClass("good");
-
-				// Test if drop is valid:
 				// Lookup dragged item in Entities:
-				var dragid = ui.draggable.attr("id"),
+				var dragid = $(ui.draggable[0]).children().attr("id"),
 					item = MYGAME.entities[dragid];
 				// Lookup drop target in Entities:
 				var dropid = this.id,
 					target = MYGAME.entities[dropid];
+				console.log(item, target);
 
+				// Test if drop is valid:
 				if (item && target && item.giveable) {
 					// See if they fail to combine:
 					if (!steve.canUse(item, target)) {
-						// Invalid combination, disable the droppable:
-						$(this).droppable("disable");
-//						$(this).removeClass("good").addClass("bad");
-						console.log("No drop, reverting (2).");		// OK
+						console.log("No drop, reverting (2).");
+					}
+					else {
+						// SUCCESS:
+						steve.use(item, target);
+						// Refresh inventory in case of item deletion:
+						$("#inventory").sortable("refresh");
+						// Delete helper?
+						console.log("Dropped", item.id, "on", target.id);
 					}
 				}
 				else {
-					// Invalid combination, disable the droppable:
-					$(this).droppable("disable");
-//					$(this).removeClass("good").addClass("bad");
 					console.log("No drop, reverting (1).");
 				}
-			},
-			out: function(event, ui) {
-				// Reset droppable:
-				$(this).droppable("enable");
-//				$(this).removeClass("bad").removeClass("good");
-			},
-			drop: function(event, ui) {
-				var dragid = ui.draggable.attr("id"),
-					item = MYGAME.entities[dragid];
-				// Lookup drop target in Entities:
-				var dropid = this.id,
-					target = MYGAME.entities[dropid];
-
-				// Success:
-				steve.use(item, target);
-				console.log("Dropped", item.id, "on", target.id);
 			}
 		});
-*/
+
 		//	$("#inventory").tooltip({track: true});		// ERROR
 	}
 

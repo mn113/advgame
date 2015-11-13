@@ -2,27 +2,28 @@
 /*global $, jQuery, alert*/
 /*global Player, Character, Item, FixedItem, Exit */
 
-// Initialise entities:
+// Initialise characters:
 var steve = new Player($("#steve"), "Steve", "yellow").placeAt([50,30]).face(90).setZIndex();
-var pepper = new Character($("#pepper"), "Pepper", "red").placeAt([170,90]).face(90).setZIndex();
+var pepper = new Character($("#pepper"), "Pepper", "red").placeAt([170,110]).face(90).setZIndex();
 var john = new Character($("#john"), "John", "lightblue").placeAt([30,160]).face(180).setZIndex();
-
+// Initialise stage items:
 var bread = new Item($(".bread"), "bread").placeAt([30,70]);
 var cheese = new Item($(".cheese"), "cheese").placeAt([50,170]);
-
-var knife = new Item($(".knife"), "knife", true);
-var key = new Item($(".key"), "key", true);
-var slicedbread = new Item($(".slicedbread"), "slicedbread", true);
-var sandwich = new Item($(".sandwich"), "sandwich", true);
-
+// Initialise hidden items:
+var knife = new Item($(".knife"), "knife", false);
+var key = new Item($(".key"), "key", false);
+var slicedbread = new Item($(".slicedbread"), "slicedbread", false);
+var sandwich = new Item($(".sandwich"), "sandwich", false);
+// Initialise scenery:
 var lake = new FixedItem($(".lake"), "lake").placeAt([68,48]);
 var door = new FixedItem($(".door"), "door").placeAt([100,-24]);		// Locked / Unlocked states ???
 var chest = new FixedItem($(".chest.closed"), "chest").placeAt([140,30]);
+// Initialise hidden scenery:
 var openchest = new FixedItem($(".chest.open"), "openchest", false);	// Invisible
-
+// Initialise exits:
 var exit1 = new Exit($(".exit"), "exit1", null, true, false).placeAt([100,0]);	// Visible but inactive
 
-console.log("All vars loaded.");
+console.log("All objects initialised.");
 
 // All descriptions for entities in this level:
 steve.descriptions = [
@@ -159,14 +160,6 @@ john.uses = {
 console.log("Uses loaded.");
 
 /*
-Character.giveable = 1 (droppable)
-Character.talkable = 1
-Item.giveable = 1
-
-Item.replaceWith()	// DEPRECATED??
-
-Player.use(i1,i2) -OR- Item.use(item) ???
-
 -= POSSIBLE VERBS =-
 * Examine
 * Use / use with

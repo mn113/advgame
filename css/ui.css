@@ -34,8 +34,8 @@
 }
 
 #foreground .drop-hover { border: 2px solid orange; }
-#foreground .drop-hover.good { border: 2px solid green; }
-#foreground .drop-hover.bad { border: 2px solid red; }
+#foreground .ui-droppable { border: 2px solid green; }
+#foreground .ui-droppable-disabled { border: 2px solid red; }
 
 #contextMenu {
 	position: absolute;
