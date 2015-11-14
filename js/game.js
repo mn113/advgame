@@ -354,22 +354,8 @@ BaseObj.prototype.reportLoc = function() {
 	console.log("I'm at " + this.x + ', ' + this.y + ': [' + this.gridref() + ']');
 };
 BaseObj.prototype.remove = function() {
-	var ininv = false,
-		index = steve.inventory.indexOf(this.id);
-	
-	// From Inventory:
-	if (index > -1) {
-		ininv = true;
-		steve.inventory.splice(index, 1);
-	}
 	// From DOM:
-	if (ininv) {
-		// Remove it and container div:
-		this.domNode.parent().remove();
-	}
-	else {
-		this.domNode.remove();
-	}
+	this.domNode.remove();
 
 	// From Entities:
 	delete MYGAME.entities[this];
@@ -396,37 +382,6 @@ FixedItem.prototype = Object.create(BaseObj.prototype, {
 	// Options
 });
 FixedItem.prototype.constructor = FixedItem;
-FixedItem.prototype.replaceWith = function(newitem) {
-	// New item must already exist - creating on-the-fly is too complex
-	newitem.visible = true;
-	
-	// Copy some properties:
-
-	if (steve.inventory.indexOf(this) >= 0) {
-		// Replace in Inventory:
-		steve.inventory.push(newitem);
-	}
-	else {
-		// Replace in Room:
-		newitem.placeAt([this.x, this.y]);
-	}
-	// Move old item to Trash
-	delete MYGAME.entities[this];
-
-	return;
-};		// NEEDED?
-/*FixedItem.prototype.use = function(other) {		// NOT USED - Player.use(Item) is current way
-	other = other || null;
-	if (!other) {
-		// Solo use
-	}
-	else if (other instanceof Item || other instanceof FixedItem) {
-		// Use with item
-	}
-	else if (other instanceof Character) {
-		// Use with person
-	}
-};*/
 
 
 /**
@@ -450,11 +405,48 @@ Item.prototype = Object.create(FixedItem.prototype, {
 	// Options
 });
 Item.prototype.constructor = Item;
-Item.prototype.toInventory = function() {
+Item.prototype.remove = function() {
+	// Inventory check:
+	var ininv = false,
+		index = steve.inventory.indexOf(this.id);
+
+	// From Inventory:
+	if (index > -1) {
+		ininv = true;
+		steve.inventory.splice(index, 1);
+	}
+	// From DOM:
+	if (ininv) {
+		// Remove container div and item:
+		this.domNode.parent("div").remove();	// NOT REMOVING
+	}
+	else {
+		this.domNode.remove();
+	}
+
+	// From Entities:
+	delete MYGAME.entities[this];
+
+	console.log(this.id, "removed.");
+
+	return index;
+};
+Item.prototype.toInventory = function(index) {
+	// If no index passed, insert item at end:
+	index = (index) ? index : steve.inventory.length - 1;
+	console.log("Insert", this.id, '@', index);
+
 	// Move the HTML element:
 	var $newdiv = $("<div>");
-	$newdiv.appendTo("#inventory");
+	var $target = $("#inventory > div").eq(index);
+	$target.after($newdiv);
 	this.domNode.detach().appendTo($newdiv);
+
+	// Flash it:
+	$newdiv.addClass("flash");
+	setTimeout(function() {
+		$newdiv.removeClass("flash");
+	}, 2000);
 
 	// Redo tooltips:
 	MYGAME.UIUtils.inventory.ttRefresh();
@@ -463,7 +455,6 @@ Item.prototype.toInventory = function() {
 	steve.inventory.push(this.id);
 	console.log(this.id, "to Inventory.");
 };
-
 
 /**
 * Exit
@@ -631,7 +622,7 @@ function Player(domNode, name, colour, visible) {
 	Character.call(this, domNode, name, colour, visible);
 
 	// Player-specific properties:
-	this.inventory = ['fluff'];		// Hash of inventory item ids
+	this.inventory = [];		// Hash of inventory item ids
 }
 // Inheritance: Player extends Character
 Player.prototype = Object.create(Character.prototype, {
@@ -663,8 +654,8 @@ Player.prototype.canUse = function(item1, item2) {
 	if (item2id !== 'itself') {
 		// Sort item1 & item2 alphabetically, to avoid doubling up on Item.uses:
 		if (item1.id > item2.id) {
-			this.use(item2, item1);
-			return this;
+			var flip = this.canUse(item2, item1);
+			return flip;
 		}
 	}
 
@@ -690,15 +681,15 @@ Player.prototype.use = function(item1, item2) {
 	if (item2id !== 'itself') {
 		// Sort item1 & item2 alphabetically, to avoid doubling up on Item.uses:
 		if (item1.id > item2.id) {
-			this.use(item2, item1);
-			return this;
+			var flip = this.use(item2, item1);
+			return flip;
 		}
 	}
 
 	// Use X with Y (or 'itself'), as per Item.uses definition:
 	if (!($.isEmptyObject(item1.uses))) {
-		if (item2id in item1.uses) {		
-			if (item1.uses[item2id] !== null) {
+		if (item2id in item1.uses) {
+			if (typeof item1.uses[item2id] === 'function') {		//
 				// Execute:
 				item1.uses[item2id]();		// WORKS FOR 'itself', cheese...
 				return true;
@@ -722,7 +713,7 @@ Player.prototype.pickUp = function(item) {
 				item.toInventory();
 				item.pickable = false;
 //				item.pickedUp();		// ?
-				this.inventory.push(item.id);
+//				this.inventory.push(item.id);
 				this.say("Got me some " + item.name);
 			}
 			else {
@@ -731,12 +722,12 @@ Player.prototype.pickUp = function(item) {
 		}
 	}
 };
-Player.prototype.getItem = function(item) {
+Player.prototype.getItem = function(item, index) {
 	// If we don't already have it:
 	if (this.inventory.indexOf(item) === -1) {
 		// Add item to inventory:
-		this.inventory.push(item.id);
-		item.toInventory();
+//		this.inventory.push(item.id);
+		item.toInventory(index);
 		item.pickable = false;
 		item.visible = true;
 		item.domNode.show();
@@ -774,7 +765,7 @@ $(function () {
 
 	// Load level:
 	$.getScript("js/level0.js", function(){
-		console.log("Level.js loaded but not necessarily executed.");
+		console.log("Level0.js loaded but not necessarily executed.");
 	});
 
 	// Stage click handler:
@@ -925,7 +916,7 @@ $(function () {
 $(document).keydown(function(e) {			// keydown is Safari-compatible; keypress allows holding a key to send continuous events
 	MYGAME.UIUtils.toolMode(null);
 	
-	if (e.keyCode === 69) {									// press 'e'
+	if (e.keyCode === 69) {											// press 'e'
 		MYGAME.UIUtils.toolMode('examine');			
 	}
 	else if (e.keyCode === 84) {									// press 't'
@@ -941,7 +932,7 @@ $(document).keydown(function(e) {			// keydown is Safari-compatible; keypress al
 		// Toggle debug state:
 		$("body").toggleClass("debug");
 	}
-	else {
+	else {															// any other keypress
 		$("body").removeClass();	// unset all modes
 		MYGAME.cursor.mode = 'default';
 	}

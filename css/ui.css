@@ -135,3 +135,25 @@
 #displayChoices a:hover {
 	text-decoration: underline;
 }
+
+
+.flash {
+  -webkit-animation: flash .5s 0s 1 ease-out;
+  -moz-animation: flash .5s 0s 1 ease-out;
+  -ms-animation: flash .5s 0s 1 ease-out;
+}
+@-webkit-keyframes flash {
+    0% { background-color: none; }
+    50% { background-color: #fff; }
+    100% { background-color: none; }
+}
+@-moz-keyframes flash {
+    0% { background-color: none; }
+    50% { background-color: #fff; }
+    100% { background-color: none; }
+}
+@-ms-keyframes flash {
+    0% { background-color: none; }
+    50% { background-color: #fff; }
+    100% { background-color: none; }
+}

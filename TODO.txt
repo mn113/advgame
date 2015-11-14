@@ -51,23 +51,29 @@ build a little delay into the dialogues
 //item drag springback
 //inventory items need containers
 //inventory grid positioning
-drag/drop styles
-/	inventory tooltips
-flash new inventory item
-try to have new item appear in same spot as removed one
-inventory sandbox
+//	inventory tooltips
+//flash new inventory items
+//try to have new item appear in same spot as removed one
 different item icons in inventory & stage
+drag/drop styles
+inventory sandbox?
+
 walkTo should accept objects
+dialogues where NPC speaks first
 
 /	add non-gridded backwall area (60px?)
 fix viewport size (320*200)
+resolution changer: 1x, 2x, 3x, 4x (css/js)
 make side-scrolling areas
 parallax backgrounds
 grammar fixes: capitalisation, articles...
 
+link 2 rooms
 load rooms & contents by ajax: $.load()?
 load the extra items by $.getObject each time?
-
+steganographic obfuscation of new items?
+should each item have a special code to negate fake instantiations?
+	
 cutscenes using NPC.say() and NPC.walkTo()
 
 smartphone side-mission

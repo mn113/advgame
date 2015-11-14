@@ -11,6 +11,7 @@ var bread = new Item($(".bread"), "bread").placeAt([30,70]);
 var cheese = new Item($(".cheese"), "cheese").placeAt([50,170]);
 // Initialise inventory items:
 var chicken = new Item($(".chicken"), "chicken", true);
+steve.inventory.push(chicken.id);
 // Initialise hidden items:
 var knife = new Item($(".knife"), "knife", false);
 var key = new Item($(".key"), "key", false);
@@ -108,17 +109,16 @@ bread.uses = {
 		return false;
 	},
 	knife: function() {
-		steve.getItem(slicedbread);
-		bread.remove();
-		// Set some flags
+		var invpos = bread.remove();
+		steve.getItem(slicedbread, invpos);
+		// Set some flags?
 		steve.say("It cuts well.");
 		return true;
 	}
 };
 cheese.uses = {
 	slicedbread: function() {
-		steve.getItem(sandwich);
-		cheese.remove();
+		steve.getItem(sandwich, cheese.remove());
 		return true;		
 	}
 };
