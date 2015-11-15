@@ -155,8 +155,63 @@ MYGAME.gridUtils = {
 			dy = (ay2 <= by1) ? by1 - ay2 : ay1 - by2,
 			dist = Math.sqrt(dx * dx + dy * dy);
 		return dist;
+	},
+
+	pointIsInPoly: function(p, polygon) {
+		var isInside = false;
+		// Test all vertices to find max/min x & y for a bounding box:
+		var minX = polygon[0].x, maxX = polygon[0].x;
+		var minY = polygon[0].y, maxY = polygon[0].y;
+		for (var n = 1; n < polygon.length; n++) {
+			var q = polygon[n];
+			minX = Math.min(q.x, minX);
+			maxX = Math.max(q.x, maxX);
+			minY = Math.min(q.y, minY);
+			maxY = Math.max(q.y, maxY);
+		}
+
+		if (p.x < minX || p.x > maxX || p.y < minY || p.y > maxY) {
+			// Point outside bounding box
+			return false;
+		}
+
+		// Clever part:
+		var i = 0, j = polygon.length - 1;
+		for (i, j; i < polygon.length; j = i++) {
+			if ( (polygon[i].y > p.y) != (polygon[j].y > p.y) &&
+					p.x < (polygon[j].x - polygon[i].x) * (p.y - polygon[i].y) / (polygon[j].y - polygon[i].y) + polygon[i].x ) {
+				isInside = !isInside;
+			}
+		}
+
+		return isInside;
+	},
+
+	whichWalkbox: function(point) {
+		for (var wbname in level0.walkboxes) {
+			var wb = level0.walkboxes[wbname],
+				pxy = { x: point[0], y: point[1] };
+			if (MYGAME.gridUtils.pointIsInPoly(pxy, wb)) {
+				return wbname;
+			}
+		}
+		// No match:
+		return false;
 	}
+
 };
+
+var level0 = {};
+level0.walkboxes = {
+	wb1: [{x:60,y:10}, {x:140,y:10}, {x:140,y:40}, {x:60,y:40}],
+	wb2: [{x:140,y:10}, {x:200,y:50}, {x:200,y:90}, {x:140,y:150}],
+	wb3: [{x:140,y:120}, {x:140,y:195}, {x:60,y:195}, {x:60,y:120}],
+	wb4: [{x:60,y:10}, {x:60,y:195}, {x:20,y:150}, {x:20,y:40}],
+	wb5: [{x:60,y:40}, {x:80,y:40}, {x:60,y:60}],
+	wb6: [{x:120,y:40}, {x:140,y:40}, {x:140,y:60}],
+	wb7: [{x:60,y:100}, {x:80,y:120}, {x:60,y:120}],
+	wb8: [{x:120,y:120}, {x:140,y:120}, {x:140,y:100}]
+}
 
 MYGAME.UIUtils = {
 	toolMode: function(mode) {
@@ -599,9 +654,19 @@ Character.prototype.walkSvgPath = function(deets, steps) {
 	// if (I'm at my destination) return 1;
 	// else return 0;
 };
-Character.prototype.walkTo = function(dest) {
+Character.prototype.walkTo = function(dest) {			// MAKE IT ACCEPT OBJECTS
+	var point;
+	if (dest.hasOwnProperty("id")) {
+		// Object passed in:
+		point = [dest.x, dest.y];
+	}
+	else {
+		// Coords passed in:
+		point = dest;
+	}
+
 	// Make path:
-	var ppp = new Path(this.gridref(), MYGAME.gridUtils.gridref(dest), MYGAME.maps.demograph);
+	var ppp = new Path(this.gridref(), MYGAME.gridUtils.gridref(point), MYGAME.maps.demograph);
 	ppp.get();
 	var ppl = ppp.nodes.length;
 	ppp.simplify().toString().highlight().makeSvg();
@@ -755,7 +820,8 @@ function modedClick(targetObj) {
 			break;
 	}		
 
-	$("body").removeClass();	// unset all modes
+	// Unset mode & cursor:
+	$("body").removeClass();
 	MYGAME.cursor.mode = 'default';
 }
 
@@ -780,7 +846,9 @@ $(function () {
 		var gr = MYGAME.gridUtils.gridref(evxy),
 			targetObj = null;		
 		console.log("click @ ", evxy, event.target.id);
-//		console.log("click @ ", gr);
+		console.log("click @ ", gr);
+
+		console.log(MYGAME.gridUtils.whichWalkbox(evxy));
 		
 		// Check Entities list first:
 		var ens = MYGAME.entities;
@@ -809,7 +877,7 @@ $(function () {
 			// No specific object clicked, so just walk there:
 			// Check if clicked spot is valid in NavMesh:
 //			if (MYGAME.maps.demograph.grid[gr[0]][gr[1]].weight == '1') {
-			if (MYGAME.gridUtils.tileLookup(gr) === '1') {
+			if (!MYGAME.gridUtils.tileLookup(gr)) {		// if not wall...
 				MYGAME.gridUtils.highlightTile(gr);
 				steve.walkTo(evxy);
 				return;

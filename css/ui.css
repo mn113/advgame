@@ -4,7 +4,8 @@
 .pickup #gamebox { cursor: url('../img/cursor-grab2.png'), grab; }
 .use #gamebox { cursor: url('../img/cursor-wrench2.png'), default; }
 
-/* UI */
+
+/* INVENTORY */
 #inventory {
 	background: #666;
 	width: 240px;
@@ -44,10 +45,33 @@
 
 }
 
-#foreground .drop-hover { border: 2px solid orange; }
-#foreground .ui-droppable { border: 2px solid green; }
-#foreground .ui-droppable-disabled { border: 2px solid red; }
+#inventory .flash {
+  -webkit-animation: flash .5s 0s 1 ease-out;
+  -moz-animation: flash .5s 0s 1 ease-out;
+  -ms-animation: flash .5s 0s 1 ease-out;
+}
+@-webkit-keyframes flash {
+    0% { background-color: none; }
+    50% { background-color: #fff; }
+    100% { background-color: none; }
+}
+@-moz-keyframes flash {
+    0% { background-color: none; }
+    50% { background-color: #fff; }
+    100% { background-color: none; }
+}
+@-ms-keyframes flash {
+    0% { background-color: none; }
+    50% { background-color: #fff; }
+    100% { background-color: none; }
+}
 
+#foreground .drop-hover { xborder: 2px solid orange; }
+#foreground .ui-droppable { xborder: 2px solid green; }
+#foreground .ui-droppable-disabled { xborder: 2px solid red; }
+
+
+/* TOOLMENU*/
 #toolMenu {
 	position: absolute;
 	width: 80px;
@@ -100,6 +124,8 @@
 	font-size: 10px;
 }
 
+
+/* DIALOGUE */
 #dialogue {
 	background: rgba(0,0,0,0.5);
 	color: red;
@@ -136,24 +162,3 @@
 	text-decoration: underline;
 }
 
-
-.flash {
-  -webkit-animation: flash .5s 0s 1 ease-out;
-  -moz-animation: flash .5s 0s 1 ease-out;
-  -ms-animation: flash .5s 0s 1 ease-out;
-}
-@-webkit-keyframes flash {
-    0% { background-color: none; }
-    50% { background-color: #fff; }
-    100% { background-color: none; }
-}
-@-moz-keyframes flash {
-    0% { background-color: none; }
-    50% { background-color: #fff; }
-    100% { background-color: none; }
-}
-@-ms-keyframes flash {
-    0% { background-color: none; }
-    50% { background-color: #fff; }
-    100% { background-color: none; }
-}
