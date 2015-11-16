@@ -4,6 +4,7 @@
 
 // Initialise characters:
 var steve = new Player($("#steve"), "Steve", "yellow").placeAt([50,30]).face(90).setZIndex();
+var player = steve;
 var pepper = new Character($("#pepper"), "Pepper", "red").placeAt([170,110]).face(90).setZIndex();
 var john = new Character($("#john"), "John", "lightblue").placeAt([30,160]).face(180).setZIndex();
 // Initialise stage items:

@@ -157,12 +157,14 @@ MYGAME.gridUtils = {
 		return dist;
 	},
 
-	pointIsInPoly: function(p, polygon) {
+	// Third-party imported function; returns true if point p lies inside a polygon
+	pointIsInPoly: function(p, polygon) {	// Point object e.g. {x:0, y:0}; polygon as array of points
 		var isInside = false;
 		// Test all vertices to find max/min x & y for a bounding box:
-		var minX = polygon[0].x, maxX = polygon[0].x;
-		var minY = polygon[0].y, maxY = polygon[0].y;
-		for (var n = 1; n < polygon.length; n++) {
+		var minX = polygon[0].x, maxX = polygon[0].x,
+			minY = polygon[0].y, maxY = polygon[0].y,
+			n;
+		for (n = 1; n < polygon.length; n++) {
 			var q = polygon[n];
 			minX = Math.min(q.x, minX);
 			maxX = Math.max(q.x, maxX);
@@ -178,7 +180,7 @@ MYGAME.gridUtils = {
 		// Clever part:
 		var i = 0, j = polygon.length - 1;
 		for (i, j; i < polygon.length; j = i++) {
-			if ( (polygon[i].y > p.y) != (polygon[j].y > p.y) &&
+			if ( (polygon[i].y > p.y) !== (polygon[j].y > p.y) &&
 					p.x < (polygon[j].x - polygon[i].x) * (p.y - polygon[i].y) / (polygon[j].y - polygon[i].y) + polygon[i].x ) {
 				isInside = !isInside;
 			}
@@ -187,8 +189,9 @@ MYGAME.gridUtils = {
 		return isInside;
 	},
 
-	whichWalkbox: function(point) {
-		for (var wbname in level0.walkboxes) {
+	whichWalkbox: function(point) {		// Point array e.g. [0,0]
+		var wbname;
+		for (wbname in level0.walkboxes) {
 			var wb = level0.walkboxes[wbname],
 				pxy = { x: point[0], y: point[1] };
 			if (MYGAME.gridUtils.pointIsInPoly(pxy, wb)) {
@@ -211,7 +214,7 @@ level0.walkboxes = {
 	wb6: [{x:120,y:40}, {x:140,y:40}, {x:140,y:60}],
 	wb7: [{x:60,y:100}, {x:80,y:120}, {x:60,y:120}],
 	wb8: [{x:120,y:120}, {x:140,y:120}, {x:140,y:100}]
-}
+};
 
 MYGAME.UIUtils = {
 	toolMode: function(mode) {
@@ -396,6 +399,9 @@ BaseObj.prototype.updateXY = function() {
 	this.y = this.domNode.position().top + this.anchorOffset[1];
 	return this;
 };
+BaseObj.prototype.coords = function() {
+	return [this.x, this.y];
+};
 BaseObj.prototype.gridref = function() {
 	var gridx = Math.ceil(this.x / 20) - 1,
 		gridy = Math.ceil(this.y / 20) - 1;
@@ -488,7 +494,7 @@ Item.prototype.remove = function() {
 };
 Item.prototype.toInventory = function(index) {
 	// If no index passed, insert item at end:
-	index = (index) ? index : steve.inventory.length - 1;
+	index = index || steve.inventory.length - 1;
 	console.log("Insert", this.id, '@', index);
 
 	// Move the HTML element:
@@ -654,24 +660,45 @@ Character.prototype.walkSvgPath = function(deets, steps) {
 	// if (I'm at my destination) return 1;
 	// else return 0;
 };
-Character.prototype.walkTo = function(dest) {			// MAKE IT ACCEPT OBJECTS
+Character.prototype.walkTo = function(dest) {
 	var point;
 	if (dest.hasOwnProperty("id")) {
 		// Object passed in:
 		point = [dest.x, dest.y];
 	}
+	else if (dest > 0) {
+		// Node number passed in:
+		point = [nodes[dest].x, nodes[dest].y];
+	}
 	else {
-		// Coords passed in:
+		// Simple coords array passed in:
 		point = dest;
 	}
+	console.log("Walk to:", point);
+	steve.directWalkTo(point);
 
-	// Make path:
-	var ppp = new Path(this.gridref(), MYGAME.gridUtils.gridref(point), MYGAME.maps.demograph);
-	ppp.get();
-	var ppl = ppp.nodes.length;
-	ppp.simplify().toString().highlight().makeSvg();
-	// Go walkies:
-	this.walkSvgPath(ppp.svgDeets, ppl);
+//	// Make path:
+//	var ppp = new Path(this.gridref(), MYGAME.gridUtils.gridref(point), MYGAME.maps.demograph);
+//	ppp.get();
+//	var ppl = ppp.nodes.length;
+//	ppp.simplify().toString().highlight().makeSvg();
+//	// Go walkies:
+//	this.walkSvgPath(ppp.svgDeets, ppl);
+};
+Character.prototype.directWalkTo = function(point) {
+	var dist = p2pDist([this.x, this.y], point),
+		time = dist * 10,
+		me = this;
+//	console.log(dist, time, point);
+	this.domNode.addClass("walking")
+				.animate({
+					"left": point[0] - 16,
+					"top": point[1] - 44},
+					time,
+					function() {
+						$(this).removeClass("walking");
+						me.updateXY();
+					});
 };
 
 
@@ -726,7 +753,7 @@ Player.prototype.canUse = function(item1, item2) {
 
 	// Use X with Y (or 'itself'), as per Item.uses definition:
 	if (!($.isEmptyObject(item1.uses))) {
-		if (item2id in item1.uses) {
+		if (item1.uses.hasOwnProperty(item2id)) {
 			if (typeof item1.uses[item2id] === 'function') {
 				return true;
 			}
@@ -753,7 +780,7 @@ Player.prototype.use = function(item1, item2) {
 
 	// Use X with Y (or 'itself'), as per Item.uses definition:
 	if (!($.isEmptyObject(item1.uses))) {
-		if (item2id in item1.uses) {
+		if (item1.uses.hasOwnProperty(item2id)) {
 			if (typeof item1.uses[item2id] === 'function') {		//
 				// Execute:
 				item1.uses[item2id]();		// WORKS FOR 'itself', cheese...
@@ -836,8 +863,10 @@ $(function () {
 
 	// Stage click handler:
 	$("#foreground").on("click", function(event) {
-		// What element was clicked? Set the target.
-		var evxy = [event.clientX - 31, event.clientY - 91];	// accounts for #foreground's pos within viewport
+		// What element was clicked? Set the target (Take parent element's offset into account!)
+		var fgOffset = $(this).offset();
+		var evxy = [event.pageX - fgOffset.left, event.pageY - fgOffset.top];
+
 		// Fix negative y clicks:
 		if (evxy[1] < 0) {
 			evxy[1] = 0;
@@ -848,11 +877,11 @@ $(function () {
 		console.log("click @ ", evxy, event.target.id);
 		console.log("click @ ", gr);
 
-		console.log(MYGAME.gridUtils.whichWalkbox(evxy));
+		console.log(MYGAME.gridUtils.whichWalkbox(evxy));	// FALSE - NOT IN WALKBOX
 		
 		// Check Entities list first:
 		var ens = MYGAME.entities;
-		if (event.target.id in ens) {
+		if (ens.hasOwnProperty(event.target.id)) {
 			// Found a match:, retrieve it:
 			console.log("Clicked on", event.target.id, "(" + MYGAME.cursor.mode[0] + ")");
 			targetObj = ens[event.target.id];
@@ -876,12 +905,12 @@ $(function () {
 		else {
 			// No specific object clicked, so just walk there:
 			// Check if clicked spot is valid in NavMesh:
-//			if (MYGAME.maps.demograph.grid[gr[0]][gr[1]].weight == '1') {
-			if (!MYGAME.gridUtils.tileLookup(gr)) {		// if not wall...
-				MYGAME.gridUtils.highlightTile(gr);
-				steve.walkTo(evxy);
-				return;
-			}
+//			if (!MYGAME.gridUtils.tileLookup(gr)) {		// if not wall...
+//				MYGAME.gridUtils.highlightTile(gr);
+//				steve.walkTo(evxy);
+//				return;
+//			}
+			pathFind([steve.x, steve.y], evxy);	// Experimental!
 		}	
 	});
 
@@ -893,7 +922,7 @@ $(function () {
 
 		// Check Entities list:
 		var ens = MYGAME.entities;
-		if (event.target.id in ens) {
+		if (ens.hasOwnProperty(event.target.id)) {
 			// Found a match:, retrieve it:
 			console.log("Clicked on", event.target.id, "(" + MYGAME.cursor.mode[0] + ")");
 			targetObj = ens[event.target.id];
@@ -909,7 +938,7 @@ $(function () {
 
 		// Check Entities list:
 		var ens = MYGAME.entities;
-		if (event.target.id in ens) {
+		if (ens.hasOwnProperty(event.target.id)) {
 			// Found a match:, retrieve it:
 			exit = ens[event.target.id];
 		}
@@ -999,6 +1028,14 @@ $(document).keydown(function(e) {			// keydown is Safari-compatible; keypress al
 	else if (e.keyCode === 68) {									// press 'd'
 		// Toggle debug state:
 		$("body").toggleClass("debug");
+	}
+	else if (e.keyCode === 67) {									// press 'c'
+		// Toggle canvas layer:
+		$("canvas").toggle();
+	}
+	else if (e.keyCode === 83) {									// press 's'
+		// Toggle SVG layer:
+		$("svg").toggle();
 	}
 	else {															// any other keypress
 		$("body").removeClass();	// unset all modes
