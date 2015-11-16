@@ -9,13 +9,19 @@
 // 7. scripted NPC-NPC convo				->	NPC1.say(); NPC2.say()
 // 8. multi-line monologue					->	steve.say() or NPC.say() handles it
 
+// choicesFromOpts() -> displayChoices() -> getOpts() -> choicesFromOpts()
+// until [0] chosen or [null] response.
+
 /*global
 steve: true, pepper: true, MYGAME: true
 */
 
-var dialogues = {
+// Find global namespace:
+var MYGAME = MYGAME || {};	// "get it or set it"
+
+MYGAME.dialogues = {
 	/**
-	* dialogueChooser() - start or continue a conversation:
+	* choicesFromOpts() - start or continue a conversation:
 	* @param {Character Object} person
 	* @param {Objects} opts
 	* @param {Boolean} is_icebreaker
@@ -49,7 +55,6 @@ var dialogues = {
 			return;
 		}
 	},
-
 	/**
 	* displayChoices() - onscreen dialogue chooser:
 	* @param {Character Object} person
@@ -85,9 +90,8 @@ var dialogues = {
 			dialogues.getOpts(person, $(event.target).attr("data-id"));
 		});
 	},
-
 	/**
-	* dialogueFinder() - fetch & handle conversation responses:
+	* getOpts() - fetch & handle conversation responses:
 	* @param {Character Object} person
 	* @param {int} id
 	*/
@@ -139,7 +143,6 @@ var dialogues = {
 		// Process options:
 		dialogues.choicesFromOpts(person, opts, false);
 	},
-
 	/**
 	* pruneTree - delete a completed node of the dialogue tree
 	* @param {Character Object} person
@@ -148,7 +151,6 @@ var dialogues = {
 	pruneTree: function(person, node) {
 		delete dialogues[person][node];
 	},
-
 	/**
 	* generic() - Talk using randomised synonyms
 	* @param {string} key
@@ -171,16 +173,16 @@ var dialogues = {
 			term = terms[Math.floor(Math.random() * terms.length)];
 		return term;
 	},
-
-	idelRemark: function() {}
+	/**
+	* idleRemark() - The random things player will mutter during idle moments:
+	* @param {Character Object} person
+	*/
+	idleRemark: function(person) {}
 };
 
-// choicesFromOpts() -> displayChoices() -> getOpts() -> choicesFromOpts()
-// until [0] chosen or [null] response.
-
+// Level0 content:
 // Build this structure from an Excel csv file:
-//var dialogues = {
-dialogues.pepper = {
+MYGAME.dialogues.pepper = {
 	1: {				// id
 		line: "Hi, Pepper Potts.",	// what Steve says first
 		count: 0,					// increment when used
@@ -189,7 +191,7 @@ dialogues.pepper = {
 		permanent: true,			// never disable line if true
 		responses: {
 			0: "Hey you.",			// first time response
-			1: dialogues.generic('hi'),		// second time response
+			1: MYGAME.dialogues.generic('hi'),		// second time response
 			2: "What do you want?"	// all subsequent responses
 		},
 		events: {},					// functions that run when a response occurs (animation, items...)
@@ -207,10 +209,10 @@ dialogues.pepper = {
 		permanent: false,
 		responses: {
 			0: "Beer o'clock!",
-			1: dialogues.generic('goaway')
+			1: MYGAME.dialogues.generic('goaway')
 		},
 		events: {1: function() {
-			dialogues.pruneTree('pepper', 2);
+			MYGAME.dialogues.pruneTree('pepper', 2);
 		}},
 		options: null
 	},
@@ -235,7 +237,7 @@ dialogues.pepper = {
 		}
 	}
 };
-dialogues.john = {
+MYGAME.dialogues.john = {
 	1: {
 		line: "Hi, what's up?",
 		count: 0,
@@ -251,5 +253,3 @@ dialogues.john = {
 		}
 	}
 };
-//};
-

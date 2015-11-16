@@ -10,11 +10,10 @@
 //walk tile-by-tile, not in 1 huge chunk
 //break the path down into straights to allow animation time
 //walk smoothly: 2px per loop, 20-28 loops within each tile
-add line-of-sight smoothing to our A* path
 //hand-code SVG path through the node path
 //try a bezier program
 try pathAnimator
-find a fix to give walking speed which doesnt vary with distance
+//find a fix to give walking speed which doesnt vary with distance
 vertical walk speed < horizontal walk speed (depending on perspective)
 //context menu: look, talk, get, use
 //not a hovering context menu, but a tool panel which changes the cursor
@@ -64,6 +63,7 @@ inventory sandbox?
 stop steve spazzing on multi-click
 dialogues where NPC speaks first
 rewrite geometry functions to all use {x:0,y:0} point objects
+combine Player.use() & Player.canUse() into 1 fn with Boolean param
 
 /	add non-gridded backwall area (60px?)
 fix viewport size (320*200)
@@ -76,7 +76,8 @@ link 2 rooms
 load rooms & contents by ajax: $.load()?
 load the extra items by $.getObject each time?
 steganographic obfuscation of new items?
-should each item have a special code to negate fake instantiations?
+should each item have a special code to prevent fake instantiations?
+use html template for adding objects to DOM?
 	
 cutscenes using NPC.say() and NPC.walkTo()
 

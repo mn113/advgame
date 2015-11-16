@@ -36,3 +36,5 @@
 14-Nov	walkbox polygon tests working first time
 
 15-Nov	implemented walkboxes & nodes with new algorithm
+
+16-Nov	refactored entire app using revealing module pattern
