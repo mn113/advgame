@@ -7,7 +7,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 (function(M, $) {
 	// Define the geometry of level0:
-	var demoroom = new M.Room(0, "Grassy Knoll", true);
+	var demoroom = new M.Room(0, "Grassy Knoll", true).load();
 	demoroom.walkboxes = {
 			wb1: [{x:60,y:10}, {x:140,y:10}, {x:140,y:40}, {x:60,y:40}],
 			wb2: [{x:140,y:10}, {x:200,y:50}, {x:200,y:90}, {x:140,y:150}],
@@ -32,7 +32,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	demoroom.exits = {};
 	demoroom.entities = {};	// Could store fixed items and default items/characters in this object
 	// Exits:
-	var exit1 = new M.Exit($(".exit"), "exit1", null, true, false).placeAt([115,0]);	// Visible but inactive
+	var exit1 = new M.Exit($(".exit"), "exit1", null, true, false).placeAt([100,15]);	// Visible but inactive
 
 	console.log("Room initialised.");
 

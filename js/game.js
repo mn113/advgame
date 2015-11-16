@@ -52,12 +52,7 @@ var MYGAME = (function() {
 	var utils = {
 		room: {
 			fadeIn: function() {},
-			fadeOut: function() {},
-			loadRoom: function(room, startref) {},
-			leave: function(dest) {
-				console.log("You exited the room to", dest.id);
-				MYGAME.player.remove();
-			}
+			fadeOut: function() {}
 		},
 		ui: {
 			inventory: {
@@ -449,8 +444,24 @@ var MYGAME = (function() {
 
 		return this;
 	}
-	Room.prototype.load = function() {
+	Room.prototype.load = function(playerStartRef) {
 		// load geometry & entities
+		this.fadeIn();
+		return this;
+	};
+	Room.prototype.leave = function(dest) {
+		console.log("You exited the room to", dest.id);
+		MYGAME.player.remove();
+		this.fadeToBlack();
+		return this;
+	};
+	Room.prototype.fadeIn = function() {
+		$("#blackout").show().fadeOut(3000);
+		return this;
+	};
+	Room.prototype.fadeToBlack = function() {
+		$("#blackout").fadeIn(3000);
+		return this;
 	};
 
 
@@ -1071,7 +1082,7 @@ $(function () {
 			exit = ens[event.target.id];
 		}
 		if (exit.visible && exit.active) {
-			MYGAME.utils.room.leave(exit);
+			MYGAME.rooms[0].leave(exit.dest);
 		}
 	});
 

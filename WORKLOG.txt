@@ -32,9 +32,10 @@
 13-Nov	improved toolMenu
 
 14-Nov	sprited 40x88 argyle_guy with 8-step R walk cycle
-14-Nov	improved imventory
+14-Nov	improved inventory
 14-Nov	walkbox polygon tests working first time
 
 15-Nov	implemented walkboxes & nodes with new algorithm
 
 16-Nov	refactored entire app using revealing module pattern
+16-Nov	added Rooms with basic functionality

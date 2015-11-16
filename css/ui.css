@@ -4,7 +4,6 @@
 .pickup #gamebox { cursor: url('../img/cursor-grab2.png'), grab; }
 .use #gamebox { cursor: url('../img/cursor-wrench2.png'), default; }
 
-
 /* INVENTORY */
 #inventory {
 	background: #666;
