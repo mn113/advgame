@@ -56,14 +56,14 @@ build a little delay into the dialogues
 //walkTo should accept objects
 //ditch gridwalking, go to walkboxes
 //combine visibility with A* for pathfinding
+//combine Player.use() & Player.canUse() into 1 fn with Boolean param
 different item icons in inventory & stage
 drag/drop styles
 inventory sandbox?
 
-stop steve spazzing on multi-click
+.stop() steve spazzing on multi-click
 dialogues where NPC speaks first
 rewrite geometry functions to all use {x:0,y:0} point objects
-combine Player.use() & Player.canUse() into 1 fn with Boolean param
 
 /	add non-gridded backwall area (60px?)
 fix viewport size (320*200)

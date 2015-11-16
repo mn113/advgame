@@ -275,7 +275,7 @@ var MYGAME = (function() {
 					dist = utils.pf.p2pDist(p1, p2),
 					i;
 
-				console.log(dist, "pixels to goal");
+//				console.log(dist, "pixels to goal");
 				ctx.fillStyle = "#000000";
 				// Increment by roughly 1 pixel per loop:
 				for (i = 1; i <= dist; i++) {
@@ -427,10 +427,39 @@ var MYGAME = (function() {
 	// OBJECT CONSTRUCTORS & METHODS FOLLOW:
 
 	/**
+	* Room structure
+	* @constructor
+	* @param {int} id
+	* @param {string} name
+	* @param {Boolean} opened
+	*/
+	function Room(id, name, opened) {
+		// Essentials:
+		this.id = id;
+		this.name = name;
+		this.opened = opened || false;
+		this.background = '';	// image file url
+		this.walkboxes;		// loaded from file after construction
+		this.nodes;			// loaded from file after construction
+		this.exits;			// loaded from file after construction
+		this.entities;		// loaded from file after construction
+
+		// Store by id in entities hash:
+		MYGAME.rooms[this.id] = this;
+
+		return this;
+	}
+	Room.prototype.load = function() {
+		// load geometry & entities
+	};
+
+
+	/**
 	* BaseObj structure
 	* @constructor
 	* @param {jQuery Object} domNode
 	* @param {string} name
+	* @param {Boolean} visible
 	*/
 	function BaseObj(domNode, name, visible) {
 		// Essentials:
@@ -767,8 +796,13 @@ var MYGAME = (function() {
 	Character.prototype.directWalkTo = function(point) {
 		var dist = utils.pf.p2pDist([this.x, this.y], point),
 			time = dist * 10,
+			dx = point[0] - this.x,
+			dy = point[1] - this.y,
+			angle = (360 / 6.28) * Math.atan2(dy,dx),
 			me = this;
-	//	console.log(dist, time, point);
+		me.face(angle);
+
+		//	console.log(dist, time, point);
 		this.domNode.addClass("walking")
 					.animate({
 						"left": point[0] - 16,
@@ -818,35 +852,37 @@ var MYGAME = (function() {
 			dialogues.choicesFromOpts(character, null, true);
 		}
 	};
-	Player.prototype.canUse = function(item1, item2) {
-		var item2id = (item2) ? item2.id : 'itself';	// This string will be used for looking up in Item.uses
+//	Player.prototype.canUse = function(item1, item2) {
+/*		var item2id = (item2) ? item2.id : 'itself';	// This string will be used for looking up in Item.uses
 
 		// 2 items passed:
-		if (item2id !== 'itself') {
-			// Sort item1 & item2 alphabetically, to avoid doubling up on Item.uses:
-			if (item1.id > item2.id) {
-				var flip = this.canUse(item2, item1);
-				return flip;
-			}
-		}
+//		if (item2id !== 'itself') {
+//			// Sort item1 & item2 alphabetically, to avoid doubling up on Item.uses:
+//			if (item1.id > item2.id) {
+//				var flip = this.canUse(item2, item1);
+//				return flip;
+//			}
+//		}
 
 		// Use X with Y (or 'itself'), as per Item.uses definition:
-		if (!($.isEmptyObject(item1.uses))) {
-			if (item1.uses.hasOwnProperty(item2id)) {
-				if (typeof item1.uses[item2id] === 'function') {
-					return true;
-				}
-			}
-			else {
-				return false;
-			}
-		}
-		else {
-			return false;
-		}
-	};
-	Player.prototype.use = function(item1, item2) {
+//		if (!($.isEmptyObject(item1.uses))) {
+//			if (item1.uses.hasOwnProperty(item2id)) {
+//				if (typeof item1.uses[item2id] === 'function') {
+//					return true;
+//				}
+//			}
+//			else {
+//				return false;
+//			}
+//		}
+//		else {
+//			return false;
+//		}
+//	};
+*/
+	Player.prototype.use = function(item1, item2, goThrough) {
 		var item2id = (item2) ? item2.id : 'itself';	// This string will be used for looking up in Item.uses
+		var goThrough = goThrough || true;			// True: go through with usage. False: just test usability.
 
 		// 2 items passed:
 		if (item2id !== 'itself') {
@@ -861,18 +897,24 @@ var MYGAME = (function() {
 		if (!($.isEmptyObject(item1.uses))) {
 			if (item1.uses.hasOwnProperty(item2id)) {
 				if (typeof item1.uses[item2id] === 'function') {		//
-					// Execute:
-					item1.uses[item2id]();		// WORKS FOR 'itself', cheese...
+					if (goThrough) {
+						// Execute:
+						item1.uses[item2id]();		// WORKS FOR 'itself', cheese...
+					}
 					return true;
 				}
 			}
 			else {
-				this.say("I can't use that here.");
+				if (goThrough) {
+					this.say("I can't use that here.");
+				}
 				return false;
 			}
 		}
 		else {
-			this.say("I can't use that for anything.");
+			if (goThrough) {
+				this.say("I can't use that for anything.");
+			}
 			return false;
 		}
 	};
@@ -903,7 +945,7 @@ var MYGAME = (function() {
 	};
 
 
-	// Expose public stuff:	// IS THIS THE WRONG PATTERN CHOICE, IF JQUERY NEEDS ACCESS TO ALMOST ANY METHOD/PROPERTY?
+	// Expose public stuff:
 	return {
 		player: player,
 		state: state,
@@ -913,6 +955,8 @@ var MYGAME = (function() {
 		rooms: rooms,
 		cRoom: rooms[state.currentRoom],	// 0 because level not initted
 		canvas: canvas,
+		// Constructors:
+		Room: Room,
 		Player: Player,
 		Character: Character,
 		Item: Item,
@@ -1064,7 +1108,7 @@ $(function () {
 				// Test if drop is valid:
 				if (item && target && item.giveable) {
 					// See if they fail to combine:
-					if (!player.canUse(item, target)) {
+					if (!player.use(item, target, false)) {
 						console.log("No drop, reverting (2).");
 					}
 					else {

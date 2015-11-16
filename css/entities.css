@@ -111,6 +111,8 @@
 
 /* CHARACTERS */
 
+#steve {pointer-events: none;}
+
 .character {
 	width: 32px;
 	height: 48px;
