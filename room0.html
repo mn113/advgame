@@ -5,7 +5,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>RPG Game Test</title>
+		<title>AdvGame Demo</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="css/jquery-ui.css">
 		<link rel="stylesheet" href="css/jquery-ui.structure.css">
@@ -31,13 +31,16 @@
 				<div class="item cheese" id="cheese" title="cheese"></div>
 				<div class="item knife" id="knife"></div>
 				<div class="item key" id="key"></div>
-				<div class="item chest closed" id="chest"></div>	
-				<div class="item chest open" id="openchest"></div>	
+				<div class="item chest closed" id="chest"></div>
+				<div class="item chest open" id="openchest"></div>
 				<div class="scenery lake" id="lake"></div>
 				<div class="scenery door closed" id="door"></div>
 			</div>
 
 			<!-- UI outside the stage: -->
+			<div id="inventory">
+				<div><div class="item chicken" id="chicken"></div></div>
+			</div>
 			<div id="dialogue"></div>
 			<div id="displayChoices"></div>
 			<div id="toolMenu">
@@ -48,11 +51,28 @@
 					<li name="use"><i class="fa fa-fw fa-lg fa-wrench fa-inverse"></i><b><u>U</u>se</b></li>
 				</ul>
 			</div>
-			<div id="inventory">
-				<div><div class="item chicken" id="chicken"></div></div>
-			</div>
 			<div id="blackout"></div>
+			<svg id="pathsvg" width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug">
+				<path id="walkthisway" fill="none" stroke="indianred" stroke-width="2" d=""></path>
+				<path id="walkbox1" fill="none" stroke="lawngreen" stroke-width="1" d="M60 10,h80,v30,h-80Z"></path>
+				<path id="walkbox2" fill="none" stroke="lawngreen" stroke-width="1" d="M140 10,L200 50,v40,L140 150Z"></path>
+				<path id="walkbox3" fill="none" stroke="lawngreen" stroke-width="1" d="M140 120,v75,h-80,v-75Z"></path>
+				<path id="walkbox4" fill="none" stroke="lawngreen" stroke-width="1" d="M60 10,v185,L20 150,v-110Z"></path>
+				<path id="walkbox5" fill="none" stroke="green" stroke-width="2" d="M60 40,h20,l-20 20,v-20Z"></path>
+				<path id="walkbox6" fill="none" stroke="green" stroke-width="2" d="M120 40,h20,v20,l-20 -20Z"></path>
+				<path id="walkbox7" fill="none" stroke="green" stroke-width="2" d="M60 100,l20 20,h-20,v-20Z"></path>
+				<path id="walkbox8" fill="none" stroke="green" stroke-width="2" d="M120 120,h20,v-20,l-20 20Z"></path>
 
+				<circle cx="70" cy="40" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
+				<circle cx="130" cy="40" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
+				<circle cx="60" cy="50" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
+				<circle cx="140" cy="50" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
+				<circle cx="60" cy="110" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
+				<circle cx="140" cy="110" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
+				<circle cx="70" cy="120" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
+				<circle cx="130" cy="120" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
+				<circle cx="140" cy="150" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
+			</svg>
 			<div id="keypress" class="debug"></div>
 			<table id="tablecloth" class="debug">
 				<tr>
@@ -176,36 +196,13 @@
 					<td class="invalid"></td>
 				</tr>
 			</table>
-			<svg id="pathsvg" width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug">	
-				<path id="walkthisway" fill="none" stroke="indianred" stroke-width="2" d=""></path>
-				<path id="walkbox1" fill="none" stroke="lawngreen" stroke-width="1" d="M60 10,h80,v30,h-80Z"></path>
-				<path id="walkbox2" fill="none" stroke="lawngreen" stroke-width="1" d="M140 10,L200 50,v40,L140 150Z"></path>
-				<path id="walkbox3" fill="none" stroke="lawngreen" stroke-width="1" d="M140 120,v75,h-80,v-75Z"></path>
-				<path id="walkbox4" fill="none" stroke="lawngreen" stroke-width="1" d="M60 10,v185,L20 150,v-110Z"></path>
-				<path id="walkbox5" fill="none" stroke="green" stroke-width="2" d="M60 40,h20,l-20 20,v-20Z"></path>
-				<path id="walkbox6" fill="none" stroke="green" stroke-width="2" d="M120 40,h20,v20,l-20 -20Z"></path>
-				<path id="walkbox7" fill="none" stroke="green" stroke-width="2" d="M60 100,l20 20,h-20,v-20Z"></path>
-				<path id="walkbox8" fill="none" stroke="green" stroke-width="2" d="M120 120,h20,v-20,l-20 20Z"></path>
-
-				<circle cx="70" cy="40" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
-				<circle cx="130" cy="40" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
-				<circle cx="60" cy="50" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
-				<circle cx="140" cy="50" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
-				<circle cx="60" cy="110" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
-				<circle cx="140" cy="110" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
-				<circle cx="70" cy="120" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
-				<circle cx="130" cy="120" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
-				<circle cx="140" cy="150" r="3" stroke="none" stroke-width="0" fill="red" ></circle>
-			</svg>
 		</div>
-	
+
 		<script src="js/jquery-1.11.3.min.js"></script>
 		<script src="js/jquery-ui.min.js"></script>
 		<script src="js/astar.js"></script>
-		<!--script src="js/pathAnimator/js/pathAnimator.js"></script>
-		<script src="js/catmullrom2bezier.js"></script-->
 		<script src="js/game.js"></script>
 		<script src="js/dialogues.js"></script>
-		<script src="js/level0.js"></script>
+		<script src="js/room0.js"></script>
 	</body>
 </html>

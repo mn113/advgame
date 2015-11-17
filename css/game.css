@@ -14,26 +14,41 @@ body {
 	margin: 30px;
 	border: 1px solid black;
 	background: #aaa;
-	width: 400px;
-	height: 360px;
+	width: 640px;
+	height: 490px;
 	overflow: hidden;
 	z-index: 0;
 }
-
 #background {
 	position: absolute;
-	top: 20px;
-	width: 400px;
-	height: 340px;
-	background: url(../img/hill.png) 0 40px no-repeat;
 	z-index: 0;
 }
 #foreground {
 	position: absolute;
+	z-index: 0;
+}
+
+.room0 #background {
+	top: 20px;
+	width: 400px;
+	height: 340px;
+	background: url(../img/hill.png) 0 40px no-repeat;
+}
+.room0 #foreground {
 	top: 60px;
 	width: 200px;
 	height: 300px;
-	z-index: 0;	
+}
+.room1 #background {
+	top: 0px;
+	width: 640px;
+	height: 400px;
+	background: url(../img/room2.png) 0 0 no-repeat;
+}
+.room1 #foreground {
+	top: 0;
+	width: 640px;
+	height: 400px;
 }
 
 #blackout {
@@ -92,8 +107,12 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 #pathsvg {
 	float:right;
 	position: absolute;
-	top: 60px;
 	pointer-events: none;
 	z-index: 50;
 }
-
+.room0 #pathsvg {
+	top: 60px;
+}
+.room1 #pathsvg {
+	top: 0;
+}

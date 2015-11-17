@@ -68,17 +68,19 @@ rewrite geometry functions to all use {x:0,y:0} point objects
 /	add non-gridded backwall area (60px?)
 fix viewport size (320*200)
 resolution changer: 1x, 2x, 3x, 4x (css/js)
+put sprites on little canvases to allow for 2x upsampling?
+implement y-scaling
 make side-scrolling areas
 parallax backgrounds
 grammar fixes: capitalisation, articles...
 
-link 2 rooms
-load rooms & contents by ajax: $.load()?
+	link 2 rooms
+	load rooms & contents by ajax: $.load()?
 load the extra items by $.getObject each time?
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?
 use html template for adding objects to DOM?
-	
+
 cutscenes using NPC.say() and NPC.walkTo()
 
 smartphone side-mission

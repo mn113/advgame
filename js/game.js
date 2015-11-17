@@ -2,7 +2,7 @@
 /*global $, jQuery, alert, console*/
 
 // Global scoping / namespacing function:
-var MYGAME = (function() {
+var MYGAME = (function($) {
 	var config = {
 //		currentRoom: 'demo',
 //		currentGrid: 'demograph',
@@ -50,10 +50,6 @@ var MYGAME = (function() {
 	
 	// All utility functions:
 	var utils = {
-		room: {
-			fadeIn: function() {},
-			fadeOut: function() {}
-		},
 		ui: {
 			inventory: {
 				// Refresh tooltips (needed when item added):
@@ -405,19 +401,17 @@ var MYGAME = (function() {
 		},
 		misc: {
 			disableInput: function() {},
-			enableInput: function() {}
+			enableInput: function() {},
+			loadScript: function(name) {
+			   var script= document.createElement('script');
+			   script.type= 'text/javascript';
+			   script.src= '/js/' + name + '.js';
+			   script.async = true;
+			   document.body.appendChild(script);
+			}
 		}
 	};
 	utils.pf = utils.pathfinding;
-
-	function init() {
-		/* Try to load variables from other files:
-		MYGAME.dialogues = dialogues;
-		MYGAME.currentRoom = 0;
-		MYGAME.room = room;
-		MYGAME.entities = room.entities;
-		*/
-	}
 
 	// OBJECT CONSTRUCTORS & METHODS FOLLOW:
 
@@ -433,26 +427,54 @@ var MYGAME = (function() {
 		this.id = id;
 		this.name = name;
 		this.opened = opened || false;
-		this.background = '';	// image file url
+		this.filename = "room" + id + ".html";
+		this.background = '';		// image file url?
 		this.walkboxes;		// loaded from file after construction
 		this.nodes;			// loaded from file after construction
 		this.exits;			// loaded from file after construction
 		this.entities;		// loaded from file after construction
 
-		// Store by id in entities hash:
+		// Store by id in rooms hash:
 		MYGAME.rooms[this.id] = this;
 
 		return this;
 	}
-	Room.prototype.load = function(playerStartRef) {
-		// load geometry & entities
-		this.fadeIn();
+	Room.prototype.load = function(callback) {
+		var me = this;
+		$("#gamebox").addClass("room" + this.id);
+		// Fetch and append level-specific elements to HTML:
+		$("#gamebox #background").load(this.filename + " #background *");
+		$("#gamebox #foreground").load(this.filename + " #foreground *");
+		$("#gamebox #pathsvg").load(this.filename + " #pathsvg *", function(response, status, xhr) {
+			if (status === "success") {
+				console.log("Room", me.id, "loaded.", new Date().getMilliseconds());
+				me.fadeIn();
+				me.announce();
+
+				// Continue the loading in room.js:
+				if (callback && typeof callback === "function") {
+					callback();
+				}
+			}
+		});
+	};
+	Room.prototype.unload = function() {
+		var me = this;
+		this.fadeToBlack();
+		setTimeout(function() {
+			$("#gamebox").removeClass("room" + me.id);
+			// Remove level-specific elements from HTML:
+			$("#foreground *").remove();
+			$("#background *").remove();
+			$("#pathsvg *").remove();
+		}, 2000);
 		return this;
 	};
-	Room.prototype.leave = function(dest) {
-		console.log("You exited the room to", dest.id);
-		MYGAME.player.remove();
-		this.fadeToBlack();
+	Room.prototype.switch = function(dest) {
+		this.unload();
+		setTimeout(function() {
+			MYGAME.utils.misc.loadScript("room" + dest);
+		}, 2000);
 		return this;
 	};
 	Room.prototype.fadeIn = function() {
@@ -460,10 +482,14 @@ var MYGAME = (function() {
 		return this;
 	};
 	Room.prototype.fadeToBlack = function() {
-		$("#blackout").fadeIn(3000);
+		$("#blackout").fadeIn(2000);
 		return this;
 	};
-
+	Room.prototype.announce = function() {
+		// Put Room name briefly on screen
+		$(".announce").html(this.name).show().delay(1500).fadeOut(2000);
+		return this;
+	};
 
 	/**
 	* BaseObj structure
@@ -540,6 +566,30 @@ var MYGAME = (function() {
 
 		console.log(this.id, "removed.");
 	};
+
+
+	/**
+	* Exit
+	* @constructor
+	* @extends BaseObj
+	* @param {jQuery Object} domNode
+	* @param {string} name
+	* @param {string} dest
+	* @param {Boolean} visible
+	* @param {Boolean} active
+	*/
+	function Exit(domNode, name, dest, visible, active) {
+		BaseObj.call(this, domNode, name, visible);
+
+		// Item-specific properties:
+		this.dest = null;		// Another room id?
+		this.active = true;		// Can it currently be used?
+	}
+	// Inheritance: Exit extends BaseObj
+	Exit.prototype = Object.create(BaseObj.prototype, {
+		// Options
+	});
+	Exit.prototype.constructor = Exit;
 
 
 	/**
@@ -633,30 +683,6 @@ var MYGAME = (function() {
 		MYGAME.player.inventory.push(this.id);
 		console.log(this.id, "to Inventory.");
 	};
-
-
-	/**
-	* Exit
-	* @constructor
-	* @extends BaseObj
-	* @param {jQuery Object} domNode
-	* @param {string} name
-	* @param {string} dest
-	* @param {Boolean} visible
-	* @param {Boolean} active
-	*/
-	function Exit(domNode, name, dest, visible, active) {
-		BaseObj.call(this, domNode, name, visible);
-
-		// Item-specific properties:
-		this.dest = null;		// Another room id?
-		this.active = true;		// Can it currently be used?
-	}
-	// Inheritance: Exit extends BaseObj
-	Exit.prototype = Object.create(BaseObj.prototype, {
-		// Options
-	});
-	Exit.prototype.constructor = Exit;
 
 
 	/**
@@ -956,7 +982,13 @@ var MYGAME = (function() {
 	};
 
 
-	// Expose public stuff:
+	function init() {
+		// Try to load first room
+		MYGAME.utils.misc.loadScript('room0');// no jQ needed
+		MYGAME.state.currentRoom = 0;
+	}
+
+	// Expose public handles:
 	return {
 		player: player,
 		state: state,
@@ -966,6 +998,7 @@ var MYGAME = (function() {
 		rooms: rooms,
 		cRoom: rooms[state.currentRoom],	// 0 because level not initted
 		canvas: canvas,
+		init: init,
 		// Constructors:
 		Room: Room,
 		Player: Player,
@@ -973,32 +1006,16 @@ var MYGAME = (function() {
 		Item: Item,
 		FixedItem: FixedItem,
 		Exit: Exit
-
 	};
-}());	// end global scoping / namespacing function
+}(jQuery));	// end global scoping / namespacing function
+
+MYGAME.init();
 
 
 // jQuery ready function:
 $(function () {
 
-	// Load room:
-/*	var toLoad = "js/level" + MYGAME.room + ".js";
-	$.getScript("js/level0.js", function( data, textStatus, jqxhr ) {	// NOT LOADING
-		console.log( data ); // Data returned
-		console.log( textStatus ); // Success
-		console.log( jqxhr.status ); // 200
-		console.log( "Load was performed." );
-		console.log(toLoad + ".js loaded but not necessarily executed.");
-	}).fail(function( data, textStatus, jqxhr ) {
-		console.log( data, textStatus, jqxhr ); // Success
-		console.log("Why did it fail?");
-		try {
-			console.log(player);
-		} catch(err) {
-			eval(data);
-		}
-	});*/
-	var player = MYGAME.player;	// GOT to have this global for brevity.
+	var player = MYGAME.player;	// GOT to have this global in here for brevity.
 
 	// Stage click handler:
 	$("#foreground").on("click", function(event) {

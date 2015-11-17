@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>AdvGame Demo</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/jquery-ui.css">
+		<link rel="stylesheet" href="css/jquery-ui.structure.css">
+		<link rel="stylesheet" href="css/jquery-ui.theme.css">
+		<link rel="stylesheet" href="css/game.css">
+		<link rel="stylesheet" href="css/ui.css">
+		<link rel="stylesheet" href="css/entities.css">
+	</head>
+	<body>
+		<div id="gamebox">
+			<div id="background"><!-- purely visual layer -->
+			</div>
+			<div id="foreground"><!-- interactive layer -->
+			</div>
+
+			<!-- UI outside the stage: -->
+			<div id="inventory">
+				<div><div class="item chicken" id="chicken"></div></div>
+			</div>
+			<div id="dialogue"></div>
+			<div id="displayChoices"></div>
+			<div id="toolMenu">
+				<ul class="panel">
+					<li name="examine"><i class="fa fa-fw fa-lg fa-eye fa-inverse"></i><b><u>E</u>xamine</b></li>
+					<li name="talkto"><i class="fa fa-fw fa-lg fa-comment fa-inverse"></i><b><u>T</u>alk to</b></li>
+					<li name="pickup"><i class="fa fa-fw fa-lg fa-hand-grab-o fa-inverse"></i><b><u>P</u>ick up</b></li>
+					<li name="use"><i class="fa fa-fw fa-lg fa-wrench fa-inverse"></i><b><u>U</u>se</b></li>
+				</ul>
+			</div>
+			<div id="blackout"></div>
+			<p class="announce"></p>
+			<svg id="pathsvg" width="640px" height="400px" viewBox="0 0 640 400" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug">
+			</svg>
+			<div id="keypress" class="debug"></div>
+			<table id="tablecloth" class="debug">
+				<tr>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+				<tr>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+					<td class="invalid"></td>
+				</tr>
+			</table>
+		</div>
+
+		<script src="js/jquery-1.11.3.min.js"></script>
+		<script src="js/jquery-ui.min.js"></script>
+		<script src="js/astar.js"></script>
+		<script src="js/game.js"></script>
+		<script src="js/dialogues.js"></script>
+	</body>
+</html>
