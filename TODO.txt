@@ -60,30 +60,29 @@ inventory sandbox?
 //ditch gridwalking, go to walkboxes
 //combine visibility with A* for pathfinding
 //combine Player.use() & Player.canUse() into 1 fn with Boolean param
+//fix viewport size (320*200)
 //load rooms & contents by ajax: $.load()?
-
-.stop() steve spazzing on multi-click
+//detach change() so independent of Rooms
+//	add non-gridded backwall area (60px?) - give each room a baseline attribute
+//.stop() steve spazzing on multi-click
+/	link 2 rooms via exits
 rewrite geometry functions to all use {x:0,y:0} point objects
 item tooltips on stage
 
-/	add non-gridded backwall area (60px?)
-fix viewport size (320*200)
-resolution changer: 1x, 2x, 3x, 4x (css/js)
-put non-animating sprites on little canvases to allow for 2x upsampling?
-implement y-scaling
 make side-scrolling areas
 parallax backgrounds
-grammar fixes: capitalisation, articles...
+implement y-scaling (per-walkbox value?)
+put non-animating sprites on little canvases to allow for 2x upsampling?
+resolution changer: 1x, 2x, 3x, 4x (css/js)
 
-	link 2 rooms
-detach change() so independent of Rooms
 load the extra items by $.getObject each time?
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?
 use html template for adding objects to DOM?
 
-dialogues where NPC speaks to you first
 cutscenes using NPC.say() and NPC.walkTo()
+dialogues where NPC speaks to you first
+grammar fixes: capitalisation, articles...
 
 smartphone side-mission
 

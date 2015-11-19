@@ -8,18 +8,17 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 (function(M, $) {
 	// Define callback function for Room.load():
 	M.Room.prototype.afterLoad = function() {
-		// Define the content of level0:
-		// Define the content of level0:
+		// Define the content:
 		// Characters:
 		// Exits:
-		var exit1 = new M.Exit($("#exit1"), "exit1", null, true, false).placeAt([608,196]);	// Visible but inactive
+		var exit1 = new M.Exit($("#exit1"), "exit1", 0, true, true).placeAt([608,196]);	// Visible, active
 
 		console.log("All objects initialised.");
 	};
 
-	// Define the geometry of demo2room:
-	var room = new M.Room(1, "Flatroom", true);
-	room.load(M.Room.prototype.afterLoad);	// load() puts HTML entities into page, the callback wires them up
+	// Create the Room object:
+	var room = new M.Room(1, "Flatroom", true, M.prevRoom);
+	// Define the geometry of room1:
 	room.walkboxes = {
 			wb1: [{x:84,y:91}, {x:131,y:224}, {x:115,y:323}, {x:2,y:399}],
 			wb2: [{x:84,y:91}, {x:131,y:224}, {x:282,y:232}, {x:343,y:209}, {x:340,y:141}],
@@ -37,8 +36,19 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 			6: {x: 104, y: 329, edges: [3,7]},
 			7: {x: 295, y: 328, edges: [4,5,6]}
 		};
-	room.exits = {};
+	room.baseline = 93;	// pixels from top that walkable area starts
+	room.exits = {
+		0: {dest: 0, dir: 'e', doormat: {x: 585, y: 215}}	// where entering player stands
+	};
 	room.entities = {};	// Could store fixed items and default items/characters in this object
+
+	room.load(M.Room.prototype.afterLoad);	// load() puts HTML entities into page, the callback wires them up
+
+	console.log(M);
+	// Draw baseline:
+	M.ctx.clearRect(0,0,640,400);
+	M.ctx.strokeStyle="#FFFFFF";
+	M.ctx.strokeRect(0,0,640,room.baseline);
 
 	console.log("Room initialised.");
 

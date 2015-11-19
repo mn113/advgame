@@ -42,3 +42,5 @@
 16-Nov	1650 lojs
 
 17-Nov	roomswitching
+
+19-NOv	improved pathfinding

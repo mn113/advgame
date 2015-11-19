@@ -29,13 +29,18 @@ body {
 }
 #players {
 	position: absolute;
-	top: 60px;
 	width: 640px;
 	height: 400px;
 	z-index: 0;
 	pointer-events: none;
 }
 
+.room0 #players {
+	top: 60px;
+}
+.room1 #players {
+	top: 0px;
+}
 .room0 #background {
 	top: 20px;
 	width: 400px;
@@ -107,8 +112,15 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 }
 
 #keypress {
-	display: block;
-	text-align: right;
+	position: absolute;
+	top: 15px;
+	right: 0;
+	z-index: 500;
+}
+#mousexy {
+	position: absolute;
+	top: 0;
+	right: 0;
 	z-index: 500;
 }
 
@@ -123,4 +135,12 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 }
 .room1 #pathsvg {
 	top: 0;
+}
+
+#gamebox canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	z-index: 50;
 }

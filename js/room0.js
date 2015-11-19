@@ -8,7 +8,9 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 (function(M, $) {
 	// Define callback function for Room.load():
 	M.Room.prototype.afterLoad = function() {
-		// Define the content of level0:
+		// Define the content:
+		// Exits:
+		var exit1 = new M.Exit($("#exit1"), "exit1", 1, true, true).placeAt([100,15]);	// Visible, active
 		// Characters:
 		var pepper = new M.Character($("#pepper"), "Pepper", "red").placeAt([170,110]).face(90).setZIndex();
 		var john = new M.Character($("#john"), "John", "lightblue").placeAt([30,160]).face(180).setZIndex();
@@ -29,8 +31,6 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		var chest = new M.FixedItem($(".chest.closed"), "chest").placeAt([140,30]);
 		// Hidden scenery:
 		var openchest = new M.FixedItem($(".chest.open"), "openchest", false);	// Invisible
-		// Exits:
-		var exit1 = new M.Exit($("#exit1"), "exit1", null, true, false).placeAt([100,15]);	// Visible but inactive
 
 		console.log("All objects initialised.");
 
@@ -161,9 +161,8 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		console.log("Uses loaded.");
 	};
 
-	// Define the geometry of level0:
-	var room = new M.Room(0, "Grassy Knoll", true);
-	room.load(M.Room.prototype.afterLoad);	// load() puts HTML entities into page, the callback wires them up
+	// Define the geometry of room0:
+	var room = new M.Room(0, "Grassy Knoll", true, M.prevRoom);
 	room.walkboxes = {
 			wb1: [{x:60,y:10}, {x:140,y:10}, {x:140,y:40}, {x:60,y:40}],
 			wb2: [{x:140,y:10}, {x:200,y:50}, {x:200,y:90}, {x:140,y:150}],
@@ -185,8 +184,18 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 			8: {x: 140, y: 110, edges: [4,7,9]},
 			9: {x: 140, y: 150, edges: [6,7,8]}
 		};
-	room.exits = {};
+	room.baseline = 0;	// pixels from top that walkable area starts
+	room.exits = {
+		0: {dest: 1, dir: 'n', doormat: {x: 110, y: 25}}	// where entering player stands
+	};
 	room.entities = {};	// Could store fixed items and default items/characters in this object
+
+	room.load(M.Room.prototype.afterLoad);	// load() puts HTML entities into page, the callback wires them up
+
+	// Draw baseline:
+	M.ctx.clearRect(0,0,640,400);
+	M.ctx.strokeStyle="#FFFFFF";
+	M.ctx.strokeRect(0,0,640,room.baseline);
 
 	console.log("Room initialised.");
 

@@ -3,6 +3,7 @@
 .talkto #gamebox { cursor: url('../img/cursor-speech2.png'), help; }
 .pickup #gamebox { cursor: url('../img/cursor-grab2.png'), grab; }
 .use #gamebox { cursor: url('../img/cursor-wrench2.png'), default; }
+.exit { cursor: pointer; }
 
 .announce {
 	position: absolute;
@@ -79,9 +80,9 @@
     100% { background-color: none; }
 }
 
-.drop-hover { border: 2px solid orange; }
-.ui-droppable { border: 2px solid green; }
-.ui-droppable-disabled { border: 2px solid red; }
+.drop-hover { xborder: 2px solid orange; }
+.ui-droppable { xborder: 2px solid green; }
+.ui-droppable-disabled { xborder: 2px solid red; }
 
 
 /* TOOLMENU*/
