@@ -11,8 +11,6 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		// Define the content of level0:
 		// Define the content of level0:
 		// Characters:
-		var steve = new M.Player($("#steve"), "Steve", "yellow").placeAt([590,200]).face(180).setZIndex();
-		M.player = steve;
 		// Exits:
 		var exit1 = new M.Exit($("#exit1"), "exit1", null, true, false).placeAt([608,196]);	// Visible but inactive
 

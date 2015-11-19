@@ -39,3 +39,6 @@
 
 16-Nov	refactored entire app using revealing module pattern
 16-Nov	added Rooms with basic functionality
+16-Nov	1650 lojs
+
+17-Nov	roomswitching

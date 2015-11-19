@@ -10,8 +10,6 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	M.Room.prototype.afterLoad = function() {
 		// Define the content of level0:
 		// Characters:
-		var steve = new M.Player($("#steve"), "Steve", "yellow").placeAt([50,30]).face(90).setZIndex();
-		M.player = steve;
 		var pepper = new M.Character($("#pepper"), "Pepper", "red").placeAt([170,110]).face(90).setZIndex();
 		var john = new M.Character($("#john"), "John", "lightblue").placeAt([30,160]).face(180).setZIndex();
 		// Stage items:
@@ -37,13 +35,6 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		console.log("All objects initialised.");
 
 		// All descriptions for entities in this level:
-		steve.descriptions = [
-			"It's me.",
-			"Not too shabby.",
-			"I look good.",
-			"I hope that isn't a spot coming up.",
-			"Me."
-		];		// 5
 		pepper.descriptions = [
 			"She's a smartly dressed blonde woman.",
 			"She's Robert Downey Jr's assistant in that movie.",
@@ -109,30 +100,30 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 		bread.uses = {
 			itself: function() {
-				steve.say("It tastes pretty dry.");
+				M.player.say("It tastes pretty dry.");
 				return false;
 			},
 			cheese: function() {
-				steve.say("I could really do with a knife.");
+				M.player.say("I could really do with a knife.");
 				return false;
 			},
 			knife: function() {
 				var invpos = bread.remove();
-				steve.getItem(slicedbread, invpos);
+				M.player.getItem(slicedbread, invpos);
 				// Set some flags?
-				steve.say("It cuts well.");
+				M.player.say("It cuts well.");
 				return true;
 			}
 		};
 		cheese.uses = {
 			slicedbread: function() {
-				steve.getItem(sandwich, cheese.remove());
+				M.player.getItem(sandwich, cheese.remove());
 				return true;
 			}
 		};
 		slicedbread.uses = {
 			itself: function() {
-				steve.say("A bread sandwich? No thanks!");
+				M.player.say("A bread sandwich? No thanks!");
 				return false;
 			}
 		};
@@ -141,14 +132,14 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 				chest.remove();
 				openchest.visible = true;
 				openchest.placeAt([140,30]);
-				steve.getItem(knife);
-				steve.say("There was a nice little knife inside!");
+				M.player.getItem(knife);
+				M.player.say("There was a nice little knife inside!");
 				return true;
 			}
 		};
 		door.uses = {
 			itself: function() {
-				steve.say("It's locked.");
+				M.player.say("It's locked.");
 				return false;
 			},
 			key: function() {

@@ -3,6 +3,7 @@
 
 // Global scoping / namespacing function:
 var MYGAME = (function($) {
+	var M = this;	// shorthand
 	var config = {
 //		currentRoom: 'demo',
 //		currentGrid: 'demograph',
@@ -16,24 +17,8 @@ var MYGAME = (function($) {
 		gametime: 0,		// count seconds elapsed
 		currentRoom: 0		// TBD
 	};
-	var rooms = [0,1,2,3];	// Filled by external files
-	var maps = {};
-	// NavMesh:	(TRANSPOSED)		0 = off-grid or blocked / 1 = valid standing spot
-//	maps.demograph = new Graph([		// Sets graph up for A* algorithm
-/*		[0,0,0,0,0,0,0,0,0,0],
-		[0,1,1,1,1,1,1,1,0,0],
-		[1,1,1,1,1,1,1,1,1,0],
-		[1,1,1,0,0,1,1,1,1,1],
-		[1,1,0,0,0,0,1,1,1,1],
-		[1,1,0,0,0,0,1,1,1,1],
-		[1,1,1,0,0,1,1,1,1,1],
-		[0,1,1,1,1,1,1,0,0,0],
-		[0,1,1,1,1,1,0,0,0,0],
-		[0,0,1,1,1,0,0,0,0,0]
-	], { diagonal: true });
-*/
-
-	var player;
+	var rooms = [0,1];	// Filled by external files
+	var player = null;
 	// Entities within the game (characters, items, scenery...) stored by id
 	var entities = {test: null};
 	var dialogues = {};		// Filled by external file
@@ -45,8 +30,7 @@ var MYGAME = (function($) {
 	canvas.setAttribute("style", "position: absolute; x:0; y:0;");
 	document.getElementById("foreground").appendChild(canvas);
 	var ctx = canvas.getContext("2d");
-	//Then you can draw a point at (x,y) like this:
-	//ctx.fillRect(x,y,1,1);
+	// Then you can draw a point at (x,y) like this: ctx.fillRect(x,y,1,1);
 	
 	// All utility functions:
 	var utils = {
@@ -276,7 +260,7 @@ var MYGAME = (function($) {
 					ctx.fillRect(tx,ty,1,1);
 
 					// Test (tx,ty):
-					if (MYGAME.utils.grid.whichWalkbox([tx,ty]) === false) {
+					if (utils.grid.whichWalkbox([tx,ty]) === false) {
 						console.log("failed LOS on pt", i, '@', tx, ',', ty);
 						// Draw red blob where LOS failed:
 						ctx.fillStyle = "#FF0000";
@@ -336,10 +320,10 @@ var MYGAME = (function($) {
 			// Pathfinding algorithm:
 			pathFind: function(start, finish, room) {	// Point arrays e.g. [0,0]
 				var player = MYGAME.player;
-				var fwb = MYGAME.utils.grid.whichWalkbox(finish),
-					pwb = MYGAME.utils.grid.whichWalkbox(start);
+				var fwb = utils.grid.whichWalkbox(finish),
+					pwb = utils.grid.whichWalkbox(start);
 				// Test for trivial (nodeless) solution:
-				if (fwb === pwb || utils.pf.lineOfSight(player.coords(), finish)) {	// LOS NOT WORKING
+				if (fwb === pwb || utils.pf.lineOfSight(start, finish)) {
 					player.walkTo(finish);
 				}
 				else {	//	No line-of-sight; BF pathfinding required:
@@ -361,40 +345,74 @@ var MYGAME = (function($) {
 					}
 
 					// More than 2 nodes required (proper big-boy algorithm):
-					var path = utils.pf.breadthFirstSearch(nrNodeA, nrNodeZ, room),
-						i;
-					console.log(path);
-					// Traverse:
-					for (i = 0; i < path.length; i++) {
-						player.walkTo(path[i]);
-					}
+					var path = utils.pf.breadthFirstSearch(nrNodeA, nrNodeZ, room); // path returned is just nodes, e.g. [1,3,5]
+					var pl = path.length;
+					var i;
+					console.log(1, path);
 
-					// Final line-of-sight hop required to reach click target:
-					if (utils.pf.lineOfSight(player.coords(), finish)) {
-						console.log("last hop!");
-						player.walkTo(finish);
+					// Convert path of nodes to path of coords:
+					for (i = 0; i < pl; i++) {
+						var node = path[i];
+						path[i] = [room.nodes[node].x, room.nodes[node].y];
+					}
+					console.log(2, path.toString());
+
+					// Mark any redundant nodes from the start:
+					for (i = 0; i < pl - 1; i++) {
+						var nextNode = path[i+1];
+						// If we see next node, null this one:
+						if (utils.pf.lineOfSight(start, nextNode)) {
+							path[i] = null;
+						}
+					}
+					// Mark any redundant nodes from the end:
+					for (i = pl - 1; i > 0; i--) {
+						var prevNode = path[i-1];
+						// If we see previous node, null this one:
+						if (prevNode !== null && utils.pf.lineOfSight(finish, prevNode)) {
+							path[i] = null;
+						}
+					}
+					console.log(3, path.toString());
+
+					// Now prune nulls:
+					var shortPath = [];
+					for (i = 0; i < pl; i++) {
+						if (path[i] !== null) { shortPath.push(path[i]); }
+					}
+					console.log(4, shortPath.toString());
+
+					// Add on start and end coords:
+					shortPath.unshift(player.coords());
+					shortPath.push(finish);
+					console.log(5, shortPath.toString());
+
+					// Traverse all coords of new fancy path:
+					for (i = 1; i < shortPath.length; i++) {
+						player.walkTo(shortPath[i]);
 					}
 					// If still not at finish, too bad. Hopefully we are cloesr.
 				}
 				return;
 			}
-			// Smooth out a path by removing middle nodes from straight sections:
-			/*function smoothPath(path) {		// Array
-				var savedPath = path;
+			// Smooth out a path by removing middle nodes from straight sections:	// BAD ALGO
+/*			smoothPath: function(path) {		// Array
+				var savedPath = $.extend({}, path);		// Clone path by value (shallow copy)
+				var i;
 				// Loop through a copy of pathNodes as trios:
 				for (i = 0; i < path.length - 2; i++) {
 					var n1 = path[i],
 						n2 = path[i+1],
 						n3 = path[i+2];
-					if (lineOfSight(n1,n3)) {
-						// n2 superfluous
+					if (utils.pf.lineOfSight(n1,n3)) {
+						// point n2 superfluous; set to null:
 						savedPath[i+1] = null;
 					}
 				}
 				// Now prune nulls:
 				var shortPath = [];
 				for (i = 0; i < savedPath.length; i++) {
-					if (savedPath[i] !== null) shortPath.push(savedPath[i]);
+					if (savedPath[i] !== null) { shortPath.push(savedPath[i]); }
 				}
 				return shortPath;
 			}*/
@@ -411,7 +429,7 @@ var MYGAME = (function($) {
 			}
 		}
 	};
-	utils.pf = utils.pathfinding;
+	utils.pf = utils.pathfinding;	// shorthand
 
 	// OBJECT CONSTRUCTORS & METHODS FOLLOW:
 
@@ -429,10 +447,10 @@ var MYGAME = (function($) {
 		this.opened = opened || false;
 		this.filename = "room" + id + ".html";
 		this.background = '';		// image file url?
-		this.walkboxes;		// loaded from file after construction
-		this.nodes;			// loaded from file after construction
-		this.exits;			// loaded from file after construction
-		this.entities;		// loaded from file after construction
+//		this.walkboxes;		// loaded from file after construction
+//		this.nodes;			// loaded from file after construction
+//		this.exits;			// loaded from file after construction
+//		this.entities;		// loaded from file after construction
 
 		// Store by id in rooms hash:
 		MYGAME.rooms[this.id] = this;
@@ -464,17 +482,19 @@ var MYGAME = (function($) {
 		setTimeout(function() {
 			$("#gamebox").removeClass("room" + me.id);
 			// Remove level-specific elements from HTML:
-			$("#foreground *").remove();
+			$("#foreground *").not("#steve").remove();
 			$("#background *").remove();
 			$("#pathsvg *").remove();
 		}, 2000);
 		return this;
 	};
-	Room.prototype.switch = function(dest) {
-		this.unload();
-		setTimeout(function() {
-			MYGAME.utils.misc.loadScript("room" + dest);
-		}, 2000);
+	Room.prototype.change = function(dest) {
+		if (MYGAME.rooms[dest] !== 'undefined') {
+			this.unload();
+			setTimeout(function() {
+				MYGAME.utils.misc.loadScript("room" + dest);
+			}, 2000);
+		}
 		return this;
 	};
 	Room.prototype.fadeIn = function() {
@@ -786,7 +806,7 @@ var MYGAME = (function($) {
 			parent.face(angle);
 
 			// Take a step:
-			parent.domNode.animate({"left": pt1.x - 16, "top": pt1.y - 44}, speed, function() {
+			parent.domNode.animate({"left": pt1.x - 16, "top": pt1.y - 44}, speed, 'linear', function() {
 				// Update position:
 				parent.updateXY();
 			});
@@ -819,19 +839,14 @@ var MYGAME = (function($) {
 			// Simple coords array passed in:
 			point = dest;
 		}
+		// Already there! check:
+		if (this.coords === point) { return; }
+
 		console.log("Walk to:", point);
 		this.directWalkTo(point);
-
-	//	// Make path:
-	//	var ppp = new Path(this.gridref(), MYGAME.gridUtils.gridref(point), MYGAME.maps.demograph);
-	//	ppp.get();
-	//	var ppl = ppp.nodes.length;
-	//	ppp.simplify().toString().highlight().makeSvg();
-	//	// Go walkies:
-	//	this.walkSvgPath(ppp.svgDeets, ppl);
 	};
 	Character.prototype.directWalkTo = function(point) {
-		var dist = utils.pf.p2pDist([this.x, this.y], point),
+		var dist = utils.pf.p2pDist([this.x, this.y], point),	// CALCULATED TOO EARLY - NEEDS DOING AT EVERY STEP
 			time = dist * 10,
 			dx = point[0] - this.x,
 			dy = point[1] - this.y,
@@ -839,14 +854,19 @@ var MYGAME = (function($) {
 			me = this;
 		me.face(angle);
 
-		//	console.log(dist, time, point);
+		console.log(dist, time, point);
 		this.domNode.addClass("walking")
 					.animate({
 						"left": point[0] - 16,
 						"top": point[1] - 44},
 						time,
-						function() {
-							$(this).removeClass("walking");
+						'linear',
+						function onComplete() {
+							var q = $(this).queue();
+							console.log(q.length, q);
+							if (q.length < 2) {
+								$(this).removeClass("walking");	// only stop CSS animation after last queue item
+							}
 							me.updateXY();
 						});
 	};
@@ -919,7 +939,7 @@ var MYGAME = (function($) {
 */
 	Player.prototype.use = function(item1, item2, goThrough) {
 		var item2id = (item2) ? item2.id : 'itself';	// This string will be used for looking up in Item.uses
-		var goThrough = goThrough || true;			// True: go through with usage. False: just test usability.
+		goThrough = goThrough || true;					// True: go through with usage. False: just test usability.
 
 		// 2 items passed:
 		if (item2id !== 'itself') {
@@ -982,10 +1002,47 @@ var MYGAME = (function($) {
 	};
 
 
+	// Droppables in the field + inventory:
+	function createDroppables() {
+		$("#foreground div, #inventory .item").droppable({
+			hoverClass: "drop-hover",		// USE CLASS FOR AN ICON
+			drop: function(event, ui) {
+				// Lookup dragged item in Entities:
+				var dragid = $(ui.draggable[0]).children().attr("id"),
+					item = MYGAME.entities[dragid];
+				// Lookup drop target in Entities:
+				var dropid = this.id,
+					target = MYGAME.entities[dropid];
+				console.log(item, target);
+
+				// Test if drop is valid:
+				if (item && target && item.giveable) {
+					// See if they fail to combine:
+					if (!MYGAME.player.use(item, target, false)) {
+						console.log("No drop, reverting (2).");
+					}
+					else {
+						// SUCCESS:
+						MYGAME.player.use(item, target);
+						// Refresh inventory in case of item deletion:
+						$("#inventory").sortable("refresh");
+						// Delete helper?
+						console.log("Dropped", item.id, "on", target.id);
+					}
+				}
+				else {
+					console.log("No drop, reverting (1).");
+				}
+			}
+		});
+	}
+
 	function init() {
 		// Try to load first room
-		MYGAME.utils.misc.loadScript('room0');// no jQ needed
+		utils.misc.loadScript('room0');	// no jQ needed
 		MYGAME.state.currentRoom = 0;
+		MYGAME.player = new Player($("#steve"), "Steve", "yellow").placeAt([50,30]).face(90).setZIndex();
+		setTimeout(createDroppables, 2000);		// BIT OF A HACK TO MAKE SURE DOM FILLED FIRST
 	}
 
 	// Expose public handles:
@@ -996,9 +1053,11 @@ var MYGAME = (function($) {
 		utils: utils,
 		dialogues: dialogues,
 		rooms: rooms,
-		cRoom: rooms[state.currentRoom],	// 0 because level not initted
+		cRoom: rooms[state.currentRoom],	// 0 because assigned before room initialised
 		canvas: canvas,
+		ctx: ctx,
 		init: init,
+		M: this,		// IS THIS WISE? OR EVEN USEFUL?
 		// Constructors:
 		Room: Room,
 		Player: Player,
@@ -1016,6 +1075,7 @@ MYGAME.init();
 $(function () {
 
 	var player = MYGAME.player;	// GOT to have this global in here for brevity.
+	console.log(player);		// OK
 
 	// Stage click handler:
 	$("#foreground").on("click", function(event) {
@@ -1045,12 +1105,12 @@ $(function () {
 		
 		if (targetObj) {
 			// If Steve NEAR targetObj, ok, otherwise walk to it first
-			var dist = MYGAME.utils.grid.dist(player, targetObj);
+			var dist = MYGAME.utils.grid.dist(MYGAME.player, targetObj);		// HOW TO PASS PLAYER TO HERE?
 			if (dist > 30) {
 				// Walk to it first:
 				console.log("Not near enough. (dist: " + dist + ")");
 				MYGAME.utils.grid.highlightTile(gr);
-				player.stop().walkTo(evxy);
+				MYGAME.player.stop().walkTo(evxy);
 				return;		// Need to click again when nearer
 			}
 			else {
@@ -1060,18 +1120,12 @@ $(function () {
 		}
 		else {
 			// No specific object clicked, so just walk there:
-			// Check if clicked spot is valid in NavMesh:
-//			if (!MYGAME.gridUtils.tileLookup(gr)) {		// if not wall...
-//				MYGAME.gridUtils.highlightTile(gr);
-//				steve.walkTo(evxy);
-//				return;
-//			}
 			MYGAME.utils.pf.pathFind(player.coords(), evxy, MYGAME.rooms[0]);	// Experimental!
 		}	
 	});
 
 	// Inventory click handler:
-	$("#inventory").on("click", function(event) {
+	$("#inventory").on("click", ".item", function(event) {
 		
 		// What element was clicked? Set the target.
 		var targetObj;
@@ -1099,7 +1153,7 @@ $(function () {
 			exit = ens[event.target.id];
 		}
 		if (exit.visible && exit.active) {
-			MYGAME.rooms[0].leave(exit.dest);
+			MYGAME.rooms[MYGAME.state.currentRoom].change(exit.dest);
 		}
 	});
 
@@ -1118,39 +1172,6 @@ $(function () {
 			helper: "clone",
 			start: function(event, ui) {
 				console.log("Reordering...");// item", $(ui.item[0]).children().attr("id"));
-			}
-		});
-
-		// Droppables in the field + inventory:
-		$("#foreground div, #inventory .item").droppable({
-			hoverClass: "drop-hover",		// USE CLASS FOR AN ICON
-			drop: function(event, ui) {
-				// Lookup dragged item in Entities:
-				var dragid = $(ui.draggable[0]).children().attr("id"),
-					item = MYGAME.entities[dragid];
-				// Lookup drop target in Entities:
-				var dropid = this.id,
-					target = MYGAME.entities[dropid];
-				console.log(item, target);
-
-				// Test if drop is valid:
-				if (item && target && item.giveable) {
-					// See if they fail to combine:
-					if (!player.use(item, target, false)) {
-						console.log("No drop, reverting (2).");
-					}
-					else {
-						// SUCCESS:
-						player.use(item, target);
-						// Refresh inventory in case of item deletion:
-						$("#inventory").sortable("refresh");
-						// Delete helper?
-						console.log("Dropped", item.id, "on", target.id);
-					}
-				}
-				else {
-					console.log("No drop, reverting (1).");
-				}
 			}
 		});
 

@@ -79,9 +79,9 @@
     100% { background-color: none; }
 }
 
-#foreground .drop-hover { xborder: 2px solid orange; }
-#foreground .ui-droppable { xborder: 2px solid green; }
-#foreground .ui-droppable-disabled { xborder: 2px solid red; }
+.drop-hover { border: 2px solid orange; }
+.ui-droppable { border: 2px solid green; }
+.ui-droppable-disabled { border: 2px solid red; }
 
 
 /* TOOLMENU*/
