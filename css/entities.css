@@ -28,6 +28,23 @@
 	position: absolute;
 	z-index: 1;	
 }
+
+#bed {
+	width: 262px;
+	height: 86px;
+	background: url(../img/zak_bed_fg_2x.png);
+	bottom: 0;
+	left: 0;
+	z-index: 230;
+}
+#cat_clock_tail {
+	width: 18px;
+	height: 14px;
+	background: url(../img/cat_clock_tail.gif);
+	left: 305px;
+	top: 80px;
+}
+
 .lake {
 	width: 64px;
 	height: 64px;
@@ -110,6 +127,44 @@
 }
 
 /* CHARACTERS */
+
+#argyle_guy {
+	width: 80px;
+	height: 176px;
+	position: absolute;
+	z-index: 1;
+	background: url(../img/argyle_guy_walking_2x.png);
+	pointer-events: none;
+}
+#argyle_guy.ss { background-position: 0 0; }
+#argyle_guy.nn { background-position: 0 -176px; }
+#argyle_guy.ee { background-position: 0 -352px; }
+#argyle_guy.ww {	/* Flip East to get West */
+	background-position: 0 -352px;
+   -moz-transform: scaleX(-1);
+	-o-transform: scaleX(-1);
+	-webkit-transform: scaleX(-1);
+	transform: scaleX(-1);
+	filter: FlipH;
+	-ms-filter: "FlipH";
+}
+#argyle_guy.walking.ss { animation: walk-arg-ss .9s 0s steps(6) infinite; }
+#argyle_guy.walking.nn { animation: walk-arg-nn .9s 0s steps(6) infinite; }
+#argyle_guy.walking.ee { animation: walk-arg-ee .9s 0s steps(8) infinite; }
+#argyle_guy.walking.ww { animation: walk-arg-ee .9s 0s steps(8) infinite; }
+
+@keyframes walk-arg-ee {
+	from { background-position: -80px -352px; }
+	to   { background-position: -720px -352px; }
+}
+@keyframes walk-arg-nn {
+	from { background-position: -80px -176px; }
+	to   { background-position: -560px -176px; }
+}
+@keyframes walk-arg-ss {
+	from { background-position: -80px 0px; }
+	to   { background-position: -560px 0px; }
+}
 
 #steve {pointer-events: none;}
 

@@ -89,3 +89,29 @@ Chapter 4 - Boundaries
 Chapter 5 - Going Dark
 Chapter 6 - Off Grid
 Chapter 7 - Showdown
+
+
+BREAKING THE ADVENTURE GAME MOLD
+Phone messages
+Phone photography
+Phone apps
+Real life Googling for solutions
+Smart clues
+
+Item-based puzzles
+Quid-Pro-Quo puzzles
+Distraction puzzles
+Timing-based puzzles
+Dialogue-based puzzles (tricky to write)
+Brainy puzzles (with get-outs)
+Logical sequence puzzles
+Repetitivity puzzles
+Listening puzzles
+Ethical choice puzzles
+Multiplayer puzzles
+Physics/Chemistry puzzles
+Time-state-change puzzles
+Tetris puzzle
+Location-independent puzzles
+Non-character-specific character puzzles
+Giant-scale Heath Robinson puzzle

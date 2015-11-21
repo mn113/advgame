@@ -63,6 +63,28 @@ body {
 	width: 640px;
 	height: 400px;
 }
+.room2 #background {
+	top: 0px;
+	width: 640px;
+	height: 400px;
+	background: url(../img/zak_bedroom_2x.png) 0 0 no-repeat;
+}
+.room2 #foreground {
+	top: 0;
+	width: 640px;
+	height: 256px;
+}
+.room3 #background {
+	top: 0px;
+	width: 1280px;
+	height: 400px;
+	background: url(../img/zak_livingroom_2x.png) 0 0 no-repeat;
+}
+.room3 #foreground {
+	top: 0;
+	width: 1280px;
+	height: 256px;
+}
 
 #blackout {
 	position: absolute;

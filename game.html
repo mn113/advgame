@@ -6,7 +6,7 @@
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>AdvGame Demo</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+		<!--link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"-->
 		<link rel="stylesheet" href="css/jquery-ui.css">
 		<link rel="stylesheet" href="css/jquery-ui.structure.css">
 		<link rel="stylesheet" href="css/jquery-ui.theme.css">
@@ -16,12 +16,9 @@
 	</head>
 	<body>
 		<div id="gamebox">
-			<div id="background"><!-- purely visual layer -->
+			<div id="background"><!-- purely visual layer --><!-- loaded from roomX.html -->
 			</div>
-			<div id="foreground"><!-- interactive layer -->
-			</div>
-			<div id="players">
-				<div class="character steve" id="steve"><!-- game's only permanent entity --></div>
+			<div id="foreground"><!-- interactive layer --><!-- loaded from roomX.html -->
 			</div>
 
 			<!-- UI outside the stage: -->
@@ -40,7 +37,7 @@
 			</div>
 			<div id="blackout"></div>
 			<p class="announce"></p>
-			<svg id="pathsvg" width="640px" height="400px" viewBox="0 0 640 400" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug">
+			<svg id="pathsvg" width="640px" height="400px" viewBox="0 0 640 400" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug"><!-- loaded from roomX.html -->
 			</svg>
 			<table id="tablecloth" class="debug">
 				<tr>
@@ -170,7 +167,6 @@
 
 		<script src="js/jquery-1.11.3.min.js"></script>
 		<script src="js/jquery-ui.min.js"></script>
-		<script src="js/astar.js"></script>
 		<script src="js/game.js"></script>
 		<script src="js/dialogues.js"></script>
 

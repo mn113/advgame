@@ -12,8 +12,8 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		// Exits:
 		var exit1 = new M.Exit($("#exit1"), "exit1", 1, true, true).placeAt([100,15]);	// Visible, active
 		// Characters:
-		var pepper = new M.Character($("#pepper"), "Pepper", "red").placeAt([170,110]).face(90).setZIndex();
-		var john = new M.Character($("#john"), "John", "lightblue").placeAt([30,160]).face(180).setZIndex();
+		var pepper = new M.Character($("#pepper"), "Pepper", "red").placeAt([170,110]).face('ss');
+		var john = new M.Character($("#john"), "John", "lightblue").placeAt([30,160]).face('ww');
 		// Stage items:
 		var bread = new M.Item($(".bread"), "bread").placeAt([30,70]);
 		var cheese = new M.Item($(".cheese"), "cheese").placeAt([50,170]);

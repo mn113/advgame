@@ -65,24 +65,27 @@ inventory sandbox?
 //detach change() so independent of Rooms
 //	add non-gridded backwall area (60px?) - give each room a baseline attribute
 //.stop() steve spazzing on multi-click
+//increase y-coord by n*5px on all false clicks to put in a walkbox (variable baseline)
+//foreground layers to go behind
 /	link 2 rooms via exits
-rewrite geometry functions to all use {x:0,y:0} point objects
 item tooltips on stage
 
-make side-scrolling areas
+/	make side-scrolling areas
 parallax backgrounds
 implement y-scaling (per-walkbox value?)
 put non-animating sprites on little canvases to allow for 2x upsampling?
 resolution changer: 1x, 2x, 3x, 4x (css/js)
+rewrite geometry functions to all use {x:0,y:0} point objects
+
+cutscenes using NPC.say() and NPC.walkTo()
+dialogues where NPC speaks to you first
+restyle all dialogue ui
+grammar fixes: capitalisation, articles...
 
 load the extra items by $.getObject each time?
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?
 use html template for adding objects to DOM?
-
-cutscenes using NPC.say() and NPC.walkTo()
-dialogues where NPC speaks to you first
-grammar fixes: capitalisation, articles...
 
 smartphone side-mission
 

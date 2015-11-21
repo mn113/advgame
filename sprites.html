@@ -17,8 +17,14 @@
 			.front {
 				background-position: 0px 0px;
 			}
+			.front.walk {
+				animation: walk-ss .9s 0s steps(6) infinite;
+			}
 			.back {
 				background-position: 0px -88px;
+			}
+			.back.walk {
+				animation: walk-nn .9s 0s steps(6) infinite;
 			}
 			.right {
 				background-position: 0px -176px;
@@ -42,11 +48,22 @@
 				from { background-position: -40px -176px; }
 				to   { background-position: -360px -176px; }
 			}
+			@keyframes walk-nn {
+				from { background-position: -40px -88px; }
+				to   { background-position: -280px -88px; }
+			}
+			@keyframes walk-ss {
+				from { background-position: -40px 0px; }
+				to   { background-position: -280px 0px; }
+			}
 		</style>
 	</head>
 	<body>
 		<div class="argyle_guy front"></div>
+		<div class="argyle_guy front walk"></div>
+		<br>
 		<div class="argyle_guy back"></div>
+		<div class="argyle_guy back walk"></div>
 		<br>
 		<div class="argyle_guy right"></div>
 		<div class="argyle_guy right walk"></div>
