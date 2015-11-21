@@ -163,6 +163,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 	// Define the geometry of room0:
 	var room = new M.Room(0, "Grassy Knoll", true, M.prevRoom);
+	M.curRoom = room;
 	room.walkboxes = {
 			wb1: [{x:60,y:10}, {x:140,y:10}, {x:140,y:40}, {x:60,y:40}],
 			wb2: [{x:140,y:10}, {x:200,y:50}, {x:200,y:90}, {x:140,y:150}],

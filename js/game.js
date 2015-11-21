@@ -18,13 +18,13 @@ var MYGAME = (function($) {
 		'e': 180,
 		's': -90,
 		'w': 0
-	};
+	};	// constant
 	this.rooms = [0,1];	// filled by external files
-	this.prevRoom;		// previous room
-	this.curRoom;		// current room
+	this.prevRoom;		// previous room id
+	this.curRoom;		// current room object
 	this.player = null;
 	// Entities within the game (characters, items, scenery...) stored by id
-	this.entities = {test: null};
+	this.entities = {};
 	this.dialogues = {};		// Filled by external file
 
 	// REALLY USEFUL DEBUGGING CANVAS:
@@ -219,8 +219,8 @@ var MYGAME = (function($) {
 			whichWalkbox: function(point) {		// Point array e.g. [0,0]
 				var wbname,
 					curRoom = MYGAME.curRoom;
-				for (wbname in rooms[curRoom].walkboxes) {
-					var wb = rooms[curRoom].walkboxes[wbname],
+				for (wbname in curRoom.walkboxes) {
+					var wb = curRoom.walkboxes[wbname],
 						pxy = { x: point[0], y: point[1] };
 					if (MYGAME.utils.grid.pointIsInPoly(pxy, wb)) {
 						return wbname;
@@ -402,7 +402,7 @@ var MYGAME = (function($) {
 				return;
 			},
 			// Smooth out a path by removing middle nodes from straight sections:	// BAD ALGO
-/*			smoothPath: function(path) {		// Array
+			/*smoothPath: function(path) {		// Array
 				var savedPath = $.extend({}, path);		// Clone path by value (shallow copy)
 				var i;
 				// Loop through a copy of pathNodes as trios:
@@ -434,7 +434,7 @@ var MYGAME = (function($) {
 				}
 				// Reset and decrease Y incrementally;
 				newpoint = point;
-				while (newpoint[1] > MYGAME.rooms[MYGAME.curRoom].baseline) {
+				while (newpoint[1] > MYGAME.curRoom.baseline) {
 					newpoint[1] -= 5;
 					if ( utils.grid.whichWalkbox(newpoint) !== false ) { return newpoint; }
 				}
@@ -448,11 +448,11 @@ var MYGAME = (function($) {
 			change: function(dest) {	// Int
 				if (MYGAME.rooms[dest] !== 'undefined') {
 					// Set current room as previous:
-					MYGAME.prevRoom = MYGAME.rooms[MYGAME.curRoom]
+					MYGAME.prevRoom = MYGAME.curRoom;
 					// Unload:
-					MYGAME.rooms[MYGAME.curRoom].unload();
+					MYGAME.curRoom.unload();
 					// Set new current room:
-					MYGAME.curRoom = dest;
+					MYGAME.curRoom = MYGAME.room[dest];
 					setTimeout(function() {
 						utils.misc.loadScript("room" + dest);	// Script includes Room loading
 					}, 1000);
@@ -480,13 +480,13 @@ var MYGAME = (function($) {
 				// Scroll incrementally:
 				var scrolledpx = 0;
 				while (scrolledpx < amount) {
-					$bg.animate({"left": delta}, 10);
-					$fg.animate({"left": delta}, 10);
-					$svg.animate({"left": delta}, 10);
+					$bg.animate({"left": delta}, 10, 'linear');
+					$fg.animate({"left": delta}, 10, 'linear');
+					$svg.animate({"left": delta}, 10, 'linear');
 					scrolledpx += 5;
 					// Are we too close to left or right limit?:
 					bgPos = -1 * parseInt($bg.position().left);
-					if (bgPos - 10 < min || bgPos + 10 > max) {	// bigger buffer prevents overshooting
+					if ((dir === 'L' && bgPos - 10 < min) || (dir == 'R' && bgPos + 10 > max)) {
 						break;
 					}
 				}
@@ -505,13 +505,19 @@ var MYGAME = (function($) {
 					bgPos = -1 * parseInt($bg.position().left),
 					min = 0,
 					max = parseInt($bg.css("width")) - 640;
-				// Scroll if player not central:
-				console.log(point[0] - bgPos + "px relative to gamebox.");
-				if (point[0] - bgPos < 213 && bgPos > min) {		// player in first third of viewport
-					utils.room.scrollX("L", 100);
+
+				// Do not scroll if player will end up offscreen:
+				if (Math.abs(MYGAME.player.x - point[0]) > 480) {
+					return;
 				}
-				else if (point[0] - bgPos > 427 && bgPos < max) {	// player in final third of viewport
-					utils.room.scrollX("R", 100);
+
+				// Scroll if click not central:
+				console.log(point[0] - bgPos + "px relative to gamebox.");
+				if (point[0] - bgPos < 160 && bgPos > min) {		// click in first quarter of viewport
+					utils.room.scrollX("L", 160);
+				}
+				else if (point[0] - bgPos > 480 && bgPos < max) {	// click in final quarter of viewport
+					utils.room.scrollX("R", 160);
 				}
 			}
 		},
@@ -930,7 +936,7 @@ var MYGAME = (function($) {
 		// else return 0;
 	};
 	Character.prototype.walkTo = function(dest) {
-		var room = rooms[MYGAME.curRoom],
+		var room = MYGAME.curRoom,
 			point;
 		if (dest.hasOwnProperty("id")) {
 			// Object passed in:
@@ -949,7 +955,10 @@ var MYGAME = (function($) {
 		if (this.coords() === point) { return; }
 
 		console.log("Walk to:", point);
-		MYGAME.utils.room.scrollDecide(point);
+		// Is scrolling necessary?
+		if (room.scrollable) {
+			utils.room.scrollDecide(point);
+		}
 		this.directWalkTo(point);
 	};
 	Character.prototype.directWalkTo = function(point) {
@@ -985,7 +994,7 @@ var MYGAME = (function($) {
 								$(this).removeClass("walking");	// only stop CSS animation after last queue item
 								clearInterval(walkInterval);
 							}
-							me.face('ss');
+//							me.face('ss');
 							me.updateXYZ();
 							me.reportLoc();
 						});
@@ -1159,20 +1168,78 @@ var MYGAME = (function($) {
 	}
 
 	// Process clicks in game area:
-	function fgClickHandler() {
+	function fgClickHandler(event) {
+		// Make sure game setup is complete:
+		if (this.curRoom !== null && this.player !== null) {
+			// Where was clicked? Set the target (Take parent element's offset into account!)
+			var fgOffset = $("#foreground").offset();
+			var evxy = [event.pageX - fgOffset.left, event.pageY - fgOffset.top];
+			var targetObj = null;
 
+			// Fix negative y clicks:
+			if (evxy[1] < this.curRoom.baseline) {
+				evxy[1] = this.curRoom.baseline;
+			}
+			console.log("click @", evxy, event.target.id);
+
+			// Check for an object:
+			// Check Entities list first:
+			if (this.entities.hasOwnProperty(event.target.id)) {
+				// Found a match:, retrieve it:
+				console.log("Clicked on", event.target.id, "(" + this.state.cursor.mode[0] + ")");
+				targetObj = this.entities[event.target.id];
+			}
+
+			if (targetObj) {
+				// If Steve NEAR targetObj, ok, otherwise walk to it first
+				var dist = utils.grid.dist(this.player, targetObj);
+				if (dist > 30) {
+					// Walk to it first:
+					console.log("Not near enough. (dist: " + dist + ")");
+					this.player.stop().walkTo(evxy);
+					return;		// Will need to click targetObj again when nearer...
+				}
+				// Handle an exit when clicked:
+				if (targetObj.hasOwnProperty("dest")) {
+					var exit = targetObj;
+					if (exit.visible && exit.active) {
+						utils.room.change(exit.dest);
+					}
+				}
+				else {
+					// Act, depending on mode:
+					utils.ui.modedClick(targetObj);
+				}
+			}
+			else {	// No object clicked:
+				var wb = utils.grid.whichWalkbox(evxy);
+				console.log("Walkbox", wb);
+				// Try to fix click outside walkboxes:
+				if (!wb) {
+					evxy = utils.pf.correctY(evxy);
+					console.log("New evxy:", evxy);
+					if (!evxy) {
+						// Invalid click
+						console.log("Couldn't validate click.");
+						return;
+					}
+				}
+				// No specific object clicked, so just walk to the point:
+				this.player.domNode.stop(true);
+				utils.pf.pathFind(this.player.coords(), evxy, this.curRoom);
+			}
+		}
 	}
 
 	function init(room) {
 		// Try to load first room:
-		this.curRoom = room;
 		utils.misc.loadScript('room' + room);	// no jQ needed
-		var game = this;
 
+		var game = this;
 		setTimeout(function() {
 			// Initialise the player [MOST IMPORTANT!]:
 	//		game.player = new Player($("#steve"), "Steve", "yellow");
-			game.player = new Player($("#argyle_guy"), "Argyle Guy", "blue");//.placeAt([100,200]);
+			game.player = new Player($("#argyle_guy"), "Argyle Guy", "blue");
 			createDroppables();
 		}, 1000);		// BIT OF A HACK TO MAKE SURE DOM FILLED FIRST
 	}
@@ -1191,7 +1258,9 @@ var MYGAME = (function($) {
 		// Declared as vars (var a = ):
 		state: state,
 		utils: utils,
+		// Declared as functions:
 		init: init,
+		fgClickHandler: fgClickHandler,
 		// Constructors:
 		Room: Room,
 		Player: Player,
@@ -1208,69 +1277,9 @@ MYGAME.init(3);
 // jQuery ready function:
 $(function () {
 
-	var player = MYGAME.player;	// GOT to have this global in here for brevity.
-	console.log(player);		// OK
-
 	// Stage click handler:
 	$("#foreground").on("click", function(event) {
-		// Where was clicked? Set the target (Take parent element's offset into account!)
-		var fgOffset = $(this).offset();
-		var evxy = [event.pageX - fgOffset.left, event.pageY - fgOffset.top];
-
-		// Fix negative y clicks:
-		if (evxy[1] < MYGAME.rooms[MYGAME.curRoom].baseline) {
-			evxy[1] = MYGAME.rooms[MYGAME.curRoom].baseline;
-		}
-		console.log("click @", evxy, event.target.id);
-
-		// Check for an object:
-		var targetObj = null;
-		// Check Entities list first:
-		var ens = MYGAME.entities;
-		if (ens.hasOwnProperty(event.target.id)) {
-			// Found a match:, retrieve it:
-			console.log("Clicked on", event.target.id, "(" + MYGAME.state.cursor.mode[0] + ")");
-			targetObj = ens[event.target.id];
-		}
-		
-		if (targetObj) {
-			// If Steve NEAR targetObj, ok, otherwise walk to it first
-			var dist = MYGAME.utils.grid.dist(MYGAME.player, targetObj);
-			if (dist > 30) {
-				// Walk to it first:
-				console.log("Not near enough. (dist: " + dist + ")");
-				MYGAME.player.stop().walkTo(evxy);
-				return;		// Will need to click targetObj again when nearer...
-			}
-			// Handle an exit when clicked:
-			if (targetObj.hasOwnProperty("dest")) {
-				var exit = targetObj;
-				if (exit.visible && exit.active) {
-					MYGAME.utils.room.change(exit.dest);
-				}
-			}
-			else {
-				// Act, depending on mode:
-				MYGAME.utils.ui.modedClick(targetObj);
-			}
-		}
-		else {	// No object clicked:
-			var wb = MYGAME.utils.grid.whichWalkbox(evxy);
-			console.log("Walkbox", wb);
-			// Try to fix click outside walkboxes:
-			if (!wb) {
-				evxy = MYGAME.utils.pf.correctY(evxy);
-				console.log("New evxy:", evxy);
-				if (!evxy) {
-					// Invalid click
-					console.log("Couldn't validate click.");
-					return;
-				}
-			}
-			// No specific object clicked, so just walk to the point:
-			MYGAME.player.domNode.stop(true);
-			MYGAME.utils.pf.pathFind(MYGAME.player.coords(), evxy, MYGAME.rooms[MYGAME.curRoom]);
-		}
+		MYGAME.fgClickHandler(event);
 	});
 
 	// Inventory click handler:

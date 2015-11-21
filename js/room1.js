@@ -18,6 +18,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 	// Create the Room object:
 	var room = new M.Room(1, "Flatroom", true, M.prevRoom);
+	M.curRoom = room;
 	// Define the geometry of room1:
 	room.walkboxes = {
 			wb1: [{x:84,y:91}, {x:131,y:224}, {x:115,y:323}, {x:2,y:399}],
@@ -45,11 +46,6 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	room.load(M.Room.prototype.afterLoad);	// load() puts HTML entities into page, the callback wires them up
 
 	console.log(M);
-	// Draw baseline:
-	M.ctx.clearRect(0,0,640,400);
-	M.ctx.strokeStyle="#FFFFFF";
-	M.ctx.strokeRect(0,0,640,room.baseline);
-
 	console.log("Room initialised.");
 
 }(MYGAME, jQuery));

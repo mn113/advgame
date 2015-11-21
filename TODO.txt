@@ -14,7 +14,6 @@
 //try a bezier program
 try pathAnimator
 //find a fix to give walking speed which doesnt vary with distance
-vertical walk speed < horizontal walk speed (depending on perspective)
 //context menu: look, talk, get, use
 //not a hovering context menu, but a tool panel which changes the cursor
 //hotkeys to assist player actions
@@ -24,8 +23,6 @@ vertical walk speed < horizontal walk speed (depending on perspective)
 //inventory (graphical + logical)
 //refactor code in OO stylee
 //base object for all elements to extend
-mixin classes for positioning, gridrefs, show/hide, place...
-$.extend(X.prototype, MyMixins);
 //clickable NPC
 //click/hover handler which recognises items, characters
 //areas he can look at, touch etc -> invisible divs simplest?
@@ -35,7 +32,6 @@ $.extend(X.prototype, MyMixins);
 //alternate dialogue colours
 //dialogue chooser
 //prevent duplicated dialogue on screen
-build a little delay into the dialogues
 //inventory items clickable
 //use inventory item solo
 //use inventory item with other
@@ -67,12 +63,13 @@ inventory sandbox?
 //.stop() steve spazzing on multi-click
 //increase y-coord by n*5px on all false clicks to put in a walkbox (variable baseline)
 //foreground layers to go behind
+//make side-scrolling areas
 /	link 2 rooms via exits
 item tooltips on stage
 
-/	make side-scrolling areas
 parallax backgrounds
 implement y-scaling (per-walkbox value?)
+vertical walk speed < horizontal walk speed (depending on perspective)
 put non-animating sprites on little canvases to allow for 2x upsampling?
 resolution changer: 1x, 2x, 3x, 4x (css/js)
 rewrite geometry functions to all use {x:0,y:0} point objects
@@ -80,6 +77,7 @@ rewrite geometry functions to all use {x:0,y:0} point objects
 cutscenes using NPC.say() and NPC.walkTo()
 dialogues where NPC speaks to you first
 restyle all dialogue ui
+build a little delay into the dialogues
 grammar fixes: capitalisation, articles...
 
 load the extra items by $.getObject each time?
