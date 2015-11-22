@@ -64,15 +64,15 @@ inventory sandbox?
 //increase y-coord by n*5px on all false clicks to put in a walkbox (variable baseline)
 //foreground layers to go behind
 //make side-scrolling areas
+//item tooltips on stage
 /	link 2 rooms via exits
-item tooltips on stage
+//store a session
 
 parallax backgrounds
 implement y-scaling (per-walkbox value?)
 vertical walk speed < horizontal walk speed (depending on perspective)
-put non-animating sprites on little canvases to allow for 2x upsampling?
-resolution changer: 1x, 2x, 3x, 4x (css/js)
 rewrite geometry functions to all use {x:0,y:0} point objects
+resolution changer: 1x, 2x, 3x, 4x (css/js)
 
 cutscenes using NPC.say() and NPC.walkTo()
 dialogues where NPC speaks to you first
@@ -87,7 +87,24 @@ use html template for adding objects to DOM?
 
 smartphone side-mission
 
-store a session
+save thumbnail of screenshot using html2canvas as base64 with savegames
+vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states?;
+
+var npcs = {
+	'john': john,
+	'pepper': pepper
+}	// store room + coords + convos
+
+var progress = {
+	picked_bread: false,
+	opened_chest: false,
+	got_cheese: false,
+	sliced_bread: false,
+	made_sandwich: false,
+	got_key: false,
+	opened_door: false
+	// hundreds more...
+}
 
 puzzles object which stores the state of each key step
 puzzles: {act1: {puzzle1: {get_bread_from_pepper: false}}}

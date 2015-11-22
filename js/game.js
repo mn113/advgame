@@ -26,6 +26,8 @@ var MYGAME = (function($) {
 	// Entities within the game (characters, items, scenery...) stored by id
 	this.entities = {};
 	this.dialogues = {};		// Filled by external file
+	this.npcs = {};
+	this.progress = {};
 
 	// REALLY USEFUL DEBUGGING CANVAS:
 	this.canvas = document.createElement("canvas");
@@ -38,21 +40,19 @@ var MYGAME = (function($) {
 	// All utility functions:
 	var utils = {
 		ui: {
-			inventory: {
-				// Refresh tooltips (needed when item added):
-				ttRefresh: function() {
-					$("#inventory div div.item").tooltip({
-						content: function() {
-							return $(this).attr("id");
-						},
-						show: {
-							delay: 750	// a reasonable delay makes dragging/dropping/sorting a lot easier
-						},
-						items: "div[id]",
-						tooltipClass: "tt",
-						track: true
-					});
-				}
+			// Refresh tooltips (needed when item added):
+			ttRefresh: function() {
+				$("div.item").tooltip({	// NOT WORKING IN FG
+					items: "div[id]",
+					content: function() {
+						return $(this).attr("id");
+					},
+					show: {
+						delay: 750	// a reasonable delay makes dragging/dropping/sorting a lot easier
+					},
+					tooltipClass: "tt",
+					track: true
+				});
 			},
 			// Switches body class to reflect mode:
 			toolMode: function(mode) {
@@ -531,6 +531,57 @@ var MYGAME = (function($) {
 			   script.async = true;
 			   document.body.appendChild(script);
 			}
+		},
+		session: {
+			// Save the state of the game to browser storage:
+			saveGame: function() {
+				// Check for localStorage:
+				if (typeof(Storage) !== "undefined") {
+					var s = MYGAME.state,
+						n = MYGAME.npcs,
+						i = MYGAME.player.inventory,
+						p = MYGAME.progress,
+						e = MYGAME.entities,
+						r = MYGAME.rooms;
+					var ts = new Date();
+					var saveObj = JSON.stringify([s,n,i,p,e,r]);
+					console.log(saveObj);
+					// Save:
+					localStorage.setItem("SavedGame" + ts, saveObj);
+					console.log("Game saved at", ts);
+				}
+				else {
+					console.log("No Web Storage support.");
+				}
+			},
+			// Restore a saved game stored in browser storage:
+			loadGame: function(ts) {
+				var loadObj = JSON.parse(localStorage.getItem(ts));
+				// Restore all data:
+				MYGAME.state = loadObj[0];
+				MYGAME.npcs = loadObj[1];
+				MYGAME.player.inventory = loadObj[2];
+				MYGAME.progress = loadObj[3];
+				MYGAME.entities = loadObj[4];
+				MYGAME.rooms = loadObj[5];
+				// Further loading code...
+				console.log("Game loaded.");
+			},
+			chooseSavedGame() {
+				// Access browser storage:
+				for (var thing in localStorage) {
+					// Build a basic chooser:
+					var $a = $("<a>").html(thing);
+					$a.appendTo("#displayChoices");
+					$a.on("click", function() {
+						// Load the savegame with the clicked timestamp:
+						utils.session.loadGame($(this).html());
+						// Clean up:
+						$("#displayChoices").html('');
+						return;
+					})
+				}
+			}
 		}
 	};
 	utils.pf = utils.pathfinding;	// shorthand
@@ -544,15 +595,15 @@ var MYGAME = (function($) {
 	* @param {string} name
 	* @param {Boolean} unlocked
 	*/
-	function Room(id, name, unlocked, entry) {
+	function Room(options) {	// (id, name, unlocked, scrollable, entry)
 		// Essentials:
-		this.id = id;
-		this.name = name;
-		this.unlocked = unlocked || false;		// whether room has been unlocked yet
-		this.entry = entry || 0;				// determines where player will appear
-		this.filename = "room" + id + ".html";
-		this.background = '';		// image file url?
-		this.scrollable = false;
+		this.id = options.id || null;
+		this.name = options.name || null;
+		this.unlocked = options.unlocked || false;		// whether room has been unlocked yet
+		this.scrollable = options.scrollable || false;
+		this.entry = options.entry || 0;				// determines where player will appear
+		this.filename = "room" + this.id + ".html";			// needed for loading room HTML
+//		this.background = '';					// image file url?
 //		this.walkboxes;		// loaded from file after construction
 //		this.nodes;			// loaded from file after construction
 //		this.exits;			// loaded from file after construction
@@ -616,6 +667,7 @@ var MYGAME = (function($) {
 		$(".announce").html(this.name).show().delay(1500).fadeOut(2000);
 		return this;
 	};
+
 
 	/**
 	* _BaseObj structure
@@ -706,12 +758,12 @@ var MYGAME = (function($) {
 	* @param {Boolean} visible
 	* @param {Boolean} active
 	*/
-	function Exit(domNode, name, dest, visible, active) {
-		_BaseObj.call(this, domNode, name, visible);
+	function Exit(options) {	// (domNode, name, dest, visible, active)
+		_BaseObj.call(this, options.domNode, options.name, options.visible);
 
 		// Item-specific properties:
-		this.dest = dest;		// Another room id
-		this.active = true;		// Can it currently be used?
+		this.dest = options.dest || null;		// Another room id
+		this.active = options.active || true;	// Can it currently be used?
 	}
 	// Inheritance: Exit extends _BaseObj
 	Exit.prototype = Object.create(_BaseObj.prototype, {
@@ -805,7 +857,7 @@ var MYGAME = (function($) {
 		}, 2000);
 
 		// Redo tooltips:
-		MYGAME.utils.ui.inventory.ttRefresh();
+		MYGAME.utils.ui.ttRefresh();
 
 		// Move the logical element:
 		MYGAME.player.inventory.push(this.id);
@@ -1133,7 +1185,7 @@ var MYGAME = (function($) {
 
 
 	// Droppables in the field + inventory:
-	function createDroppables() {
+	function _createDroppables() {
 		$("#foreground div, #inventory .item").droppable({
 			hoverClass: "drop-hover",		// USE CLASS FOR AN ICON?
 			drop: function(event, ui) {
@@ -1240,7 +1292,9 @@ var MYGAME = (function($) {
 			// Initialise the player [MOST IMPORTANT!]:
 	//		game.player = new Player($("#steve"), "Steve", "yellow");
 			game.player = new Player($("#argyle_guy"), "Argyle Guy", "blue");
-			createDroppables();
+			_createDroppables();
+			// Tooltips:
+			MYGAME.utils.ui.ttRefresh();
 		}, 1000);		// BIT OF A HACK TO MAKE SURE DOM FILLED FIRST
 	}
 
@@ -1318,8 +1372,6 @@ $(function () {
 			}
 		});
 
-		// Inventory Tooltips:
-		MYGAME.utils.ui.inventory.ttRefresh();
 
 	}	// end jQuery UI block
 
@@ -1365,7 +1417,13 @@ $(document).keydown(function(e) {			// keydown is Safari-compatible; keypress al
 	}
 	else if (e.keyCode >= 48 && e.keyCode <= 57) {					// press '0-9'
 		// Change room:
-			MYGAME.utils.room.change(e.keyCode - 48);
+		MYGAME.utils.room.change(e.keyCode - 48);
+	}
+	else if (e.keyCode === 116) {									// press 'F5'
+		MYGAME.utils.session.saveGame();
+	}
+	else if (e.keyCode === 117) {									// press 'F6'
+		MYGAME.utils.session.chooseSavedGame();
 	}
 	else {															// any other keypress
 		$("body").removeClass();	// unset all modes

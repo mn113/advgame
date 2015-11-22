@@ -1,6 +1,5 @@
 /*jslint browser: true*/
 /*global $, jQuery, alert, console*/
-/*global MYGAME */
 
 // Find global namespace:
 var MYGAME = MYGAME || {};	// "get it or set it"
@@ -11,13 +10,24 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		// Define the content:
 		// Characters:
 		// Exits:
-		var exit1 = new M.Exit($("#exit1"), "exit1", 0, true, true).placeAt([608,196]);	// Visible, active
+		var exit1 = new M.Exit({
+			domNode: $("#exit1"),
+			id: "exit1",
+			dest: 0,
+			visible: true,
+			active:true
+		}).placeAt([608,196]);
 
 		console.log("All objects initialised.");
 	};
 
 	// Create the Room object:
-	var room = new M.Room(1, "Flatroom", true, M.prevRoom);
+	var room = new M.Room({
+		id: 1,
+		name: "Flatroom",
+		unlocked: true,
+		entry: M.prevRoom
+	});
 	M.curRoom = room;
 	// Define the geometry of room1:
 	room.walkboxes = {

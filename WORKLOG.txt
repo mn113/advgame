@@ -47,3 +47,6 @@
 
 20-Nov	sprited front & back 6-step walk cycles for argyle_guy
 20-Nov	implemented 2 Zak rooms at 2x, worked on clickfixing & x-scrolling
+
+21-Nov	fixed scrolling
+21-Nov	wrote rudimentary save/load/choose feature

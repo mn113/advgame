@@ -211,9 +211,3 @@
 	from { background-position: 0px -144px; }
 	to   { background-position: -128px -144px; }
 }
-
-body.debug .character {border: 1px dotted red;}
-body.debug .scenery {border: 1px dotted blue;}
-body.debug .item {border: 1px dotted yellow;}
-body.debug #foreground {border: 1px solid fuchsia;}
-body.debug #background {border: 1px solid teal;}

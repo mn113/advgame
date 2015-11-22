@@ -1,6 +1,5 @@
 /*jslint browser: true*/
 /*global $, jQuery, alert, console*/
-/*global MYGAME */
 
 // Find global namespace:
 var MYGAME = MYGAME || {};	// "get it or set it"
@@ -10,7 +9,13 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	M.Room.prototype.afterLoad = function() {
 		// Define the content:
 		// Exits:
-		var exit1 = new M.Exit($("#exit1"), "exit1", 1, true, true).placeAt([100,15]);	// Visible, active
+		var exit1 = new M.Exit({
+			domNode: $("#exit1"),
+			id: "exit1",
+			dest: 1,
+			visible: true,
+			active: true
+		}).placeAt([100,15]);
 		// Characters:
 		var pepper = new M.Character($("#pepper"), "Pepper", "red").placeAt([170,110]).face('ss');
 		var john = new M.Character($("#john"), "John", "lightblue").placeAt([30,160]).face('ww');
@@ -162,7 +167,12 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	};
 
 	// Define the geometry of room0:
-	var room = new M.Room(0, "Grassy Knoll", true, M.prevRoom);
+	var room = new M.Room({
+		id: 0,
+		name: "Grassy Knoll",
+		unlocked: true,
+		entry: M.prevRoom
+	});
 	M.curRoom = room;
 	room.walkboxes = {
 			wb1: [{x:60,y:10}, {x:140,y:10}, {x:140,y:40}, {x:60,y:40}],

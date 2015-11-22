@@ -1,6 +1,5 @@
 /*jslint browser: true*/
 /*global $, jQuery, alert, console*/
-/*global MYGAME */
 
 // Find global namespace:
 var MYGAME = MYGAME || {};	// "get it or set it"
@@ -9,6 +8,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	// Define callback function for Room.load():
 	M.Room.prototype.afterLoad = function() {
 		// Define the content:
+		var cheese = new M.Item($(".cheese"), "cheese").placeAt([200,250]);
 		// Characters:
 		// Exits:
 
@@ -16,7 +16,12 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	};
 
 	// Create the Room object:
-	var room = new M.Room(3, "Zak's living room", true);
+	var room = new M.Room({
+		id: 3,
+		name: "Zak's living room",
+		unlocked: true,
+		scrollable: true
+	});
 	M.curRoom = room;
 	// Define the geometry of room2:
 	room.walkboxes = {
@@ -29,9 +34,13 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		1: {dest: 3, dir: 'e', doormat: {x: 1185, y: 235}}
 	};
 	room.entities = {};	// Could store fixed items and default items/characters in this object
-	room.scrollable = true;
 
 	room.load(room.afterLoad);	// load() puts HTML entities into page, the callback wires them up
+
+	var s = JSON.stringify(M.rooms);
+	console.log(s);
+	var o = JSON.parse(s);
+	console.log(o);
 
 	console.log(M);
 	console.log("Room initialised.");

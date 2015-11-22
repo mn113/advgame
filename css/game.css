@@ -166,3 +166,9 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 	pointer-events: none;
 	z-index: 50;
 }
+
+body.debug .character {border: 1px dotted red;}
+body.debug .scenery {border: 1px dotted blue;}
+body.debug .item {border: 1px dotted yellow;}
+body.debug #foreground {border: 1px solid fuchsia;}
+body.debug #background {border: 1px solid teal;}

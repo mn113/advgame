@@ -1,6 +1,5 @@
 /*jslint browser: true*/
 /*global $, jQuery, alert, console*/
-/*global MYGAME */
 
 // Find global namespace:
 var MYGAME = MYGAME || {};	// "get it or set it"
@@ -16,7 +15,11 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	};
 
 	// Create the Room object:
-	var room = new M.Room(2, "Zak's bedroom", true);
+	var room = new M.Room({
+		id: 2,
+		name: "Zak's bedroom",
+		unlocked: true
+	});
 	M.curRoom = room;
 	// Define the geometry of room2:
 	room.walkboxes = {
