@@ -3,12 +3,12 @@
 
 // Global scoping / namespacing function:
 var MYGAME = (function($) {
-	var config = {
+	this.config = {
 		chapter: 0,
 		stage: 0,
 		language: 'en'
 	};
-	var state = {
+	this.state = {
 		cursor: {mode: 'default'},
 		paused: false,
 		gametime: 0		// count seconds elapsed
@@ -18,10 +18,10 @@ var MYGAME = (function($) {
 		'e': 180,
 		's': -90,
 		'w': 0
-	};	// constant
-	this.rooms = [0,1];	// filled by external files
-	this.prevRoom;		// previous room id
-	this.curRoom;		// current room object
+	};		// constant
+	this.rooms = [];			// filled by external files
+	this.prevRoom = null;		// previous room id
+	this.curRoom = null;		// current room object
 	this.player = null;
 	// Entities within the game (characters, items, scenery...) stored by id
 	this.entities = {};
@@ -220,13 +220,15 @@ var MYGAME = (function($) {
 				var wbname,
 					curRoom = MYGAME.curRoom;
 				for (wbname in curRoom.walkboxes) {
-					var wb = curRoom.walkboxes[wbname],
+					// Extract the points array from the walkboxes member:
+					var polygon = curRoom.walkboxes[wbname].points,
+						// Convert our point to {x,y}
 						pxy = { x: point[0], y: point[1] };
-					if (MYGAME.utils.grid.pointIsInPoly(pxy, wb)) {
+					if (MYGAME.utils.grid.pointIsInPoly(pxy, polygon)) {
 						return wbname;
 					}
 				}
-				// No match:
+				// If no match:
 				return false;
 			}
 		},
@@ -254,6 +256,7 @@ var MYGAME = (function($) {
 					dist = utils.pf.p2pDist(p1, p2),
 					i;
 
+				var ctx = MYGAME.ctx;
 //				console.log(dist, "pixels to goal");
 				ctx.fillStyle = "#000000";
 				// Increment by roughly 1 pixel per loop:
@@ -426,7 +429,7 @@ var MYGAME = (function($) {
 			correctY: function(point) {	// Point array e.g. [0,0]
 				var newpoint = point,
 					$fg = $("#foreground"),
-					bottom = parseInt($fg.css("height"));
+					bottom = parseInt($fg.css("height"), 10);
 				// Increase Y incrementally:
 				while (newpoint[1] < bottom) {
 					newpoint[1] += 5;
@@ -464,11 +467,11 @@ var MYGAME = (function($) {
 					$fg = $("#foreground"),
 					$svg = $("#pathsvg"),
 					// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
-					bgPos = -1 * parseInt($bg.position().left),
+					bgPos = -1 * parseInt($bg.position().left, 10),
 					min = 0,
-					max = parseInt($bg.css("width")) - 640;
+					max = parseInt($bg.css("width"), 10) - 640;
 				// Check if scroll possible first:
-				if ((dir === 'L' && bgPos - 5 < min) || (dir == 'R' && bgPos + 5 > max)) {
+				if ((dir === 'L' && bgPos - 5 < min) || (dir === 'R' && bgPos + 5 > max)) {
 					console.log("Cannot scroll out-of-bounds.");
 					return;
 				}
@@ -485,8 +488,8 @@ var MYGAME = (function($) {
 					$svg.animate({"left": delta}, 10, 'linear');
 					scrolledpx += 5;
 					// Are we too close to left or right limit?:
-					bgPos = -1 * parseInt($bg.position().left);
-					if ((dir === 'L' && bgPos - 10 < min) || (dir == 'R' && bgPos + 10 > max)) {
+					bgPos = -1 * parseInt($bg.position().left, 10);
+					if ((dir === 'L' && bgPos - 10 < min) || (dir === 'R' && bgPos + 10 > max)) {
 						break;
 					}
 				}
@@ -498,13 +501,13 @@ var MYGAME = (function($) {
 				// TODO
 			},
 			// Run this when player is moving about to decide when scrolling is necessary:
-			scrollDecide(point) {
+			scrollDecide: function(point) {
 				var $bg = $("#background"),
 					$gbox = $("#gamebox"),
 					// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
-					bgPos = -1 * parseInt($bg.position().left),
+					bgPos = -1 * parseInt($bg.position().left, 10),
 					min = 0,
-					max = parseInt($bg.css("width")) - 640;
+					max = parseInt($bg.css("width"), 10) - 640;
 
 				// Do not scroll if player will end up offscreen:
 				if (Math.abs(MYGAME.player.x - point[0]) > 480) {
@@ -567,9 +570,11 @@ var MYGAME = (function($) {
 				// Further loading code...
 				console.log("Game loaded.");
 			},
-			chooseSavedGame() {
+			// Present dialog for user to select a previously saved game to load:
+			chooseSavedGame: function() {
+				var thing;
 				// Access browser storage:
-				for (var thing in localStorage) {
+				for (thing in localStorage) {
 					// Build a basic chooser:
 					var $a = $("<a>").html(thing);
 					$a.appendTo("#displayChoices");
@@ -579,7 +584,7 @@ var MYGAME = (function($) {
 						// Clean up:
 						$("#displayChoices").html('');
 						return;
-					})
+					});
 				}
 			}
 		}
@@ -614,7 +619,7 @@ var MYGAME = (function($) {
 
 		return this;
 	}
-	Room.prototype.load = function(callback) {
+	Room.prototype.load = function(_callback) {
 		var me = this;
 		$("#gamebox").addClass("room" + this.id);
 		// Fetch and append level-specific elements to HTML:
@@ -627,8 +632,8 @@ var MYGAME = (function($) {
 				me.announce();
 
 				// Continue the loading in room.js (after a short wait - ensures DOM ready):
-				if (callback && typeof callback === "function") {
-					setTimeout(callback, 500);
+				if (_callback && typeof _callback === "function") {
+					setTimeout(_callback, 500);
 				}
 			}
 		});
@@ -689,13 +694,16 @@ var MYGAME = (function($) {
 		this.y = 0;
 		this.z = 0;
 
+		this.defaultRoom = MYGAME.curRoom.id;
 		this.giveable = false;
 		this.anchorOffset = [0,0];		// Every sprite needs an anchor offset
 		this.descriptions = [];			// Everything can have multiple descriptions
-		this.looksCtr = 0;					// Everything can be looked at 0 or more times
+		this.looksCtr = 0;				// Everything can be looked at 0 or more times
 
 		// Store by id in entities hash:
 		MYGAME.entities[this.id] = this;
+//		MYGAME.npcs[this.id] = this;
+		// STORE ITEMS IN entities, CHARACTERS IN npcs
 
 		// Set visibility:
 		if (!this.visible) {
@@ -889,7 +897,9 @@ var MYGAME = (function($) {
 		// Options
 	});
 	Character.prototype.constructor = Character;
-	Character.prototype.say = function(sentences) {
+	Character.prototype.say = function(sentences, _callback) {	// Array or string
+		// Wait for previous lines to finish:
+
 		// Clear out previous lines:
 		$("#dialogue").html('');
 
@@ -900,28 +910,42 @@ var MYGAME = (function($) {
 				sentences = [sentences];
 			}
 
-			var me = this;		// Store 'this' (me/Character) to pass to function below
+//			var me = this;		// Store 'this' (me/Character) to pass to function below
 
-			// Define loop:
-			var i = 0;
-			var loop = function() {
-				var line = sentences[i],
-					time = line.length * 70;
-				// Add a new div to #dialogue instead of reusing:
-				$("<div class='dia'>").appendTo($("#dialogue"))
-									  .css("color", me.textColour)
-									  .html(line).show()
-									  .delay(time).fadeOut(1500);
-				i++;
-				// Not done? Initiate the next one:
-				if (i < sentences.length) {
-					setTimeout(loop, time);
-				}
-			};
-			// Set first loop iteration going:
-			loop();
+			// Set first timed sayLoop iteration going:
+			this._sayLoop(sentences, 0);
+
+			// Activate callback after waiting (roughly) for all the talking to finish:
+			if (_callback && typeof _callback === "function") {
+				setTimeout(_callback, 100 * sentences[0].length * sentences.length);
+			}
 		}
 		return this;
+	};
+	Character.prototype._sayLoop = function(sentences, i) {
+		var line, duration, top, left, right;
+		console.log("loop", i);
+
+		// Figure out optimal duration and positioning of dialogue line:
+		line = sentences[i];
+		duration = line.length * 100;
+		top = Math.max(0, (this.y - 200));		// NOT VERY SCIENTIFIC DIALOGUE POSITIONING
+		left = Math.max(0, (this.x - 100));			// prevent offscreen text
+		right = Math.min(640, (this.x + 100));		// prevent offscreen text
+		left = Math.min(left, right);
+
+		// Add a new text div to #dialogue:
+		$("<div class='dia'>").appendTo($("#dialogue"))
+							  .css("color", this.textColour)
+							  .css("top", top)
+							  .css("left", left)
+							  .html(line).show()
+							  .delay(duration).fadeOut(1500);
+		i++;
+		// Not done? Initiate the next one:
+		if (i < sentences.length) {
+			setTimeout(this._sayLoop(sentences, i), duration);
+		}
 	};
 	Character.prototype.face = function(angle) {
 		// Allow cardinal directions to be passed:
@@ -1088,7 +1112,7 @@ var MYGAME = (function($) {
 	};
 	Player.prototype.talkTo = function(character) {
 		if (character.hasOwnProperty('name')) {
-			dialogues.choicesFromOpts(character, null, true);
+			MYGAME.dialogues.choicesFromOpts(character, null, true);
 		}
 	};
 //	Player.prototype.canUse = function(item1, item2) {
@@ -1291,7 +1315,7 @@ var MYGAME = (function($) {
 		setTimeout(function() {
 			// Initialise the player [MOST IMPORTANT!]:
 	//		game.player = new Player($("#steve"), "Steve", "yellow");
-			game.player = new Player($("#argyle_guy"), "Argyle Guy", "blue");
+			game.player = new Player($("#argyle_guy"), "Argyle Guy", "#ccf");
 			_createDroppables();
 			// Tooltips:
 			MYGAME.utils.ui.ttRefresh();
@@ -1307,10 +1331,10 @@ var MYGAME = (function($) {
 		curRoom: this.curRoom,
 		rooms: this.rooms,
 		canvas: this.canvas,
-		ctx: this.ctx,
 		doordirs: this.doordirs,
+		ctx: this.ctx,
+		state: this.state,
 		// Declared as vars (var a = ):
-		state: state,
 		utils: utils,
 		// Declared as functions:
 		init: init,
@@ -1355,25 +1379,20 @@ $(function () {
 	});
 
 	// ToolMenu click handler:
-	$("#toolMenu li").on("click", function(event) {
+	$("#toolMenu li, #toolMenu2 li").on("click", function(event) {
 		// Extract the chosen mode from HTML:
-		var mode = $(event.target).parent("li").attr("name");
+		var mode = $(event.target).parent("li").attr("id");
 		// Set the mode:
 		MYGAME.utils.ui.toolMode(mode);
 	});
 
-	//jQuery UI block:
-	{
-		// Set up sortable inventory:
-		$("#inventory").sortable({
-			helper: "clone",
-			start: function(event, ui) {
-				console.log("Reordering...");// item", $(ui.item[0]).children().attr("id"));
-			}
-		});
-
-
-	}	// end jQuery UI block
+	// Set up sortable inventory:
+	$("#inventory").sortable({
+		helper: "clone",
+		start: function(event, ui) {
+			console.log("Reordering...");// item", $(ui.item[0]).children().attr("id"));
+		}
+	});
 
 }); // end jQuery function
 

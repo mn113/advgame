@@ -2,7 +2,7 @@
 //
 // 1. spontaneous & game-triggered			->	steve.say("My my, what was that?")
 // 2. spontaneous & random (idle remarks)	->	steve.say("I like cheese.")
-// 3. response to user interaction 			-> 	steve.say("That doesn't seem to work.")
+// 3. response to user interaction			-> 	steve.say("That doesn't seem to work.")
 // 4. talking to a NPC						->	steve.say(line, person) -> dialogueWalker(person, line)
 // 5. NPC-initiated convo					->	(you start the dialogue after NPC.say())
 // 6. NPC solo remarks						->	NPC.say()
@@ -12,9 +12,8 @@
 // choicesFromOpts() -> displayChoices() -> getOpts() -> choicesFromOpts()
 // until [0] chosen or [null] response.
 
-/*global
-steve: true, pepper: true, MYGAME: true
-*/
+/*jslint browser: true*/
+/*global $, jQuery, alert, console*/
 
 // Find global namespace:
 var MYGAME = MYGAME || {};	// "get it or set it"
@@ -28,7 +27,8 @@ MYGAME.dialogues = {
 	*/
 	choicesFromOpts: function(person, opts, is_icebreaker) {	// Object, array, Bool
 		console.log("choicesFromOpts(" + person.id + ', ' + opts + ', ' + is_icebreaker + ') called.' );
-		var p = dialogues[person.id];
+		var dia = MYGAME.dialogues;
+		var p = dia[person.id];
 
 		// Steve starts the convo:
 		if (is_icebreaker) {
@@ -40,14 +40,13 @@ MYGAME.dialogues = {
 			var choices = {};
 			var i;
 			for (i = 0; i < opts.length; i++) {
-				var id = opts[i];
-				choices[id] = p[id].line;
+				var cid = opts[i];
+				choices[cid] = p[cid].line;
 			}
-			choices[9999] = dialogues.generic('nevermind');		// Steve always has this get-out :)
-//			console.log(choices);
+			choices[9999] = dia.generic('nevermind');	// Player always has this get-out :)
 
 			// Present options onscreen:
-			dialogues.displayChoices(person, choices);
+			dia.displayChoices(person, choices);
 		}
 		// Dead end returned (null opts):
 		else {
@@ -55,81 +54,101 @@ MYGAME.dialogues = {
 			return;
 		}
 	},
+
 	/**
 	* displayChoices() - onscreen dialogue chooser:
 	* @param {Character Object} person
 	* @param {Array} choices
 	*/
 	displayChoices: function(person, choices) {	// Object, Object
-		console.log("displayChoices(" + person.id + ', ' + choices + ') called.' );
+		console.log("displayChoices(" + person.id + ', ' + choices + ") called." );
 
+		// Clear out old choices, then show:
 		var $wrapper = $("#displayChoices");
-		// Clear out wrapper first:
 		$wrapper.html('');
+		$wrapper.show();
 
-		// Append choices:
-		var id;
-		for (id in choices) {
+		// Append new choices:
+		var cid;
+		for (cid in choices) {
 			var $a = $("<a>");
 			$a.addClass("diaChoice")
-			  .attr("data-id", id)
-			  .html(choices[id])
+			  .attr("data-id", cid)
+			  .html(choices[cid])
 			  .appendTo($wrapper);
 		}
 
-		// Show and attach link click handler:
-		$wrapper.show();
-		$(".diaChoice").on('click', function(event) {			// IS THIS WHAT's MULTI-CALLING?
-			console.log("clicked", event.target);
-
-			// Take chooser away, trash all the lines:
-			$(".diaChoice").remove();
-			$wrapper.hide();
-
-			// Continue dialogue process:
-			dialogues.getOpts(person, $(event.target).attr("data-id"));
+		// Show and attach a delegated click handler:
+		$("#displayChoices").on("click", ".diaChoice", {person: person}, function(event) {
+			MYGAME.dialogues.clickLine(person, event.target);
 		});
 	},
+
+	/**
+	* clickLine() - what to do when a dialogue option is clicked by the player
+	* @param {Character Object} person
+	* @param {DOMElement} target
+	*/
+	clickLine: function(person, target) {
+		console.log("clickLine(" + person.id + ", " + target + ") called.");
+
+		// Take chooser away, trash all the lines:
+		$("#displayChoices").hide();
+		$(".diaChoice").remove();
+
+		// Say the line:
+		MYGAME.player.say($(target).html(), function() {	// Callback
+			// When done saying, continue the dialogue process:
+			MYGAME.dialogues.getOpts(person, $(target).attr("data-id"));
+		});
+
+	},
+
 	/**
 	* getOpts() - fetch & handle conversation responses:
 	* @param {Character Object} person
 	* @param {int} id
 	*/
-	getOpts: function(person, node) {		// Object, Int
+	getOpts: function(person, node) {
 		console.log("getOpts(" + person.id + ', ' + node + ') called.' );
 
-		var p = dialogues[person.id],
+		var p = MYGAME.dialogues[person.id],
 			d = p[node],
 			opts,
 			num;
-		if (node === '9999') {	// Steve chose get-out
+		if (node === '9999') {	// Player chose get-out
 			console.log("Player ended conversation");
 			return;
 		}
 		if (!d.disabled) {
-			if (d.permanent || d.count < d.limit) {		// Valid line
+			if (d.permanent || d.count < d.limit) {		// Valid line of dialogue
 				// Which number response to give?
 				num = d.count < d.limit ? d.count : d.limit - 1;	// prevents num maxing out
-
-				// The NPC gives the appropriate response:
-				console.log("Num:", num);
-				person.say(d.responses[num]);
-
-				// Execute any functions found:
-				if (typeof d.events[num] === 'function') {
-					d.events[num]();
-				}
-
-				// Retrieve options for next step:
-				if (d.options && d.options[num] !== null) {
-					opts = d.options[num];
-				}
-				else {
-					opts = null;
-				}
-
 				// Mark line as visited:
 				d.count += 1;
+
+				// The NPC delivers the appropriate response:
+				// Use any string separators to make an array of sentences:
+				var lines = d.responses[num].split('|');
+				person.say(lines, function() {	// Callback
+					// When done saying, continue the dialogue process:
+					// Execute any functions found:
+					if (typeof d.events[num] === 'function') {
+						d.events[num]();
+					}
+
+					// Retrieve options for next step:
+					if (d.options && d.options[num] !== null) {
+						opts = d.options[num];
+					}
+					else {
+						opts = null;
+					}
+
+					// Process options:
+					MYGAME.dialogues.choicesFromOpts(person, opts, false);
+
+				});
 			}
 			else if (!d.permanent) {
 				// Count reached limit, and line not permanent:
@@ -140,17 +159,17 @@ MYGAME.dialogues = {
 			// line is disabled
 			console.log("Nothing.");
 		}
-		// Process options:
-		dialogues.choicesFromOpts(person, opts, false);
 	},
+
 	/**
 	* pruneTree - delete a completed node of the dialogue tree
 	* @param {Character Object} person
 	* @param {int} node
 	*/
 	pruneTree: function(person, node) {
-		delete dialogues[person][node];
+		delete MYGAME.dialogues[person][node];
 	},
+
 	/**
 	* generic() - Talk using randomised synonyms
 	* @param {string} key
@@ -173,6 +192,7 @@ MYGAME.dialogues = {
 			term = terms[Math.floor(Math.random() * terms.length)];
 		return term;
 	},
+
 	/**
 	* idleRemark() - The random things player will mutter during idle moments:
 	* @param {Character Object} person
@@ -180,7 +200,7 @@ MYGAME.dialogues = {
 	idleRemark: function(person) {}
 };
 
-// Level0 content:
+// Whole game dialogue content:
 // Build this structure from an Excel csv file:
 MYGAME.dialogues.pepper = {
 	1: {				// id
@@ -192,7 +212,7 @@ MYGAME.dialogues.pepper = {
 		responses: {
 			0: "Hey you.",			// first time response
 			1: MYGAME.dialogues.generic('hi'),		// second time response
-			2: "What do you want?"	// all subsequent responses
+			2: "What...|do...|you...|want?"			// all subsequent responses
 		},
 		events: {},					// functions that run when a response occurs (animation, items...)
 		options: {			// ids available to Steve after this line
@@ -214,7 +234,10 @@ MYGAME.dialogues.pepper = {
 		events: {1: function() {
 			MYGAME.dialogues.pruneTree('pepper', 2);
 		}},
-		options: null
+		options: {
+			0: [1,2,3],
+			1: null
+		}
 	},
 	3: {
 		line: "What can you tell me about dairy?",
@@ -224,11 +247,11 @@ MYGAME.dialogues.pepper = {
 		permanent: false,
 		responses: {
 			0: "Gorgonzola is nice.",
-			1: "Belgian cheese is no Gouda.",
+			1: "Belgian cheese is no Gouda.|LOL.",
 			2: "Here, try this brie if you're so desperate."
 		},
 		events: {2: function() {
-			steve.getItem(cheese);
+			MYGAME.player.getItem(cheese);
 		}},
 		options: {
 			0: [1],

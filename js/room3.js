@@ -10,6 +10,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		// Define the content:
 		var cheese = new M.Item($(".cheese"), "cheese").placeAt([200,250]);
 		// Characters:
+		var pepper = new M.Character($("#pepper"), "Pepper", "pink").placeAt([300,250]).face('ss');
 		// Exits:
 
 		console.log("All objects initialised.");
@@ -25,7 +26,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	M.curRoom = room;
 	// Define the geometry of room2:
 	room.walkboxes = {
-			wb1: [{x:53,y:213}, {x:1226,y:213}, {x:1270,y:255}, {x:5,y:257}]
+			wb1: {points: [{x:53,y:213}, {x:1226,y:213}, {x:1270,y:255}, {x:5,y:257}], scale: 1}
 		};
 	room.nodes = {};
 	room.baseline = 178;	// pixels from top that walkable area starts

@@ -23,8 +23,8 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	M.curRoom = room;
 	// Define the geometry of room2:
 	room.walkboxes = {
-			wb1: [{x:249,y:257}, {x:282,y:197}, {x:576,y:197}, {x:639,y:257}],
-			wb2: [{x:129,y:178}, {x:287,y:178}, {x:263,y:226}, {x:89,y:226}]
+			wb1: {points: [{x:249,y:257}, {x:282,y:197}, {x:576,y:197}, {x:639,y:257}], scale: 1},
+			wb2: {points: [{x:129,y:178}, {x:287,y:178}, {x:263,y:226}, {x:89,y:226}], scale: 1}
 		};
 	room.nodes = {
 			1: {x: 283, y: 196, edges: [1]}
