@@ -12,7 +12,6 @@
 //walk smoothly: 2px per loop, 20-28 loops within each tile
 //hand-code SVG path through the node path
 //try a bezier program
-try pathAnimator
 //find a fix to give walking speed which doesnt vary with distance
 //context menu: look, talk, get, use
 //not a hovering context menu, but a tool panel which changes the cursor
@@ -82,14 +81,14 @@ resolution changer: 1x, 2x, 3x, 4x (css/js)
 different option text and dialogue for player
 dialogues where NPC speaks to you first
 cutscenes using NPC.say() and NPC.walkTo()
+
+//custom sizes for exits, items, scenery etc...
+selectable verbs
+highlight valid verbs when dragging item
 action line
-grammar fixes: capitalisation, articles...
-highlight valid actions when dragging item
-custom sizes for exits, items, scenery etc.
 
--OR-
+when switching rooms, dont necessarily load js file - check rooms object first (preserves state)
 store all possible game entities in one mega html file
-
 load the extra items by $.getObject each time?
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?

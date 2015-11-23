@@ -449,7 +449,7 @@ var MYGAME = (function($) {
 		room: {
 			// Switch to another room:
 			change: function(dest) {	// Int
-				if (MYGAME.rooms[dest] !== 'undefined') {
+				if (MYGAME.rooms[dest] !== undefined) {
 					// Set current room as previous:
 					MYGAME.prevRoom = MYGAME.curRoom;
 					// Unload:
@@ -539,7 +539,7 @@ var MYGAME = (function($) {
 			// Save the state of the game to browser storage:
 			saveGame: function() {
 				// Check for localStorage:
-				if (typeof(Storage) !== "undefined") {
+				if (typeof(Storage) !== undefined) {
 					var s = MYGAME.state,
 						n = MYGAME.npcs,
 						i = MYGAME.player.inventory,
@@ -687,25 +687,36 @@ var MYGAME = (function($) {
 	* @param {string} layer
 	* @param {Boolean} visible
 	*/
-	function _BaseObj(id, name, type, layer, visible) {
+	function _BaseObj(options) {	// (id, name, type, layer, width, height, visible)
 		// Essentials:
-		this.id = id;							// Everything must have an id
-		this.name = name;						// Everything must have a name
-		this.type = type;
-		this.visible = visible || true;
+		this.id = options.id;							// Everything must have an id
+		this.name = options.name;						// Everything must have a name
+		this.type = options.type;
+		if (options.visible === undefined) { options.visible = true }		// Visible unless declared otherwise
+		this.visible = options.visible;
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
 
 		// Create the HTML element if in midground:
-		if (layer === 'midground') {
+		if (options.layer === 'midground') {
 			$("<div>").attr("id", this.id)
 					  .addClass(this.type)
 					  .appendTo("#midground");
 		}
+		if (options.layer === 'background') {
+			$("<div>").attr("id", this.id)
+					  .addClass(this.type)
+					  .appendTo("#background");
+		}
 //		console.log("@", new Date().getTime(), 'HTML created for', this.id);
 
-		this.jqDomNode = $("#"+id);				// Everything must have a jqDomNode
+		this.jqDomNode = $("#" + this.id);				// Everything must have a jqDomNode
+
+		// Set a non-default width & height, if defined:
+		if (options.width) {this.jqDomNode.css("width", options.width);}
+		if (options.height) {this.jqDomNode.css("height", options.height);}
+
 		this.defaultRoom = MYGAME.curRoom.id;	// WORTH STORING?
 		this.giveable = false;
 		this.anchorOffset = [0,0];		// Every sprite needs an anchor offset
@@ -778,8 +789,10 @@ var MYGAME = (function($) {
 	* @param {Boolean} options.visible
 	* @param {Boolean} options.active
 	*/
-	function Exit(options) {	// (id, name, type, dest, visible, active)
-		_BaseObj.call(this, options.id, options.name, 'exit', 'midground', options.visible);
+	function Exit(options) {	// (id, name, type, dest, width, height, visible, active)
+		options.type = 'exit';
+		options.layer = 'midground';
+		_BaseObj.call(this, options);
 
 		// Item-specific properties:
 		this.dest = options.dest || null;		// Another room id
@@ -801,8 +814,9 @@ var MYGAME = (function($) {
 	* @param {string} layer
 	* @param {Boolean} visible
 	*/
-	function Scenery(id, name, layer, visible) {
-		_BaseObj.call(this, id, name, 'scenery', layer, visible);
+	function Scenery(options) {		// (id, name, layer, width, height, visible)
+		options.type = 'scenery';
+		_BaseObj.call(this, options);
 
 		// Scenery-specific properties:
 		this.pickable = false;
@@ -822,8 +836,10 @@ var MYGAME = (function($) {
 	* @param {string} name
 	* @param {Boolean} visible
 	*/
-	function Item(id, name, visible) {
-		_BaseObj.call(this, id, name, 'item', 'midground', visible);
+	function Item(options) {	// (id, name, visible)
+		options.type = 'item';
+		options.layer = 'midground';
+		_BaseObj.call(this, options);
 
 		// Item-specific properties:
 		this.giveable = true;
@@ -898,7 +914,9 @@ var MYGAME = (function($) {
 	* @param {Boolean} optinos.visible
 	*/
 	function Character(options) {	// (id, name, type, colour, layer, visible)
-		_BaseObj.call(this, options.id, options.name, 'character', 'midground', options.visible);
+		options.type = 'character';
+		options.layer = 'midground';
+		_BaseObj.call(this, options);
 
 		// Character-specific properties:
 		this.giveable = true;
@@ -1055,7 +1073,7 @@ var MYGAME = (function($) {
 	};
 	Character.prototype._directWalkTo = function(point) {
 		var dist = utils.pf.p2pDist([this.x, this.y], point),	// CALCULATED TOO EARLY - NEEDS DOING AT EVERY STEP
-			time = dist * 10,
+			time = dist * 8,
 			dx = point[0] - this.x,
 			dy = point[1] - this.y,
 			angle = (360 / 6.28) * Math.atan2(dy,dx),
@@ -1334,7 +1352,7 @@ var MYGAME = (function($) {
 			game.player = new Player({
 				id: "argyle_guy",
 				name: "Argyle Guy",
-				colour: "#ccf"
+				colour: "#f99"
 			});
 			_createDroppables();
 			// Tooltips:

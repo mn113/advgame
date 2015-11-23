@@ -7,7 +7,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 (function(M, $) {
 	// Define callback function for Room.load():
 	M.Room.prototype._afterLoad = function() {
-		M.player.inventory.push("chicken");
+		//
 	};
 
  	// Create the Room object:
@@ -20,12 +20,10 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	M.curRoom = room;
 
 	// Define the content:
-	var cheese = new M.Item("cheese", "Cheese").placeAt([200,250]);
-	// Inventory items:
-	var chicken = new M.Item("chicken", "chicken", true);
+	var cheese = new M.Item({id: "cheese", name: "Cheese"}).placeAt([200,250]);
 	// Hidden items:
-	var knife = new M.Item("knife", "knife", false);
-	var key = new M.Item("key", "key", false);
+	var knife = new M.Item({id: "knife", name: "Small knife", visible: false});
+	var key = new M.Item({id: "key", name: "Bone key", visible: false });
 	// Characters:
 	var pepper = new M.Character({
 		id: "pepper",
@@ -34,19 +32,30 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	}).placeAt([300,250]).face('ss');
 	// Exits:
 	var exit1 = new M.Exit({
-		domNode: $("#exit1"),
 		id: "exit1",
 		dest: 3,
+		width: "50px",
+		height: "160px",
 		visible: true,
 		active:true
-	}).placeAt([0,200]);
+	}).placeAt([0,70]);
 	var exit2 = new M.Exit({
-		domNode: $("#exit2"),
 		id: "exit2",
 		dest: 4,
+		width: "50px",
+		height: "160px",
 		visible: true,
 		active:true
-	}).placeAt([1240,200]);
+	}).placeAt([1230,70]);
+	// Scenery:
+	var catclock = new M.Scenery({
+		id: "cat_clock_tail",
+		name: "CCT",
+		layer: "background",
+		width: "36px",
+		height: "14px",
+		visible: true
+	});
 
 	console.log("All objects initialised.");
 
