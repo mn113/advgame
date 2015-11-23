@@ -92,7 +92,7 @@
 
 
 /* TOOLMENU*/
-#toolMenu {
+/*#toolMenu {
 	position: absolute;
 	width: 80px;
 	height: 96px;
@@ -142,8 +142,8 @@
 	width: 56px;
 	text-align: left;
 	font-size: 10px;
-}
-#toolMenu2 {
+} */
+ul#toolMenu2 {
 	position: absolute;
 	bottom: 0px;
 	left: 360px;
@@ -152,13 +152,11 @@
 	font: 16px DOS437, Helvetica, Arial, sans-serif;
 	color: white;
 	z-index: 700;
-}
-#toolMenu2 ul.verbs {
 	list-style: none;
 	padding: 0;
 	margin: 0;
 }
-#toolMenu2 li {
+ul#toolMenu2 li {
 	display: block;
 	float: left;
 	height: 18px;
@@ -168,7 +166,7 @@
 	text-align: center;
 	border: 1px dotted black;
 }
-#toolMenu2 li:hover {
+ul#toolMenu2 li:hover {
 	background: #aaa;
 	cursor: pointer;
 }
@@ -191,6 +189,15 @@
 	position: relative;
 	z-index: 500;
 	pointer-events: none;
+}
+
+.character:hover {
+	text-shadow:
+	   -1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		 1px 1px 0 #000;
+
 }
 
 #dialogue .dia {

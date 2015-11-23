@@ -25,9 +25,9 @@ var MYGAME = (function($) {
 	this.player = null;
 	// Entities within the game (characters, items, scenery...) stored by id
 	this.entities = {};
-	this.dialogues = {};		// Filled by external file
 	this.npcs = {};
 	this.progress = {};
+	this.dialogues = {};		// Filled by external file
 
 	// REALLY USEFUL DEBUGGING CANVAS:
 	this.canvas = document.createElement("canvas");
@@ -160,23 +160,23 @@ var MYGAME = (function($) {
 			},
 			// Returns a random point on the stage (NOT NECESSARILY VALID YET):
 			randomPoint: function() {
-				var rndx = Math.random() * $("#foreground").width,
-					rndy = Math.random() * $("#foreground").height;
+				var rndx = Math.random() * $("#midground").width,
+					rndy = Math.random() * $("#midground").height;
 				return [rndx, rndy];
 			},
 			// Returns distance between two objects (closest edge each):
 			dist: function(objA, objB) {
 				// Get all edge coords:
-				var a = objA.domNode.position(),
-					b = objB.domNode.position();
+				var a = objA.jqDomNode.position(),
+					b = objB.jqDomNode.position();
 				var ax1 = a.left,
-					ax2 = ax1 + objA.domNode.width,
+					ax2 = ax1 + objA.jqDomNode.width,
 					bx1 = b.left,
-					bx2 = bx1 + objB.domNode.width;
+					bx2 = bx1 + objB.jqDomNode.width;
 				var ay1 = a.top,
-					ay2 = ay1 + objA.domNode.height,
+					ay2 = ay1 + objA.jqDomNode.height,
 					by1 = b.top,
-					by2 = by1 + objB.domNode.height;
+					by2 = by1 + objB.jqDomNode.height;
 
 				// Find the difference in closest edges: (overlap case not considered important)
 				var dx = (ax2 <= bx1) ? bx1 - ax2 : ax1 - bx2,
@@ -428,7 +428,7 @@ var MYGAME = (function($) {
 			// Puts high or wall clicks down into the appropriate walkbox:
 			correctY: function(point) {	// Point array e.g. [0,0]
 				var newpoint = point,
-					$fg = $("#foreground"),
+					$fg = $("#midground"),
 					bottom = parseInt($fg.css("height"), 10);
 				// Increase Y incrementally:
 				while (newpoint[1] < bottom) {
@@ -464,7 +464,7 @@ var MYGAME = (function($) {
 			// Scroll the screen left or right by some amount:
 			scrollX: function(dir, amount) {		// e.g. "L", 50
 				var $bg = $("#background"),
-					$fg = $("#foreground"),
+					$fg = $("#midground"),
 					$svg = $("#pathsvg"),
 					// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
 					bgPos = -1 * parseInt($bg.position().left, 10),
@@ -596,9 +596,11 @@ var MYGAME = (function($) {
 	/**
 	* Room structure
 	* @constructor
-	* @param {int} id
-	* @param {string} name
-	* @param {Boolean} unlocked
+	* @param {int}		options.id
+	* @param {string}	options.name
+	* @param {Boolean}	options.unlocked
+	* @param {Boolean}	options.scrollable
+	* @param {int}		options.entry
 	*/
 	function Room(options) {	// (id, name, unlocked, scrollable, entry)
 		// Essentials:
@@ -607,8 +609,8 @@ var MYGAME = (function($) {
 		this.unlocked = options.unlocked || false;		// whether room has been unlocked yet
 		this.scrollable = options.scrollable || false;
 		this.entry = options.entry || 0;				// determines where player will appear
-		this.filename = "room" + this.id + ".html";			// needed for loading room HTML
-//		this.background = '';					// image file url?
+		this.filename = "room" + this.id + ".html";		// needed for loading room's static HTML
+
 //		this.walkboxes;		// loaded from file after construction
 //		this.nodes;			// loaded from file after construction
 //		this.exits;			// loaded from file after construction
@@ -625,6 +627,7 @@ var MYGAME = (function($) {
 		// Fetch and append level-specific elements to HTML:
 		$("#gamebox #background").load(this.filename + " #background *");
 		$("#gamebox #foreground").load(this.filename + " #foreground *");
+//		$("#gamebox #midground").load(this.filename + " #midground *");
 		$("#gamebox #pathsvg").load(this.filename + " #pathsvg *", function(response, status, xhr) {
 			if (status === "success") {
 				console.log("Room", me.id, "loaded.");
@@ -633,7 +636,7 @@ var MYGAME = (function($) {
 
 				// Continue the loading in room.js (after a short wait - ensures DOM ready):
 				if (_callback && typeof _callback === "function") {
-					setTimeout(_callback, 500);
+					setTimeout(_callback, 1000);
 				}
 			}
 		});
@@ -653,8 +656,9 @@ var MYGAME = (function($) {
 		setTimeout(function() {
 			$("#gamebox").removeClass("room" + me.id);
 			// Remove level-specific elements from HTML:
-			$("#foreground *").not("#steve, #argyle_guy").remove();	// REDUNDANT
 			$("#background *").remove();
+			$("#midground *").not("#steve, #argyle_guy").remove();	// REDUNDANT
+			$("#foreground *").remove();
 			$("#pathsvg *").remove();
 		}, 2000);
 		return this;
@@ -677,24 +681,32 @@ var MYGAME = (function($) {
 	/**
 	* _BaseObj structure
 	* @constructor
-	* @param {jQuery Object} domNode
+	* @param {string} id
 	* @param {string} name
+	* @param {string} type
+	* @param {string} layer
 	* @param {Boolean} visible
 	*/
-	function _BaseObj(domNode, name, visible) {
+	function _BaseObj(id, name, type, layer, visible) {
 		// Essentials:
-		this.name = name;				// Everything must have a name
-		this.domNode = domNode;			// Everything must have a domNode
-		this.id = domNode.attr("id");	// Everything must have an id
-		if (visible === undefined) {
-			visible = true;				// Everything is visible by default (debatable...)
-		}
-		this.visible = visible;
+		this.id = id;							// Everything must have an id
+		this.name = name;						// Everything must have a name
+		this.type = type;
+		this.visible = visible || true;
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
 
-		this.defaultRoom = MYGAME.curRoom.id;
+		// Create the HTML element if in midground:
+		if (layer === 'midground') {
+			$("<div>").attr("id", this.id)
+					  .addClass(this.type)
+					  .appendTo("#midground");
+		}
+//		console.log("@", new Date().getTime(), 'HTML created for', this.id);
+
+		this.jqDomNode = $("#"+id);				// Everything must have a jqDomNode
+		this.defaultRoom = MYGAME.curRoom.id;	// WORTH STORING?
 		this.giveable = false;
 		this.anchorOffset = [0,0];		// Every sprite needs an anchor offset
 		this.descriptions = [];			// Everything can have multiple descriptions
@@ -703,35 +715,35 @@ var MYGAME = (function($) {
 		// Store by id in entities hash:
 		MYGAME.entities[this.id] = this;
 //		MYGAME.npcs[this.id] = this;
-		// STORE ITEMS IN entities, CHARACTERS IN npcs
 
 		// Set visibility:
 		if (!this.visible) {
-			this.domNode.hide();
+			this.jqDomNode.hide();
 		}
 		return this;
 	}
 	_BaseObj.prototype.placeAt = function(coords) {
-		this.domNode.css("left", coords[0] - this.anchorOffset[0]);		// Compensate for anchor point
-		this.domNode.css("top", coords[1] - this.anchorOffset[1]);		// being inside sprite
+//		console.log("@", new Date().getTime(), 'placeAt() called for', this.id);
+		this.jqDomNode.css("left", coords[0] - this.anchorOffset[0]);		// Compensate for anchor point
+		this.jqDomNode.css("top", coords[1] - this.anchorOffset[1]);		// being inside sprite
 		this.updateXYZ();
 		// Update HTML visibility:
 		if (this.visible) {
-			this.domNode.show();
+			this.jqDomNode.show();
 		}
 		else {
-			this.domNode.hide();
+			this.jqDomNode.hide();
 		}
 		console.log(this.id, "placed @ [" + this.x + ', ' + this.y + "]");
 		return this;
 	};
 	_BaseObj.prototype.updateXYZ = function() {
 		// Set sprite's anchor coords:
-		this.x = this.domNode.position().left + this.anchorOffset[0];
-		this.y = this.domNode.position().top + this.anchorOffset[1];
-		// Set Z-index (same as Y-coord except in non-flat locations:
+		this.x = this.jqDomNode.position().left + this.anchorOffset[0];
+		this.y = this.jqDomNode.position().top + this.anchorOffset[1];
+		// Set Z-index (same as Y-coord except in non-flat locations):
 		this.z = this.y;
-		this.domNode.css("z-index", this.z);
+		this.jqDomNode.css("z-index", this.z);
 		return this;
 	};
 	_BaseObj.prototype.coords = function() {
@@ -747,7 +759,7 @@ var MYGAME = (function($) {
 	};
 	_BaseObj.prototype.remove = function() {
 		// From DOM:
-		this.domNode.remove();
+		this.jqDomNode.remove();
 
 		// From Entities:
 		delete MYGAME.entities[this];
@@ -760,14 +772,14 @@ var MYGAME = (function($) {
 	* Exit
 	* @constructor
 	* @extends _BaseObj
-	* @param {jQuery Object} domNode
-	* @param {string} name
-	* @param {string} dest
-	* @param {Boolean} visible
-	* @param {Boolean} active
+	* @param {string} options.id
+	* @param {string} options.name
+	* @param {string} options.dest
+	* @param {Boolean} options.visible
+	* @param {Boolean} options.active
 	*/
-	function Exit(options) {	// (domNode, name, dest, visible, active)
-		_BaseObj.call(this, options.domNode, options.name, options.visible);
+	function Exit(options) {	// (id, name, type, dest, visible, active)
+		_BaseObj.call(this, options.id, options.name, 'exit', 'midground', options.visible);
 
 		// Item-specific properties:
 		this.dest = options.dest || null;		// Another room id
@@ -781,34 +793,37 @@ var MYGAME = (function($) {
 
 
 	/**
-	* FixedItem structure
+	* Scenery structure
 	* @constructor
 	* @extends _BaseObj
-	* @param {jQuery Object} domNode
+	* @param {string} id
 	* @param {string} name
+	* @param {string} layer
+	* @param {Boolean} visible
 	*/
-	function FixedItem(domNode, name, visible) {
-		_BaseObj.call(this, domNode, name, visible);		// Create an object like this parent
+	function Scenery(id, name, layer, visible) {
+		_BaseObj.call(this, id, name, 'scenery', layer, visible);
 
-		// FixedItem-specific properties:
+		// Scenery-specific properties:
 		this.pickable = false;
 	}
-	// Inheritance: FixedItem extends _BaseObj
-	FixedItem.prototype = Object.create(_BaseObj.prototype, {
+	// Inheritance: Scenery extends _BaseObj
+	Scenery.prototype = Object.create(_BaseObj.prototype, {
 		// Options
 	});
-	FixedItem.prototype.constructor = FixedItem;
+	Scenery.prototype.constructor = Scenery;
 
 
 	/**
 	* Item structure
 	* @constructor
-	* @extends FixedItem
-	* @param {jQuery Object} domNode
+	* @extends _BaseObj
+	* @param {string} id
 	* @param {string} name
+	* @param {Boolean} visible
 	*/
-	function Item(domNode, name, visible) {
-		FixedItem.call(this, domNode, name, visible);
+	function Item(id, name, visible) {
+		_BaseObj.call(this, id, name, 'item', 'midground', visible);
 
 		// Item-specific properties:
 		this.giveable = true;
@@ -816,8 +831,8 @@ var MYGAME = (function($) {
 		this.pickable = true;
 		this.pickedUp = false;
 	}
-	// Inheritance: Item extends FixedItem
-	Item.prototype = Object.create(FixedItem.prototype, {
+	// Inheritance: Item extends _BaseObj
+	Item.prototype = Object.create(_BaseObj.prototype, {
 		// Options
 	});
 	Item.prototype.constructor = Item;
@@ -834,10 +849,10 @@ var MYGAME = (function($) {
 		// From DOM:
 		if (ininv) {
 			// Remove container div and item:
-			this.domNode.parent("div").remove();	// NOT REMOVING
+			this.jqDomNode.parent("div").remove();	// NOT REMOVING
 		}
 		else {
-			this.domNode.remove();
+			this.jqDomNode.remove();
 		}
 
 		// From Entities:
@@ -856,7 +871,7 @@ var MYGAME = (function($) {
 		var $newdiv = $("<div>");
 		var $target = $("#inventory > div").eq(index);
 		$target.after($newdiv);
-		this.domNode.detach().appendTo($newdiv);
+		this.jqDomNode.detach().appendTo($newdiv);
 
 		// Flash it:
 		$newdiv.addClass("flash");
@@ -877,20 +892,21 @@ var MYGAME = (function($) {
 	* Character structure
 	* @constructor
 	* @extends _BaseObj
-	* @param {jQuery Object} domNode
+	* @param {string} options.id
 	* @param {string} name
 	* @param {string} colour
+	* @param {Boolean} optinos.visible
 	*/
-	function Character(domNode, name, colour, visible) {
-		_BaseObj.call(this, domNode, name, visible);
+	function Character(options) {	// (id, name, type, colour, layer, visible)
+		_BaseObj.call(this, options.id, options.name, 'character', 'midground', options.visible);
 
 		// Character-specific properties:
 		this.giveable = true;
 		this.anchorOffset = [16,44];	// corrects for 32x48 sprite
-		this.looksCtr = 0;
+		this.textColour = options.colour;
 		this.talksCtr = 0;
+		this.convos = [];
 		this.state = 0;					// advances as gameplay dictates
-		this.textColour = colour;
 	}
 	// Inheritance: Character extends _BaseObj
 	Character.prototype = Object.create(_BaseObj.prototype, {
@@ -957,11 +973,11 @@ var MYGAME = (function($) {
 			else if (angle > 135 || angle < -135) { dir = 'ww'; }
 		}
 		// Give owner the correct class:
-		this.domNode.removeClass("nn ee ss ww").addClass(dir);
+		this.jqDomNode.removeClass("nn ee ss ww").addClass(dir);
 
 		return this;
 	};
-	Character.prototype.walkSvgPath = function(deets, steps) {
+	Character.prototype._walkSvgPath = function(deets, steps) {
 		// Create a <path> element in DOM:
 		var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 		// Assign the generated pathdata to it:
@@ -970,12 +986,12 @@ var MYGAME = (function($) {
 			speed =  (3 * steps);
 	//	console.log("Path length:", svglen, "Steps:", steps, "Speed:", speed);
 
-		this.domNode.addClass("walking");
+		this.jqDomNode.addClass("walking");
 		var parent = this;	// upcoming functions will lose 'this' context
 
 		// Set a timer to execute finishing code after 50 loops of setInterval:		// UGLY HACK
 		var totalWalk = setTimeout(function() {
-			parent.domNode.removeClass("walking");
+			parent.jqDomNode.removeClass("walking");
 			parent.reportLoc();
 			MYGAME.utils.grid.highlightsOff();
 		}, 110 * speed);
@@ -993,7 +1009,7 @@ var MYGAME = (function($) {
 			parent.face(angle);
 
 			// Take a step:
-			parent.domNode.animate({"left": pt1.x - 16, "top": pt1.y - 44}, speed, 'linear', function() {
+			parent.jqDomNode.animate({"left": pt1.x - 16, "top": pt1.y - 44}, speed, 'linear', function() {
 				// Update position:
 				parent.updateXYZ();
 			});
@@ -1035,9 +1051,9 @@ var MYGAME = (function($) {
 		if (room.scrollable) {
 			utils.room.scrollDecide(point);
 		}
-		this.directWalkTo(point);
+		this._directWalkTo(point);
 	};
-	Character.prototype.directWalkTo = function(point) {
+	Character.prototype._directWalkTo = function(point) {
 		var dist = utils.pf.p2pDist([this.x, this.y], point),	// CALCULATED TOO EARLY - NEEDS DOING AT EVERY STEP
 			time = dist * 10,
 			dx = point[0] - this.x,
@@ -1057,7 +1073,7 @@ var MYGAME = (function($) {
 		MYGAME.ctx.fillRect(point[0],point[1],3,3);
 
 		console.log(dist, time, point);
-		this.domNode.addClass("walking")
+		this.jqDomNode.addClass("walking")
 					.animate({
 						"left": point[0] - me.anchorOffset[0],
 						"top": point[1] - me.anchorOffset[1]},
@@ -1081,16 +1097,16 @@ var MYGAME = (function($) {
 	* Player structure
 	* @constructor
 	* @extends Character
-	* @param {jQuery Object} domNode
-	* @param {string} name
-	* @param {string} colour
+	* @param {string} options.id
+	* @param {string} options.name
+	* @param {string} options.colour
 	*/
-	function Player(domNode, name, colour, visible) {
-		Character.call(this, domNode, name, colour, visible);
+	function Player(options) {	// (id, name, colour, visible)
+		Character.call(this, options);
 
 		// Player-specific properties:
 		this.inventory = [];			// Hash of inventory item ids
-		this.anchorOffset = [40,160];	// offset for argyle_guy (40x88)
+		this.anchorOffset = [40,170];	// offset for argyle_guy (40x88)
 	}
 	// Inheritance: Player extends Character
 	Player.prototype = Object.create(Character.prototype, {
@@ -1203,14 +1219,14 @@ var MYGAME = (function($) {
 			item.toInventory(index);
 			item.pickable = false;
 			item.visible = true;
-			item.domNode.show();
+			item.jqDomNode.show();
 		}
 	};
 
 
 	// Droppables in the field + inventory:
 	function _createDroppables() {
-		$("#foreground div, #inventory .item").droppable({
+		$("#midground div, #inventory .item").droppable({
 			hoverClass: "drop-hover",		// USE CLASS FOR AN ICON?
 			drop: function(event, ui) {
 				// Lookup dragged item in Entities:
@@ -1248,7 +1264,7 @@ var MYGAME = (function($) {
 		// Make sure game setup is complete:
 		if (this.curRoom !== null && this.player !== null) {
 			// Where was clicked? Set the target (Take parent element's offset into account!)
-			var fgOffset = $("#foreground").offset();
+			var fgOffset = $("#midground").offset();
 			var evxy = [event.pageX - fgOffset.left, event.pageY - fgOffset.top];
 			var targetObj = null;
 
@@ -1301,7 +1317,7 @@ var MYGAME = (function($) {
 					}
 				}
 				// No specific object clicked, so just walk to the point:
-				this.player.domNode.stop(true);
+				this.player.jqDomNode.stop(true);
 				utils.pf.pathFind(this.player.coords(), evxy, this.curRoom);
 			}
 		}
@@ -1315,7 +1331,11 @@ var MYGAME = (function($) {
 		setTimeout(function() {
 			// Initialise the player [MOST IMPORTANT!]:
 	//		game.player = new Player($("#steve"), "Steve", "yellow");
-			game.player = new Player($("#argyle_guy"), "Argyle Guy", "#ccf");
+			game.player = new Player({
+				id: "argyle_guy",
+				name: "Argyle Guy",
+				colour: "#ccf"
+			});
 			_createDroppables();
 			// Tooltips:
 			MYGAME.utils.ui.ttRefresh();
@@ -1344,7 +1364,7 @@ var MYGAME = (function($) {
 		Player: Player,
 		Character: Character,
 		Item: Item,
-		FixedItem: FixedItem,
+		Scenery: Scenery,
 		Exit: Exit
 	};
 }(jQuery));	// end global scoping / namespacing function
@@ -1356,7 +1376,7 @@ MYGAME.init(3);
 $(function () {
 
 	// Stage click handler:
-	$("#foreground").on("click", function(event) {
+	$("#midground").on("click", function(event) {
 		MYGAME.fgClickHandler(event);
 	});
 
@@ -1456,6 +1476,6 @@ $(document).keydown(function(e) {			// keydown is Safari-compatible; keypress al
 
 	$('#keypress').html(e.keyCode);		// Show onscreen
 });
-$(document).on("mousemove", "#foreground", function(e) {
+$(document).on("mousemove", "#midground", function(e) {
 	$("#mousexy").html(e.offsetX + ', ' + e.offsetY);
 });

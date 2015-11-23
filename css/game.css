@@ -15,7 +15,7 @@ body {
 	border: 1px solid black;
 	background: #aaa;
 	width: 640px;
-	height: 490px;
+	height: 400px;
 	overflow: hidden;
 	z-index: 0;
 }
@@ -23,9 +23,14 @@ body {
 	position: absolute;
 	z-index: 0;
 }
+#midground {
+	position: absolute;
+	z-index: 0;
+}
 #foreground {
 	position: absolute;
 	z-index: 0;
+	pointer-events: none;
 }
 #players {
 	position: absolute;
@@ -47,7 +52,7 @@ body {
 	height: 340px;
 	background: url(../img/hill.png) 0 40px no-repeat;
 }
-.room0 #foreground {
+.room0 #midground {
 	top: 60px;
 	width: 200px;
 	height: 300px;
@@ -58,7 +63,7 @@ body {
 	height: 400px;
 	background: url(../img/room2.png) 0 0 no-repeat;
 }
-.room1 #foreground {
+.room1 #midground {
 	top: 0;
 	width: 640px;
 	height: 400px;
@@ -69,7 +74,7 @@ body {
 	height: 400px;
 	background: url(../img/zak_bedroom_2x.png) 0 0 no-repeat;
 }
-.room2 #foreground {
+.room2 #midground {
 	top: 0;
 	width: 640px;
 	height: 256px;
@@ -80,7 +85,7 @@ body {
 	height: 400px;
 	background: url(../img/zak_livingroom_2x.png) 0 0 no-repeat;
 }
-.room3 #foreground {
+.room3 #midground {
 	top: 0;
 	width: 1280px;
 	height: 256px;
@@ -147,16 +152,14 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 }
 
 #pathsvg {
-	float:right;
 	position: absolute;
-	pointer-events: none;
+	top: 0;
+	left: 0;
 	z-index: 50;
+	pointer-events: none;
 }
 .room0 #pathsvg {
 	top: 60px;
-}
-.room1 #pathsvg {
-	top: 0;
 }
 
 #gamebox canvas {
@@ -170,5 +173,5 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 body.debug .character {border: 1px dotted red;}
 body.debug .scenery {border: 1px dotted blue;}
 body.debug .item {border: 1px dotted yellow;}
-body.debug #foreground {border: 1px solid fuchsia;}
+body.debug #midground {border: 1px solid fuchsia;}
 body.debug #background {border: 1px solid teal;}

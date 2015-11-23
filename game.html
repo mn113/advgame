@@ -16,9 +16,11 @@
 	</head>
 	<body>
 		<div id="gamebox">
-			<div id="background"><!-- purely visual layer --><!-- loaded from roomX.html -->
+			<div id="background"><!-- static visual layer --><!-- loaded from roomX.html -->
 			</div>
-			<div id="foreground"><!-- interactive layer --><!-- loaded from roomX.html -->
+			<div id="midground"><!-- interactive layer --><!-- loaded by js -->
+			</div>
+			<div id="foreground"><!-- static visual layer --><!-- loaded from roomX.html -->
 			</div>
 
 			<!-- UI outside the stage: -->
@@ -27,154 +29,22 @@
 			</div>
 			<div id="dialogue"></div>
 			<div id="displayChoices"></div>
-			<!--div id="toolMenu">
-				<ul class="panel">
-					<li id="examine"><i class="fa fa-fw fa-lg fa-eye fa-inverse"></i><b><u>E</u>xamine</b></li>
-					<li id="talkto"><i class="fa fa-fw fa-lg fa-comment fa-inverse"></i><b><u>T</u>alk to</b></li>
-					<li id="pickup"><i class="fa fa-fw fa-lg fa-hand-grab-o fa-inverse"></i><b><u>P</u>ick up</b></li>
-					<li id="use"><i class="fa fa-fw fa-lg fa-wrench fa-inverse"></i><b><u>U</u>se</b></li>
-				</ul>
-			</div-->
 			<img id="phone" src="img/simplephone.png">
-			<div id="toolMenu2">
-				<ul class="verbs">
-					<li><u>W</u>alk to</li>
-					<li id="examine"><u>E</u>xamine</li>
-					<li id="pickup"><u>P</u>ick up</li>
-					<li id="talkto"><u>T</u>alk to</li>
-					<li><u>G</u>ive</li>
-					<li><u>M</u>ove</li>
-					<li id="use"><u>U</u>se</li>
-					<li><u>A</u>buse</li>
-					<li><u>H</u>ack</li>
-				</ul>
-			</div>
+			<ul id="toolMenu2" class="verbs">
+				<li><u>W</u>alk to</li>
+				<li id="examine"><u>E</u>xamine</li>
+				<li id="pickup"><u>P</u>ick up</li>
+				<li id="talkto"><u>T</u>alk to</li>
+				<li><u>G</u>ive</li>
+				<li><u>M</u>ove</li>
+				<li id="use"><u>U</u>se</li>
+				<li><u>A</u>buse</li>
+				<li><u>H</u>ack</li>
+			</ul>
 			<div id="blackout"></div>
 			<p class="announce"></p>
 			<svg id="pathsvg" width="1280px" height="400px" viewBox="0 0 1280 400" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug"><!-- loaded from roomX.html -->
 			</svg>
-			<table id="tablecloth" class="debug">
-				<tr>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-				</tr>
-				<tr>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-				</tr>
-				<tr>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-				</tr>
-				<tr>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-				</tr>
-				<tr>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-				</tr>
-				<tr>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-				</tr>
-				<tr>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-					<td class="invalid"></td>
-				</tr>
-			</table>
 		</div>
 			<div id="keypress" class="debug"></div>
 			<div id="mousexy" class="debug"></div>
