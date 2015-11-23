@@ -149,8 +149,6 @@ ul#toolMenu2 {
 	left: 360px;
 	width: 280px;
 	height: 90px;
-	font: 16px DOS437, Helvetica, Arial, sans-serif;
-	color: white;
 	z-index: 700;
 	list-style: none;
 	padding: 0;
@@ -164,11 +162,23 @@ ul#toolMenu2 li {
 	padding: 5px 5px;
 	background: #666;
 	text-align: center;
+	font: 16px DOS437, Helvetica, Arial, sans-serif;
+	color: #eee;
 	border: 1px dotted black;
 }
 ul#toolMenu2 li:hover {
 	background: #aaa;
 	cursor: pointer;
+}
+ul#toolMenu2 li.selected {
+	background: #ff9;
+	color: #333;
+}
+ul#toolMenu2 li.viable {
+	color: #ff9;
+}
+ul#toolMenu2 li.disabled {
+	color: #999;
 }
 
 

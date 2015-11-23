@@ -68,6 +68,10 @@ inventory sandbox?
 //store a session
 //add a midground, fix foreground
 //have constructor functions create html elements, reducing the file dependency?
+//restyle all dialogue ui
+//npc can say multiple lines
+//build a little delay into the dialogues
+//custom sizes for exits, items, scenery etc...
 
 R5 parallax backgrounds
 R5 implement y-scaling (per-walkbox value?)
@@ -75,14 +79,10 @@ R5 vertical walk speed < horizontal walk speed (depending on perspective)
 rewrite geometry functions to all use {x:0,y:0} point objects
 resolution changer: 1x, 2x, 3x, 4x (css/js)
 
-//npc can say multiple lines
-//build a little delay into the dialogues
-/restyle all dialogue ui
 different option text and dialogue for player
 dialogues where NPC speaks to you first
 cutscenes using NPC.say() and NPC.walkTo()
 
-//custom sizes for exits, items, scenery etc...
 selectable verbs
 highlight valid verbs when dragging item
 action line
@@ -92,7 +92,6 @@ store all possible game entities in one mega html file
 load the extra items by $.getObject each time?
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?
-use html template for adding objects to DOM?
 
 smartphone side-mission
 

@@ -40,4 +40,9 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	console.log(M);
 	console.log("Room initialised.");
 
+	// Create SVG paths (for debug use):
+	M.utils.grid.walkboxes2svg();
+	// Reload SVG wrapper to hack browser to display dynamically-inserted elements:
+	$("#svgwrap").html($("#svgwrap").html());
+
 }(MYGAME, jQuery));

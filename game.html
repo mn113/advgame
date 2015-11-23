@@ -31,20 +31,22 @@
 			<div id="displayChoices"></div>
 			<img id="phone" src="img/simplephone.png">
 			<ul id="toolMenu2" class="verbs">
-				<li><u>W</u>alk to</li>
+				<li class="selected"><u>W</u>alk to</li>
 				<li id="examine"><u>E</u>xamine</li>
 				<li id="pickup"><u>P</u>ick up</li>
 				<li id="talkto"><u>T</u>alk to</li>
-				<li><u>G</u>ive</li>
+				<li class="viable"><u>G</u>ive</li>
 				<li><u>M</u>ove</li>
 				<li id="use"><u>U</u>se</li>
-				<li><u>A</u>buse</li>
-				<li><u>H</u>ack</li>
+				<li class="disabled"><u>A</u>buse</li>
+				<li class="disabled"><u>H</u>ack</li>
 			</ul>
 			<div id="blackout"></div>
 			<p class="announce"></p>
-			<svg id="pathsvg" width="1280px" height="400px" viewBox="0 0 1280 400" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug"><!-- loaded from roomX.html -->
-			</svg>
+			<div id="svgwrap">
+				<svg id="pathsvg" width="1280px" height="400px" viewBox="0 0 1280 400" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug"><!-- loaded by js -->
+				</svg>
+			</div>
 		</div>
 			<div id="keypress" class="debug"></div>
 			<div id="mousexy" class="debug"></div>

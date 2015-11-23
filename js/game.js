@@ -230,6 +230,45 @@ var MYGAME = (function($) {
 				}
 				// If no match:
 				return false;
+			},
+			// Prepare SVG details attribute from walkbox coordinates object:
+			walkboxes2svg: function() {
+				// First up are the paths:
+				var walkboxes = MYGAME.curRoom.walkboxes;
+				var deets, wb, pts, pt, p;
+				for (wb in walkboxes) {
+					deets = "M"
+					pts = walkboxes[wb].points;
+					// Build the string point by point:
+					for (pt in pts) {
+						p = pts[pt];
+						deets += p.x + ' ' + p.y;
+						deets += ",L";
+					}
+					// Replace final ,L with Z:
+					deets = deets.substring(0, deets.length - 2);
+					deets += "Z";
+					console.log(wb, deets);
+					// Stick the SVG path into the HTML:
+					$("<path>").attr("id", wb)
+							   .attr("d", deets)
+							   .appendTo("#pathsvg");
+				}
+
+				// Next up are the nodes (a bit simpler):
+				var nodes = MYGAME.curRoom.nodes;
+				var nid, n;
+				for (nid in nodes) {
+					n = nodes[nid];
+					console.log(n);
+					// Stick the SVG path into the HTML:
+					$("<circle>").attr("id", "node" + nid)
+								 .attr("cx", n.x)
+								 .attr("cy", n.y)
+								 .attr("r", 3)
+								 .appendTo("#pathsvg");
+				}
+				return;
 			}
 		},
 		pathfinding: {
@@ -449,17 +488,17 @@ var MYGAME = (function($) {
 		room: {
 			// Switch to another room:
 			change: function(dest) {	// Int
-				if (MYGAME.rooms[dest] !== undefined) {
+//				if (typeof MYGAME.rooms[dest] !== "undefined") {	// WE MUST BE ABLE TO CHANGE TO AN UNDEFINED ROOM
 					// Set current room as previous:
 					MYGAME.prevRoom = MYGAME.curRoom;
 					// Unload:
 					MYGAME.curRoom.unload();
 					// Set new current room:
-					MYGAME.curRoom = MYGAME.room[dest];
+//					MYGAME.curRoom = MYGAME.room[dest];
 					setTimeout(function() {
 						utils.misc.loadScript("room" + dest);	// Script includes Room loading
 					}, 1000);
-				}
+//				}
 			},
 			// Scroll the screen left or right by some amount:
 			scrollX: function(dir, amount) {		// e.g. "L", 50
@@ -539,7 +578,7 @@ var MYGAME = (function($) {
 			// Save the state of the game to browser storage:
 			saveGame: function() {
 				// Check for localStorage:
-				if (typeof(Storage) !== undefined) {
+				if (typeof Storage !== "undefined") {
 					var s = MYGAME.state,
 						n = MYGAME.npcs,
 						i = MYGAME.player.inventory,
@@ -625,10 +664,10 @@ var MYGAME = (function($) {
 		var me = this;
 		$("#gamebox").addClass("room" + this.id);
 		// Fetch and append level-specific elements to HTML:
-		$("#gamebox #background").load(this.filename + " #background *");
+//		$("#gamebox #pathsvg").load(this.filename + " #pathsvg *");
 		$("#gamebox #foreground").load(this.filename + " #foreground *");
 //		$("#gamebox #midground").load(this.filename + " #midground *");
-		$("#gamebox #pathsvg").load(this.filename + " #pathsvg *", function(response, status, xhr) {
+		$("#gamebox #background").load(this.filename + " #background *", function(response, status, xhr) {
 			if (status === "success") {
 				console.log("Room", me.id, "loaded.");
 				me.fadeIn();
@@ -692,7 +731,7 @@ var MYGAME = (function($) {
 		this.id = options.id;							// Everything must have an id
 		this.name = options.name;						// Everything must have a name
 		this.type = options.type;
-		if (options.visible === undefined) { options.visible = true }		// Visible unless declared otherwise
+		if (typeof options.visible === "undefined") { options.visible = true; }		// Visible unless declared otherwise
 		this.visible = options.visible;
 		this.x = 0;
 		this.y = 0;
@@ -1387,7 +1426,7 @@ var MYGAME = (function($) {
 	};
 }(jQuery));	// end global scoping / namespacing function
 
-MYGAME.init(3);
+MYGAME.init(2);
 
 
 // jQuery ready function:

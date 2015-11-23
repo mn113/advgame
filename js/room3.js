@@ -61,7 +61,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 	// Define the geometry of room2:
 	room.walkboxes = {
-			wb1: {points: [{x:53,y:213}, {x:1226,y:213}, {x:1270,y:255}, {x:5,y:257}], scale: 1}
+			wb1: {points: [{x:53,y:209}, {x:1226,y:209}, {x:1270,y:255}, {x:5,y:257}], scale: 1}
 		};
 	room.nodes = {};
 	room.baseline = 178;	// pixels from top that walkable area starts
@@ -75,5 +75,10 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 	console.log(M);
 	console.log("Room initialised.");
+
+	// Create SVG paths (for debug use):
+	M.utils.grid.walkboxes2svg();
+	// Reload SVG wrapper to hack browser to display dynamically-inserted elements:
+	$("#svgwrap").html($("#svgwrap").html());
 
 }(MYGAME, jQuery));

@@ -79,6 +79,11 @@ body {
 	width: 640px;
 	height: 256px;
 }
+.room2 #foreground {
+	top: 0;
+	width: 1280px;
+	height: 256px;
+}
 .room3 #background {
 	top: 0px;
 	width: 1280px;
@@ -150,7 +155,7 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 	right: 0;
 	z-index: 500;
 }
-
+#svgwrap,
 #pathsvg {
 	position: absolute;
 	top: 0;
@@ -158,6 +163,16 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 	z-index: 50;
 	pointer-events: none;
 }
+#pathsvg path {
+	fill: none;
+	stroke-width: 1px;
+	stroke: lawngreen;
+}
+#pathsvg circle {
+	stroke: none;
+	fill: red;
+}
+
 .room0 #pathsvg {
 	top: 60px;
 }
