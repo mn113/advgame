@@ -64,7 +64,6 @@ inventory sandbox?
 //foreground layers to go behind
 //make side-scrolling areas
 //item tooltips on stage
-/	link 2 rooms via exits
 //store a session
 //add a midground, fix foreground
 //have constructor functions create html elements, reducing the file dependency?
@@ -76,24 +75,28 @@ inventory sandbox?
 //action line
 highlight valid verbs when dragging item
 
+/	link 2 rooms via exits
+when switching rooms, dont necessarily load js file - check rooms object first (preserves state)
+
 R5 parallax backgrounds
 R5 implement y-scaling (per-walkbox value?)
 R5 vertical walk speed < horizontal walk speed (depending on perspective)
-rewrite geometry functions to all use {x:0,y:0} point objects
-resolution changer: 1x, 2x, 3x, 4x (css/js)
 
 different option text and dialogue for player
 dialogues where NPC speaks to you first
 dialogues where back n forth continues unprompted
 cutscenes using NPC.say() and NPC.walkTo()
-actions that happen on an examine (name change, icon change, puzzle advance, convos...)
+//actions that happen on an examine (name change, icon change, puzzle advance, convos...)
 
-when switching rooms, dont necessarily load js file - check rooms object first (preserves state)
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?
 
+rewrite geometry functions to all use {x:0,y:0} point objects
+resolution changer: 1x, 2x, 3x, 4x (css/js)
+
 smartphone side-mission
 
+autosave feature (every 30 seconds?)
 save thumbnail of screenshot using html2canvas as base64 with savegames
 vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states?;
 

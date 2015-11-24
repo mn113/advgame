@@ -36,6 +36,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		dest: 3,
 		width: "50px",
 		height: "160px",
+		classes: "left",
 		visible: true,
 		active:true
 	}).placeAt([0,70]);
@@ -44,6 +45,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		dest: 4,
 		width: "50px",
 		height: "160px",
+		classes: "right",
 		visible: true,
 		active:true
 	}).placeAt([1230,70]);
@@ -54,7 +56,12 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		layer: "background",
 		width: "36px",
 		height: "14px",
-		visible: true
+		visible: true,
+		onExamine: {
+			0: function() {
+				catclock.name = "Swiss cat clock";
+			}
+		}
 	});
 
 	console.log("All objects initialised.");
@@ -67,7 +74,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	room.baseline = 178;	// pixels from top that walkable area starts
 	room.exits = {
 		0: {dest: 2, dir: 'w', doormat: {x: 50, y: 235}},	// where entering player stands
-		1: {dest: 3, dir: 'e', doormat: {x: 1185, y: 235}}
+		1: {dest: 4, dir: 'e', doormat: {x: 1185, y: 235}}
 	};
 	room.entities = {};	// Could store fixed items and default items/characters in this object
 

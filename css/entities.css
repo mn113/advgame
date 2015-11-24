@@ -29,7 +29,7 @@
 	top: 80px;
 }
 
-	
+
 /* Foreground: */
 .scenery {
 	position: absolute;
@@ -43,6 +43,7 @@
 	left: 0;
 	z-index: 230;
 }
+.dead { pointer-events: none; }
 .lake {
 	width: 64px;
 	height: 64px;

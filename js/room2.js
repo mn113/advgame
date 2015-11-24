@@ -6,12 +6,8 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 (function(M, $) {
 	// Define callback function for Room.load():
-	M.Room.prototype.afterLoad = function() {
-		// Define the content:
-		// Characters:
-		// Exits:
-
-		console.log("All objects initialised.");
+	M.Room.prototype._afterLoad = function() {
+		//
 	};
 
 	// Create the Room object:
@@ -21,6 +17,52 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		unlocked: true
 	});
 	M.curRoom = room;
+
+	// Define the content:
+	var cheese = new M.Item({
+		id: "cheese",
+		name: "Cheese",
+		onExamine: {
+			0: function() {
+				console.log('changed cheese.name');
+				cheese.name = "Smelly swiss cheese";
+			}
+		}
+	}).placeAt([400,190]);
+	// Exits:
+	var exit1 = new M.Exit({
+		id: "exit1",
+		dest: 3,
+		width: "50px",
+		height: "140px",
+		classes: "right",
+		visible: true,
+		active:true
+	}).placeAt([590,70]);
+	// Scenery:
+	var catclock = new M.Scenery({
+		id: "cat_clock_tail",
+		name: "CCT",
+		layer: "midground",
+		width: "18px",
+		height: "14px",
+		visible: true,
+		onExamine: {
+			0: function() {
+				console.log('changed catclock.name');
+				catclock.name = "Swiss cat clock";
+			}
+		}
+	});
+	var bed = new M.Scenery({
+		id: "bed",
+		name: "Bed",
+		layer: "midground",
+		clickable: false
+	});
+
+	console.log("All objects initialised.");
+
 	// Define the geometry of room2:
 	room.walkboxes = {
 			wb1: {points: [{x:249,y:257}, {x:282,y:197}, {x:576,y:197}, {x:639,y:257}], scale: 1},
@@ -35,10 +77,21 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	};
 	room.entities = {};	// Could store fixed items and default items/characters in this object
 
-	room.load(room.afterLoad);	// load() puts HTML entities into page, the callback wires them up
+	room.load(room._afterLoad);	// load() puts HTML entities into page, the callback wires them up
 
 	console.log(M);
 	console.log("Room initialised.");
+
+		// All descriptions for entities in this level:
+	cheese.descriptions = [
+		"Strange to find a half-eaten brie here.",
+		"It looks fresh and tasty",
+		"Would be nice on a baguette. With grapes.",
+		"It's yellow and smelly."
+	];		// 4
+	catclock.descriptions = [
+		"Tick, tock."
+	];		// 1
 
 	// Create SVG paths (for debug use):
 	M.utils.grid.walkboxes2svg();

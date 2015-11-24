@@ -16,14 +16,16 @@
 	</head>
 	<body>
 		<div id="gamebox">
-			<div id="background"><!-- static visual layer --><!-- loaded from roomX.html -->
+			<!-- The stage: -->
+			<div id="background"><!-- static visual layer - loaded from roomX.html -->
 			</div>
-			<div id="midground"><!-- interactive layer --><!-- loaded by js -->
+			<div id="midground"><!-- interactive layer - loaded by js -->
 			</div>
-			<div id="foreground"><!-- static visual layer --><!-- loaded from roomX.html -->
+			<div id="foreground"><!-- static visual layer - loaded from roomX.html -->
 			</div>
 
 			<!-- UI outside the stage: -->
+			<p class="announce"></p>
 			<p id="command"></p>
 			<div id="inventory">
 				<div><div class="item chicken" id="chicken"></div></div>
@@ -43,7 +45,6 @@
 				<li class="disabled">Hack</li>
 			</ul>
 			<div id="blackout"></div>
-			<p class="announce"></p>
 			<div id="svgwrap">
 				<svg id="pathsvg" width="1280px" height="400px" viewBox="0 0 1280 400" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug"><!-- loaded by js -->
 				</svg>

@@ -1,9 +1,17 @@
 /* Custom cursors */
-.examine #gamebox { cursor: url('../img/cursor-eye2.png'), zoom-in; }
-.talkto #gamebox { cursor: url('../img/cursor-speech2.png'), help; }
-.pickup #gamebox { cursor: url('../img/cursor-grab2.png'), grab; }
-.use #gamebox { cursor: url('../img/cursor-wrench2.png'), default; }
-.exit { cursor: pointer; }
+#gamebox { cursor: url(../img/cursors/cursor_arrow.png), default; }
+.use #gamebox .item,
+.use  #gamebox .character { cursor: url(../img/cursors/cursor_hand.png), default; }
+.examine #gamebox .item { cursor: url(../img/cursors/cursor_hand.png), zoom-in; }
+.talkto #gamebox .character { cursor: url(../img/cursors/cursor_hand.png), help; }
+.pickup #gamebox #midground .item { cursor: url(../img/cursors/cursor_hand.png), grab; }
+#gamebox .item,
+#gamebox .character,
+#gamebox .scenery { cursor: url(../img/cursors/cursor_hand.png), pointer; }
+#gamebox .exit.up { cursor: url(../img/cursors/exit_up.png) 16 0, pointer; }
+#gamebox .exit.left { cursor: url(../img/cursors/exit_l.png) 0 15, pointer; }
+#gamebox .exit.right { cursor: url(../img/cursors/exit_r.png) 32 15, pointer; }
+#gamebox .exit.down { cursor: url(../img/cursors/exit_down.png) 16 30, pointer; }
 
 .announce {
 	position: absolute;
@@ -32,6 +40,7 @@
 	width: 100%;
 	height: 20px;
 	padding: 0 5px;
+	margin: 0;
 	background: black;
 	color: white;
 	font: 16px DOS437, Helvetica;
@@ -254,7 +263,7 @@ ul#toolMenu2 li.disabled {
 #displayChoices a {
 	display: block;
 	text-decoration: none;
-	cursor: url('../img/cursor-speech.png'), help; ;
+	xcursor: url('../img/cursor-speech.png'), help; ;
 }
 #displayChoices a:hover {
 	text-decoration: underline;

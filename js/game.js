@@ -69,9 +69,11 @@ var MYGAME = (function($) {
 
 				// Select the verb box:
 				var $verbs = $("#toolMenu2 li");
-					$verbs.removeClass("selected");
-				$verbs.filter($("#"+mode)).addClass("selected");
+				var $verb = $verbs.filter($("#"+mode));
+				$verbs.removeClass("selected");
+				$verb.addClass("selected");
 
+				utils.ui.addToCommand('verb', $verb.html());
 			},
 			// Handles action when an object is clicked on with a mode cursor:
 			modedClick: function(targetObj) {
@@ -182,21 +184,21 @@ var MYGAME = (function($) {
 				if (!c.verb || !c.noun1) { return false; }
 
 				// Look up nouns:
-				if (c.noun1 in ens) {
+				if (ens.hasOwnProperty(c.noun1)) {
 					obj1 = ens[c.noun1];
 				}
-				if (c.noun2 && c.noun2 in ens) {
+				if (c.noun2 && ens.hasOwnProperty(c.noun2)) {
 					obj2 = ens[c.noun2];
 				}
 
 				// Act:
 				if (obj2) {
-					if (c.verb === 'Use' || (c.verb === 'Give' && typeof obj2 === 'Character')) {
+					if (c.verb === 'Use' || (c.verb === 'Give' && obj2.type === 'character')) {
 						MYGAME.player.use(obj1, obj2, true);
 					}
 				}
 				else {
-					if (c.verb === 'Talk to' && typeof obj1 === 'Character') {
+					if (c.verb === 'Talk to' && obj1.type === 'character') {
 						MYGAME.player.talkTo(obj1);
 					}
 					else if (c.verb === 'Use') {
@@ -206,7 +208,7 @@ var MYGAME = (function($) {
 						MYGAME.player.pickUp(obj1);
 					}
 					else if (c.verb === 'Examine') {
-						MYGAME.player.lookAt(obj1);
+						MYGAME.player.examine(obj1);
 					}
 					else if (c.verb === 'Walk to') {
 						MYGAME.player.walkTo(obj1);
@@ -214,6 +216,10 @@ var MYGAME = (function($) {
 				}
 
 				utils.ui.resetCommand('all');
+			},
+			//
+			selectVerb: function(verb) {
+
 			}
 		},
 		grid: {
@@ -778,6 +784,7 @@ var MYGAME = (function($) {
 		this.scrollable = options.scrollable || false;
 		this.entry = options.entry || 0;				// determines where player will appear
 		this.filename = "room" + this.id + ".html";		// needed for loading room's static HTML
+		this.defaultSpawn = [300, 200];
 
 //		this.walkboxes;		// loaded from file after construction
 //		this.nodes;			// loaded from file after construction
@@ -793,9 +800,7 @@ var MYGAME = (function($) {
 		var me = this;
 		$("#gamebox").addClass("room" + this.id);
 		// Fetch and append level-specific elements to HTML:
-//		$("#gamebox #pathsvg").load(this.filename + " #pathsvg *");
 		$("#gamebox #foreground").load(this.filename + " #foreground *");
-//		$("#gamebox #midground").load(this.filename + " #midground *");
 		$("#gamebox #background").load(this.filename + " #background *", function(response, status, xhr) {
 			if (status === "success") {
 				console.log("Room", me.id, "loaded.");
@@ -804,7 +809,7 @@ var MYGAME = (function($) {
 
 				// Continue the loading in room.js (after a short wait - ensures DOM ready):
 				if (_callback && typeof _callback === "function") {
-					setTimeout(_callback, 1000);
+					setTimeout(_callback, 500);
 				}
 			}
 		});
@@ -815,8 +820,19 @@ var MYGAME = (function($) {
 				doordir = ent.dir,
 				playdir = MYGAME.doordirs[doordir];
 			// Place player into room:
-			MYGAME.player.placeAt([doormat.x, doormat.y]).face(playdir);
-		}, 2000);
+			if (doormat && playdir) {
+				MYGAME.player.placeAt([doormat.x, doormat.y]).face(playdir).show();
+			}
+			else {	// Default placement if data missing:
+				MYGAME.player.placeAt(me.defaultSpawn).face('ss').show();
+			}
+
+			// Fix updateXYZ() not setting correct position in time bug:
+			setTimeout(function() {
+				MYGAME.player.updateXYZ();
+			}, 200);
+
+		}, 1000);
 	};
 	Room.prototype.unload = function() {
 		var me = this;
@@ -862,34 +878,38 @@ var MYGAME = (function($) {
 		this.type = options.type;
 		if (typeof options.visible === "undefined") { options.visible = true; }		// Visible unless declared otherwise
 		this.visible = options.visible;
-		this.x = 0;
+		this.x = 0;						// Everything must have coordinates
 		this.y = 0;
 		this.z = 0;
+		this.anchorOffset = [0,0];		// Every sprite needs an anchor offset
+		this.looksCtr = 0;				// Everything can be looked at 0 or more times
 
-		// Create the HTML element if in midground:
-		if (options.layer === 'midground') {
-			$("<div>").attr("id", this.id)
-					  .addClass(this.type)
-					  .appendTo("#midground");
-		}
-		if (options.layer === 'background') {
-			$("<div>").attr("id", this.id)
-					  .addClass(this.type)
-					  .appendTo("#background");
-		}
+		// Create an interactive HTML element on the appropriate layer:
+		$("<div>").attr("id", this.id)
+				  .addClass(this.type)
+				  .appendTo("#"+options.layer);
 //		console.log("@", new Date().getTime(), 'HTML created for', this.id);
 
 		this.jqDomNode = $("#" + this.id);				// Everything must have a jqDomNode
 
+		// Add any extra classes:
+		if (options.classes) {
+			this.jqDomNode.addClass(options.classes);
+		}
+		// Set a class if not clickable:
+		if (options.clickable === false) {
+			this.jqDomNode.addClass("dead");
+		}
 		// Set a non-default width & height, if defined:
 		if (options.width) {this.jqDomNode.css("width", options.width);}
 		if (options.height) {this.jqDomNode.css("height", options.height);}
 
-		this.defaultRoom = MYGAME.curRoom.id;	// WORTH STORING?
 		this.giveable = false;
-		this.anchorOffset = [0,0];		// Every sprite needs an anchor offset
-		this.descriptions = [];			// Everything can have multiple descriptions
-		this.looksCtr = 0;				// Everything can be looked at 0 or more times
+
+		// Set up any passed uses, onExamine actions, and descriptions:
+		if (options.uses) {this.uses = options.uses; }
+		if (options.onExamine) {this.onExamine = options.onExamine; }
+		if (options.descriptions) {this.descriptions = options.descriptions; }
 
 		// Store by id in entities hash:
 		MYGAME.entities[this.id] = this;
@@ -902,7 +922,7 @@ var MYGAME = (function($) {
 		return this;
 	}
 	_BaseObj.prototype.placeAt = function(coords) {
-//		console.log("@", new Date().getTime(), 'placeAt() called for', this.id);
+		console.log("@", new Date().getTime(), 'placeAt() called for', this.id);
 		this.jqDomNode.css("left", coords[0] - this.anchorOffset[0]);		// Compensate for anchor point
 		this.jqDomNode.css("top", coords[1] - this.anchorOffset[1]);		// being inside sprite
 		this.updateXYZ();
@@ -913,12 +933,13 @@ var MYGAME = (function($) {
 		else {
 			this.jqDomNode.hide();
 		}
-		console.log(this.id, "placed @ [" + this.x + ', ' + this.y + "]");
+		this.reportLoc();
 		return this;
 	};
 	_BaseObj.prototype.updateXYZ = function() {
+		console.log("@", new Date().getTime(), 'updateXYZ() called for', this.id);
 		// Set sprite's anchor coords:
-		this.x = this.jqDomNode.position().left + this.anchorOffset[0];
+		this.x = this.jqDomNode.position().left + this.anchorOffset[0];		// Object's own x & y are INSIDE the div
 		this.y = this.jqDomNode.position().top + this.anchorOffset[1];
 		// Set Z-index (same as Y-coord except in non-flat locations):
 		this.z = this.y;
@@ -934,7 +955,7 @@ var MYGAME = (function($) {
 		return [gridx, gridy];
 	};
 	_BaseObj.prototype.reportLoc = function() {
-		console.log("I'm at (" + this.x + ', ' + this.y + '), Z-' + this.z);
+		console.log(this.id + ": I'm at (" + this.x + ', ' + this.y + '), Z-' + this.z + ", visibility " + this.visible);
 	};
 	_BaseObj.prototype.remove = function() {
 		// From DOM:
@@ -944,6 +965,16 @@ var MYGAME = (function($) {
 		delete MYGAME.entities[this];
 
 		console.log(this.id, "removed.");
+	};
+	_BaseObj.prototype.hide = function() {
+		this.jqDomNode.hide();
+		this.visible = false;
+		return this;
+	};
+	_BaseObj.prototype.show = function() {
+		this.jqDomNode.show();
+		this.visible = true;
+		return this;
 	};
 
 
@@ -1301,16 +1332,27 @@ var MYGAME = (function($) {
 	Player.prototype.constructor = Player;
 	Player.prototype.examine = function(target) {
 		if (target.hasOwnProperty('name') && target.name !== null) {
-			// Don't run out of descriptions, even if we examine it 100 times:
-			var last = target.descriptions.length - 1,
-				num = target.looks <= last ? target.looks : last;
-			// Describe the target out loud:
-			this.say(target.descriptions[num]);
-			target.looks += 1;
+			if (typeof target.descriptions !== 'undefined') {
+				// Take care of numbers:
+				// Don't run out of descriptions, even if we examine it 100 times:
+				var finalGo = Math.max(0, target.descriptions.length - 1);
+				var thisGo = (target.looksCtr <= finalGo) ? target.looksCtr : finalGo;
+				target.looksCtr += 1;
+
+				// Describe the target out loud (if description exists):
+				if (target.descriptions[thisGo]) {
+					this.say(target.descriptions[thisGo]);
+				}
+
+				// Take any attached onExamine actions:
+				if (target.onExamine && typeof target.onExamine[thisGo] === 'function') {
+					target.onExamine[thisGo]();
+				}
+				return;
+			}
 		}
-		else {
-			this.say("Nothing to see here.");	// Or just do nothing?
-		}
+		this.say("Nothing to see here.");	// Or confused animation...
+		return;
 	};
 	Player.prototype.talkTo = function(character) {
 		if (character.hasOwnProperty('name')) {
@@ -1412,7 +1454,7 @@ var MYGAME = (function($) {
 
 	// Droppables in the field + inventory:
 	function _createDroppables() {
-		$("#midground div, #inventory .item").droppable({
+		$(".item, .character").droppable({
 			hoverClass: "drop-hover",		// USE CLASS FOR AN ICON?
 			drop: function(event, ui) {
 				// Lookup dragged item in Entities:
@@ -1446,7 +1488,7 @@ var MYGAME = (function($) {
 	}
 
 	// Process clicks in game area:
-	function fgClickHandler(event) {
+	function entityClickHandler(event) {
 		// Make sure game setup is complete:
 		if (this.curRoom !== null && this.player !== null) {
 			// Where was clicked? Set the target (Take parent element's offset into account!)
@@ -1469,6 +1511,12 @@ var MYGAME = (function($) {
 			}
 
 			if (targetObj) {
+				// Build command line:
+				if (!MYGAME.commandObj.verb) {
+					utils.ui.addToCommand('verb', 'Walk to');
+				}
+				utils.ui.addToCommand('item', targetObj.name);
+
 				// If Steve NEAR targetObj, ok, otherwise walk to it first
 				var dist = utils.grid.dist(this.player, targetObj);
 				if (dist > 30) {
@@ -1490,6 +1538,9 @@ var MYGAME = (function($) {
 				}
 			}
 			else {	// No object clicked:
+				// Clear command line:
+				utils.ui.resetCommand('all');
+
 				var wb = utils.grid.whichWalkbox(evxy);
 				console.log("Walkbox", wb);
 				// Try to fix click outside walkboxes:
@@ -1516,11 +1567,11 @@ var MYGAME = (function($) {
 		var game = this;
 		setTimeout(function() {
 			// Initialise the player [MOST IMPORTANT!]:
-	//		game.player = new Player($("#steve"), "Steve", "yellow");
 			game.player = new Player({
 				id: "argyle_guy",
 				name: "Argyle Guy",
-				colour: "#f99"
+				colour: "#f99",
+				visible: false		// invisible until placed via Room.load()
 			});
 			_createDroppables();
 			// Tooltips:
@@ -1531,19 +1582,14 @@ var MYGAME = (function($) {
 
 				// Stage click handler:
 				$("#midground").on("click", function(event) {
-					MYGAME.fgClickHandler(event);
+					MYGAME.entityClickHandler(event);
 				});
 
 				// Item hover handler:
-				$(".item").on("mouseenter", function(event) {
-					MYGAME.utils.ui.addToCommand('item', event.target.id);
+				$(".item, .scenery, .character").on("mouseenter", function(event) {
+					MYGAME.utils.ui.addToCommand('item', event.target.name);
 				}).on("mouseleave", function() {
 					MYGAME.utils.ui.resetCommand('noun');
-				});
-
-				// Command line clickable:
-				$("#command").on("click", function() {
-					MYGAME.utils.ui.executeCommand();
 				});
 
 				// Inventory click handler:
@@ -1559,9 +1605,19 @@ var MYGAME = (function($) {
 						console.log("Clicked on", event.target.id, "(" + MYGAME.state.cursor.mode[0] + ")");
 						targetObj = ens[event.target.id];
 					}
+					// Build command line:
+					MYGAME.utils.ui.addToCommand('item', targetObj.name);
 
 					// Act, depending on mode:
 					MYGAME.utils.ui.modedClick(targetObj);
+				});
+
+				// Set up sortable inventory:
+				$("#inventory").sortable({
+					helper: "clone",
+					start: function(event, ui) {
+						console.log("Reordering...");// item", $(ui.item[0]).children().attr("id"));
+					}
 				});
 
 				// ToolMenu click handler:
@@ -1574,12 +1630,9 @@ var MYGAME = (function($) {
 
 				});
 
-				// Set up sortable inventory:
-				$("#inventory").sortable({
-					helper: "clone",
-					start: function(event, ui) {
-						console.log("Reordering...");// item", $(ui.item[0]).children().attr("id"));
-					}
+				// Command line clickable:
+				$("#command").on("click", function() {
+					MYGAME.utils.ui.executeCommand();
 				});
 
 				/* INPUT */
@@ -1648,7 +1701,6 @@ var MYGAME = (function($) {
 				});
 			}); // end jQuery function
 
-
 		}, 1000);		// BIT OF A HACK TO MAKE SURE DOM FILLED FIRST
 	}
 
@@ -1669,7 +1721,7 @@ var MYGAME = (function($) {
 		utils: utils,
 		// Declared as functions:
 		init: init,
-		fgClickHandler: fgClickHandler,
+		entityClickHandler: entityClickHandler,
 		// Constructors:
 		Room: Room,
 		Player: Player,
@@ -1680,4 +1732,4 @@ var MYGAME = (function($) {
 	};
 }(jQuery));	// end global scoping / namespacing function
 
-MYGAME.init(3);
+MYGAME.init(2);

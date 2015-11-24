@@ -22,7 +22,7 @@ MYGAME.dialogues = {
 	/**
 	* choicesFromOpts() - start or continue a conversation:
 	* @param {Character Object} person
-	* @param {Objects} opts
+	* @param {Object} opts
 	* @param {Boolean} is_icebreaker
 	*/
 	choicesFromOpts: function(person, opts, is_icebreaker) {	// Object, array, Bool
@@ -184,7 +184,7 @@ MYGAME.dialogues = {
 			bye: ["Goodbye.", "Bye.", "Toodle-oo.", "See ya!", "Hasta la vista.", "Adios.", "Later.", "Do vstrechi."],
 			man: ["man", "guy", "dude", "fella", "bro", "sir", "my man"],
 			goaway: ["Go away.", "I'm busy.", "Please stop bothering me.", "Now is not a good time.", "Can we discuss this later?"],
-			nevermind: ["Never mind.", "Whatever.", "Er, nothing.", "Excuse me.", "Sorry, nothing."]
+			nevermind: ["Never mind.", "Forget it.", "Sorry, nothing."]
 		};
 
 		// Retrieve a random simile from the hash
