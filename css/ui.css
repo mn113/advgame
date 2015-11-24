@@ -25,6 +25,19 @@
 	left: 296px;
 }
 
+#command {
+	position: absolute;
+	left: 0;
+	bottom: 90px;
+	width: 100%;
+	height: 20px;
+	padding: 0 5px;
+	background: black;
+	color: white;
+	font: 16px DOS437, Helvetica;
+	line-height: 20px;
+}
+
 /* INVENTORY */
 #inventory {
 	background: #666;
@@ -166,6 +179,10 @@ ul#toolMenu2 li {
 	color: #eee;
 	border: 1px dotted black;
 }
+ul#toolMenu2 li::first-letter {
+	text-decoration: underline;
+}
+
 ul#toolMenu2 li:hover {
 	background: #aaa;
 	cursor: pointer;

@@ -52,3 +52,5 @@
 21-Nov	wrote rudimentary save/load/choose feature
 
 22-Nov	dialogue system improvements
+
+23-Nov	created verbs & action line

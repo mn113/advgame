@@ -28,6 +28,11 @@ var MYGAME = (function($) {
 	this.npcs = {};
 	this.progress = {};
 	this.dialogues = {};		// Filled by external file
+	this.commandObj = {
+		verb: null,
+		noun1: null,
+		noun2: null
+	};
 
 	// REALLY USEFUL DEBUGGING CANVAS:
 	this.canvas = document.createElement("canvas");
@@ -61,6 +66,12 @@ var MYGAME = (function($) {
 					$("body").removeClass().toggleClass(mode);
 				}
 				MYGAME.state.cursor.mode = mode || 'default';
+
+				// Select the verb box:
+				var $verbs = $("#toolMenu2 li");
+					$verbs.removeClass("selected");
+				$verbs.filter($("#"+mode)).addClass("selected");
+
 			},
 			// Handles action when an object is clicked on with a mode cursor:
 			modedClick: function(targetObj) {
@@ -80,10 +91,129 @@ var MYGAME = (function($) {
 					default:
 						break;
 				}
-
 				// Unset mode & cursor:
-				$("body").removeClass();
-				MYGAME.state.cursor.mode = 'default';
+				utils.ui.toolMode();
+			},
+			//
+			addToCommand: function(type, value) {
+				// Fetch commandObj:
+				var c = MYGAME.commandObj,
+					command = '';
+
+				// Process input:
+				if (type === 'verb') {
+					c.verb = value;
+				}
+				else if (type === 'item' || type === 'scenery' || type === 'character') {
+					if (!c.noun1) {
+						c.noun1 = value;
+					}
+					else if (c.noun1 && !c.noun2) {
+						c.noun2 = value;
+					}
+				}
+
+				utils.ui.showCommand();
+
+				return this;
+			},
+			//
+			showCommand: function() {
+				// Fetch commandObj:
+				var c = MYGAME.commandObj,
+					command = '';
+
+				// Add prepositions:
+				if (c.verb === 'use' && c.noun1 && c.noun2) {
+					command = "Use " + c.noun1 + " with " + c.noun2;
+				}
+				else if (c.verb === 'give' && c.noun1 && c.noun2) {
+					command = "Give " + c.noun1 + " to " + c.noun2;
+				}
+				else if (c.verb && c.noun1) {
+					command = c.verb + " " + c.noun1;
+				}
+				else if (c.verb) {
+					command = c.verb;
+				}
+
+				// Display current command:
+				$("#command").html(command);
+
+				return this;
+			},
+			//
+			resetCommand: function(part) {
+				// Fetch commandObj:
+				var c = MYGAME.commandObj;
+
+				if (part === 'noun') {
+					if (!c.noun2) {
+						c.noun1 = null;
+					}
+					c.noun2 = null;
+				}
+				else if (part === 'verb') {
+					c.verb = null;
+				}
+				else {
+					// Reset all:
+					c.verb = null;
+					c.noun1 = null;
+					c.noun2 = null;
+					// Empty the command line:
+					$("#command").html('');
+					return this;
+				}
+
+				// Display modified command line:
+				utils.ui.showCommand();
+
+				return this;
+			},
+			//
+			executeCommand: function() {		// UNTESTED
+				// Fetch commandObj:
+				var c = MYGAME.commandObj,
+					ens = MYGAME.entities,
+					obj1, obj2;
+
+				// Sanity check:
+				if (!c.verb || !c.noun1) { return false; }
+
+				// Look up nouns:
+				if (c.noun1 in ens) {
+					obj1 = ens[c.noun1];
+				}
+				if (c.noun2 && c.noun2 in ens) {
+					obj2 = ens[c.noun2];
+				}
+
+				// Act:
+				if (obj2) {
+					if (c.verb === 'Use' || (c.verb === 'Give' && typeof obj2 === 'Character')) {
+						MYGAME.player.use(obj1, obj2, true);
+					}
+				}
+				else {
+					if (c.verb === 'Talk to' && typeof obj1 === 'Character') {
+						MYGAME.player.talkTo(obj1);
+					}
+					else if (c.verb === 'Use') {
+						MYGAME.player.use(obj1, 'itself', true);
+					}
+					else if (c.verb === 'Pick up') {
+						MYGAME.player.pickUp(obj1);
+					}
+					else if (c.verb === 'Examine') {
+						MYGAME.player.lookAt(obj1);
+					}
+					else if (c.verb === 'Walk to') {
+						MYGAME.player.walkTo(obj1);
+					}
+				}
+
+				utils.ui.resetCommand('all');
 			}
 		},
 		grid: {
@@ -237,7 +367,7 @@ var MYGAME = (function($) {
 				var walkboxes = MYGAME.curRoom.walkboxes;
 				var deets, wb, pts, pt, p;
 				for (wb in walkboxes) {
-					deets = "M"
+					deets = "M";
 					pts = walkboxes[wb].points;
 					// Build the string point by point:
 					for (pt in pts) {
@@ -260,7 +390,6 @@ var MYGAME = (function($) {
 				var nid, n;
 				for (nid in nodes) {
 					n = nodes[nid];
-					console.log(n);
 					// Stick the SVG path into the HTML:
 					$("<circle>").attr("id", "node" + nid)
 								 .attr("cx", n.x)
@@ -935,7 +1064,7 @@ var MYGAME = (function($) {
 		}, 2000);
 
 		// Redo tooltips:
-		MYGAME.utils.ui.ttRefresh();
+//		MYGAME.utils.ui.ttRefresh();
 
 		// Move the logical element:
 		MYGAME.player.inventory.push(this.id);
@@ -1395,7 +1524,131 @@ var MYGAME = (function($) {
 			});
 			_createDroppables();
 			// Tooltips:
-			MYGAME.utils.ui.ttRefresh();
+//			MYGAME.utils.ui.ttRefresh();
+
+			// jQuery ready function:
+			$(document).ready(function() {
+
+				// Stage click handler:
+				$("#midground").on("click", function(event) {
+					MYGAME.fgClickHandler(event);
+				});
+
+				// Item hover handler:
+				$(".item").on("mouseenter", function(event) {
+					MYGAME.utils.ui.addToCommand('item', event.target.id);
+				}).on("mouseleave", function() {
+					MYGAME.utils.ui.resetCommand('noun');
+				});
+
+				// Command line clickable:
+				$("#command").on("click", function() {
+					MYGAME.utils.ui.executeCommand();
+				});
+
+				// Inventory click handler:
+				$("#inventory").on("click", ".item", function(event) {
+
+					// What element was clicked? Set the target.
+					var targetObj;
+
+					// Check Entities list:
+					var ens = MYGAME.entities;
+					if (ens.hasOwnProperty(event.target.id)) {
+						// Found a match:, retrieve it:
+						console.log("Clicked on", event.target.id, "(" + MYGAME.state.cursor.mode[0] + ")");
+						targetObj = ens[event.target.id];
+					}
+
+					// Act, depending on mode:
+					MYGAME.utils.ui.modedClick(targetObj);
+				});
+
+				// ToolMenu click handler:
+				$("#toolMenu2 li").on("click", function(event) {
+					// Extract the chosen mode from HTML, and set:
+					MYGAME.utils.ui.toolMode($(event.target).attr("id"));
+					// Alter command line:
+					MYGAME.utils.ui.resetCommand('verb');
+					MYGAME.utils.ui.addToCommand('verb', $(event.target).html());
+
+				});
+
+				// Set up sortable inventory:
+				$("#inventory").sortable({
+					helper: "clone",
+					start: function(event, ui) {
+						console.log("Reordering...");// item", $(ui.item[0]).children().attr("id"));
+					}
+				});
+
+				/* INPUT */
+				// Register keypress events on the whole document:
+				$(document).keydown(function(e) {	// keydown is Safari-compatible; keypress allows holding a key to send continuous events
+					MYGAME.utils.ui.toolMode(null);
+
+					if (e.keyCode === 87) {											// press 'w'
+						MYGAME.utils.ui.toolMode('walkto');
+					}
+					else if (e.keyCode === 69) {									// press 'e'
+						MYGAME.utils.ui.toolMode('examine');
+					}
+					else if (e.keyCode === 84) {									// press 't'
+						MYGAME.utils.ui.toolMode('talkto');
+					}
+					else if (e.keyCode === 80) {									// press 'p'
+						MYGAME.utils.ui.toolMode('pickup');
+					}
+					else if (e.keyCode === 85) {									// press 'u'
+						MYGAME.utils.ui.toolMode('use');
+					}
+					else if (e.keyCode === 68) {									// press 'd'
+						// Toggle debug state:
+						$("body").toggleClass("debug");
+					}
+					else if (e.keyCode === 67) {									// press 'c'
+						// Toggle canvas layer:
+						$("canvas").toggle();
+					}
+					else if (e.keyCode === 83) {									// press 's'
+						// Toggle SVG layer:
+						$("svg").toggle();
+					}
+					else if (e.keyCode === 37) {									// press 'left'
+						MYGAME.utils.room.scrollX("L", 20);
+					}
+					else if (e.keyCode === 39) {									// press 'right'
+						MYGAME.utils.room.scrollX("R", 20);
+					}
+					else if (e.keyCode >= 48 && e.keyCode <= 57) {					// press '0-9'
+						// Change room:
+						MYGAME.utils.room.change(e.keyCode - 48);
+					}
+					else if (e.keyCode === 116) {									// press 'F5'
+						MYGAME.utils.session.saveGame();
+					}
+					else if (e.keyCode === 117) {									// press 'F6'
+						MYGAME.utils.session.chooseSavedGame();
+					}
+					else {															// any other keypress
+						$("body").removeClass();	// unset all modes
+						MYGAME.state.cursor.mode = 'default';
+					}
+
+				//	if (e.keyCode == 32) {											// press 'space'
+				//		if (game.state == 'running') pause();						// pause/unpause
+				//		else if (game.state == 'paused') unpause();
+				//	}
+
+					$('#keypress').html(e.keyCode);		// Show onscreen
+				});
+				// Display mouse coordinates:
+				$(document).on("mousemove", "#midground", function(e) {
+					$("#mousexy").html(e.offsetX + ', ' + e.offsetY);
+				});
+			}); // end jQuery function
+
+
 		}, 1000);		// BIT OF A HACK TO MAKE SURE DOM FILLED FIRST
 	}
 
@@ -1411,6 +1664,7 @@ var MYGAME = (function($) {
 		doordirs: this.doordirs,
 		ctx: this.ctx,
 		state: this.state,
+		commandObj: this.commandObj,
 		// Declared as vars (var a = ):
 		utils: utils,
 		// Declared as functions:
@@ -1426,113 +1680,4 @@ var MYGAME = (function($) {
 	};
 }(jQuery));	// end global scoping / namespacing function
 
-MYGAME.init(2);
-
-
-// jQuery ready function:
-$(function () {
-
-	// Stage click handler:
-	$("#midground").on("click", function(event) {
-		MYGAME.fgClickHandler(event);
-	});
-
-	// Inventory click handler:
-	$("#inventory").on("click", ".item", function(event) {
-		
-		// What element was clicked? Set the target.
-		var targetObj;
-
-		// Check Entities list:
-		var ens = MYGAME.entities;
-		if (ens.hasOwnProperty(event.target.id)) {
-			// Found a match:, retrieve it:
-			console.log("Clicked on", event.target.id, "(" + MYGAME.state.cursor.mode[0] + ")");
-			targetObj = ens[event.target.id];
-		}
-		
-		// Act, depending on mode:
-		MYGAME.utils.ui.modedClick(targetObj);
-	});
-
-	// ToolMenu click handler:
-	$("#toolMenu li, #toolMenu2 li").on("click", function(event) {
-		// Extract the chosen mode from HTML:
-		var mode = $(event.target).parent("li").attr("id");
-		// Set the mode:
-		MYGAME.utils.ui.toolMode(mode);
-	});
-
-	// Set up sortable inventory:
-	$("#inventory").sortable({
-		helper: "clone",
-		start: function(event, ui) {
-			console.log("Reordering...");// item", $(ui.item[0]).children().attr("id"));
-		}
-	});
-
-}); // end jQuery function
-
-/**********/
-/*! INPUT */
-/**********/
-// Register keypress events on the whole document
-// From: http://www.marcofolio.net/webdesign/advanced_keypress_navigation_with_jquery.html
-$(document).keydown(function(e) {			// keydown is Safari-compatible; keypress allows holding a key to send continuous events
-	MYGAME.utils.ui.toolMode(null);
-	
-	if (e.keyCode === 69) {											// press 'e'
-		MYGAME.utils.ui.toolMode('examine');
-	}
-	else if (e.keyCode === 84) {									// press 't'
-		MYGAME.utils.ui.toolMode('talkto');
-	}
-	else if (e.keyCode === 80) {									// press 'p'
-		MYGAME.utils.ui.toolMode('pickup');
-	}		
-	else if (e.keyCode === 85) {									// press 'u'
-		MYGAME.utils.ui.toolMode('use');
-	}
-	else if (e.keyCode === 68) {									// press 'd'
-		// Toggle debug state:
-		$("body").toggleClass("debug");
-	}
-	else if (e.keyCode === 67) {									// press 'c'
-		// Toggle canvas layer:
-		$("canvas").toggle();
-	}
-	else if (e.keyCode === 83) {									// press 's'
-		// Toggle SVG layer:
-		$("svg").toggle();
-	}
-	else if (e.keyCode === 37) {									// press 'left'
-		MYGAME.utils.room.scrollX("L", 20);
-	}
-	else if (e.keyCode === 39) {									// press 'right'
-		MYGAME.utils.room.scrollX("R", 20);
-	}
-	else if (e.keyCode >= 48 && e.keyCode <= 57) {					// press '0-9'
-		// Change room:
-		MYGAME.utils.room.change(e.keyCode - 48);
-	}
-	else if (e.keyCode === 116) {									// press 'F5'
-		MYGAME.utils.session.saveGame();
-	}
-	else if (e.keyCode === 117) {									// press 'F6'
-		MYGAME.utils.session.chooseSavedGame();
-	}
-	else {															// any other keypress
-		$("body").removeClass();	// unset all modes
-		MYGAME.state.cursor.mode = 'default';
-	}
-
-//	if (e.keyCode == 32) {											// press 'space'
-//		if (game.state == 'running') pause();						// pause/unpause
-//		else if (game.state == 'paused') unpause();
-//	}
-
-	$('#keypress').html(e.keyCode);		// Show onscreen
-});
-$(document).on("mousemove", "#midground", function(e) {
-	$("#mousexy").html(e.offsetX + ', ' + e.offsetY);
-});
+MYGAME.init(3);

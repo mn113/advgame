@@ -1,7 +1,7 @@
 //create bounding box for movement (SVG path?) -> used binary NavMesh
 //invisible overlay click-catcher
 //diagonal walking / simultaneous x+y animation
-// z-axis so he passes behind nearer stuff -> set css z-index property to y coord upon move?
+//z-axis so he passes behind nearer stuff -> set css z-index property to y coord upon move?
 //highlight multiple tiles
 //account for F10 having an extra char over F9
 //obstacles / A* path finding
@@ -58,7 +58,7 @@ inventory sandbox?
 //fix viewport size (320*200)
 //load rooms & contents by ajax: $.load()?
 //detach change() so independent of Rooms
-//	add non-gridded backwall area (60px?) - give each room a baseline attribute
+//add non-gridded backwall area (60px?) - give each room a baseline attribute
 //.stop() steve spazzing on multi-click
 //increase y-coord by n*5px on all false clicks to put in a walkbox (variable baseline)
 //foreground layers to go behind
@@ -72,6 +72,9 @@ inventory sandbox?
 //npc can say multiple lines
 //build a little delay into the dialogues
 //custom sizes for exits, items, scenery etc...
+//selectable verbs
+//action line
+highlight valid verbs when dragging item
 
 R5 parallax backgrounds
 R5 implement y-scaling (per-walkbox value?)
@@ -81,15 +84,11 @@ resolution changer: 1x, 2x, 3x, 4x (css/js)
 
 different option text and dialogue for player
 dialogues where NPC speaks to you first
+dialogues where back n forth continues unprompted
 cutscenes using NPC.say() and NPC.walkTo()
-
-selectable verbs
-highlight valid verbs when dragging item
-action line
+actions that happen on an examine (name change, icon change, puzzle advance, convos...)
 
 when switching rooms, dont necessarily load js file - check rooms object first (preserves state)
-store all possible game entities in one mega html file
-load the extra items by $.getObject each time?
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?
 
