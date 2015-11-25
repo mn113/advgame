@@ -57,3 +57,5 @@
 
 24-Nov	linked 2 rooms correctly
 24-Nov	room & object state can persist with saving & loading
+
+25-Nov	added spawnpoints & room scrollTo

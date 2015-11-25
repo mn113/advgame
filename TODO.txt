@@ -75,9 +75,9 @@ inventory sandbox?
 //action line
 //actions that happen on an examine (name change, icon change, puzzle advance, convos...)
 highlight valid verbs when dragging item
-//	link 2 rooms via exits
-//	when switching rooms, dont necessarily load js file - check rooms object first (preserves state)
-//	preserve state of room and everything in it, for switching
+//link 2 rooms via exits
+//when switching rooms, dont necessarily load js file - check rooms object first (preserves state)
+//preserve state of room and everything in it, for switching
 
 R5 parallax backgrounds
 R5 implement y-scaling (per-walkbox value?)

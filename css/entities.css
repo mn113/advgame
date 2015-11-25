@@ -43,6 +43,15 @@
 	left: 0;
 	z-index: 230;
 }
+.grass {
+	width: 456px;
+	height: 167px;
+	background: url(../img/kscumm_fg.png);
+	bottom: 0;
+	right: 0;
+	z-index: 400;
+}
+
 .dead { pointer-events: none; }
 .lake {
 	width: 64px;

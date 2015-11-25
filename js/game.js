@@ -96,7 +96,7 @@ var MYGAME = (function($) {
 				// Unset mode & cursor:
 				utils.ui.toolMode();
 			},
-			//
+			// Adds a verb or noun to the command object:
 			addToCommand: function(type, value) {
 				// Fetch commandObj:
 				var c = MYGAME.commandObj,
@@ -119,7 +119,7 @@ var MYGAME = (function($) {
 
 				return this;
 			},
-			//
+			// Displays/refreshed the onscreen command line:
 			showCommand: function() {
 				// Fetch commandObj:
 				var c = MYGAME.commandObj,
@@ -144,7 +144,7 @@ var MYGAME = (function($) {
 
 				return this;
 			},
-			//
+			// Resets one or all parts of the command object:
 			resetCommand: function(part) {
 				// Fetch commandObj:
 				var c = MYGAME.commandObj;
@@ -173,7 +173,7 @@ var MYGAME = (function($) {
 
 				return this;
 			},
-			//
+			// Try to execute the current command:
 			executeCommand: function() {		// UNTESTED
 				// Fetch commandObj:
 				var c = MYGAME.commandObj,
@@ -686,7 +686,8 @@ var MYGAME = (function($) {
 			},
 			// Scroll the screen to a particular spot e.g. [0,0]:
 			scrollTo: function(origin) {
-				// TODO
+				var $layers = $("#background, #midground, #foreground, #pathsvg");
+				$layers.css({"left": -1 * origin[0], "top": -1 * origin[1]});
 			},
 			// Run this when player is moving about to decide when scrolling is necessary:
 			scrollDecide: function(point) {
@@ -798,14 +799,15 @@ var MYGAME = (function($) {
 		this.entry = options.entry || 0;				// determines where player will appear
 		this.unlocked = options.unlocked || false;		// whether room has been unlocked yet
 		this.filename = options.filename || "room" + this.id + ".html";	// needed for loading room's static HTML
+		this.entities = options.entities || {};
 		this.scrollable = options.scrollable || false;
-		this.defaultSpawn = options.defaultSpawn || [300, 200];
+		this.defaultScroll = options.defaultScroll || [0,0];
 
+		this.spawnPoints = options.spawnPoints || {};
 		this.exits = options.exits || {};			// loaded from file the first time
 		this.nodes = options.nodes || {};			// loaded from file the first time
 		this.walkboxes = options.walkboxes || {};	// loaded from file the first time
 		this.baseline = options.baseline || {};		// loaded from file the first time
-		this.entities = options.entities || {};		// loaded from file the first time
 
 		// Store by id in rooms hash:
 		MYGAME.rooms[this.id] = this;
@@ -821,6 +823,7 @@ var MYGAME = (function($) {
 			if (status === "success") {
 				console.info("Room", me.id, "loaded.");
 				console.info(me);
+				utils.room.scrollTo(me.defaultScroll);
 				me.fadeIn();
 				me.announce();
 
@@ -830,26 +833,7 @@ var MYGAME = (function($) {
 				}
 			}
 		});
-		setTimeout(function() {
-			// Get player's doormat data for the entry used:
-			var ent = me.exits[me.entry],	// EXITS NOT AVAILABLE UNTIL AFTER CALLBACK
-				doormat = ent.doormat,
-				doordir = ent.dir,
-				playdir = MYGAME.doordirs[doordir];
-			// Place player into room:
-			if (doormat && playdir) {
-				MYGAME.player.placeAt([doormat.x, doormat.y]).face(playdir).show();
-			}
-			else {	// Default placement if data missing:
-				MYGAME.player.placeAt(me.defaultSpawn).face('ss').show();
-			}
-
-			// Fix updateXYZ() not setting correct position in time bug:
-			setTimeout(function() {
-				MYGAME.player.updateXYZ();
-			}, 200);
-
-		}, 1000);
+		setTimeout(this.spawnPlayer.bind(this), 1000);
 	};
 	Room.prototype.unload = function() {
 		var me = this;
@@ -885,6 +869,23 @@ var MYGAME = (function($) {
 			ent = this.entities[eid];
 			ent.createHTML();
 		}
+	};
+	Room.prototype.spawnPlayer = function() {
+		var player = MYGAME.player;
+		// Get player's spawn data for the entry used:
+		var spawnPt = this.spawnPoints[this.entry];
+		// Place player into room:
+		if (typeof spawnPt !== "undefined") {
+			player.placeAt([spawnPt.x, spawnPt.y]).face(spawnPt.face).show();
+		}
+		else {	// Default placement if data missing:
+			player.placeAt([300,200]).face('ss').show();
+		}
+
+		// Fix updateXYZ() setting correct position too soon bug:
+		setTimeout(function() {
+			player.updateXYZ();
+		}, 200);
 	};
 
 
@@ -957,7 +958,7 @@ var MYGAME = (function($) {
 	}
 	_BaseObj.prototype.createHTML = function() {
 		// Create an interactive HTML element on the appropriate layer:
-		this.jqDomNode = $("<div>", {id: this.id, class: this.type}).appendTo("#"+this.layer);
+		this.jqDomNode = $("<div>", {'id': this.id, 'class': this.type}).appendTo("#"+this.layer);
 		console.log("@", new Date().getTime(), 'HTML created for', this.id);
 
 		// Add any extra classes:
