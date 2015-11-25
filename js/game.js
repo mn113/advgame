@@ -623,17 +623,31 @@ var MYGAME = (function($) {
 		room: {
 			// Switch to another room:
 			change: function(dest) {	// Int
-//				if (typeof MYGAME.rooms[dest] !== "undefined") {	// WE MUST BE ABLE TO CHANGE TO AN UNDEFINED ROOM
-					// Set current room as previous:
-					MYGAME.prevRoom = MYGAME.curRoom;
-					// Unload:
-					MYGAME.curRoom.unload();
-					// Set new current room:
-//					MYGAME.curRoom = MYGAME.room[dest];
+				var current = MYGAME.curRoom;
+				console.warn("Moving from room", current.id, "to", dest);
+				// Set current room as previous:
+				MYGAME.prevRoom = current;
+				// Unload:
+				current.unload();
+
+				// Check if dest in rooms:
+				if (typeof MYGAME.rooms[dest] === 'object' ) {
+					// Load room from existing record:
+					current = MYGAME.rooms[dest];
+					var newroom = new MYGAME.Room(current);	// All saved properties are passed into the constructor
+					newroom.load();
+
+					// Add room's entities back in, after a delay:
+					setTimeout(function() {
+						newroom.populate();
+					}, 1000);
+				}
+				else {
+					// Load from file:
 					setTimeout(function() {
 						utils.misc.loadScript("room" + dest);	// Script includes Room loading
 					}, 1000);
-//				}
+				}
 			},
 			// Scroll the screen left or right by some amount:
 			scrollX: function(dir, amount) {		// e.g. "L", 50
@@ -702,7 +716,8 @@ var MYGAME = (function($) {
 			disableInput: function() {},
 			enableInput: function() {},
 			loadScript: function(name) {
-			   var script= document.createElement('script');
+				console.warn("Fetching script", name + ".js");
+				var script= document.createElement('script');
 			   script.type= 'text/javascript';
 			   script.src= '/js/' + name + '.js';
 			   script.async = true;
@@ -780,16 +795,17 @@ var MYGAME = (function($) {
 		// Essentials:
 		this.id = options.id || null;
 		this.name = options.name || null;
-		this.unlocked = options.unlocked || false;		// whether room has been unlocked yet
-		this.scrollable = options.scrollable || false;
 		this.entry = options.entry || 0;				// determines where player will appear
-		this.filename = "room" + this.id + ".html";		// needed for loading room's static HTML
-		this.defaultSpawn = [300, 200];
+		this.unlocked = options.unlocked || false;		// whether room has been unlocked yet
+		this.filename = options.filename || "room" + this.id + ".html";	// needed for loading room's static HTML
+		this.scrollable = options.scrollable || false;
+		this.defaultSpawn = options.defaultSpawn || [300, 200];
 
-//		this.walkboxes;		// loaded from file after construction
-//		this.nodes;			// loaded from file after construction
-//		this.exits;			// loaded from file after construction
-//		this.entities;		// loaded from file after construction
+		this.exits = options.exits || {};			// loaded from file the first time
+		this.nodes = options.nodes || {};			// loaded from file the first time
+		this.walkboxes = options.walkboxes || {};	// loaded from file the first time
+		this.baseline = options.baseline || {};		// loaded from file the first time
+		this.entities = options.entities || {};		// loaded from file the first time
 
 		// Store by id in rooms hash:
 		MYGAME.rooms[this.id] = this;
@@ -803,7 +819,8 @@ var MYGAME = (function($) {
 		$("#gamebox #foreground").load(this.filename + " #foreground *");
 		$("#gamebox #background").load(this.filename + " #background *", function(response, status, xhr) {
 			if (status === "success") {
-				console.log("Room", me.id, "loaded.");
+				console.info("Room", me.id, "loaded.");
+				console.info(me);
 				me.fadeIn();
 				me.announce();
 
@@ -844,21 +861,30 @@ var MYGAME = (function($) {
 			$("#midground *").not("#steve, #argyle_guy").remove();	// REDUNDANT
 			$("#foreground *").remove();
 			$("#pathsvg *").remove();
-		}, 2000);
+			console.info("@", new Date().getTime(), 'unload() completed for Room', this.id);
+		}, 1000);
 		return this;
 	};
 	Room.prototype.fadeIn = function() {
-		$("#blackout").show().fadeOut(3000);
+		$("#blackout").show().fadeOut(2000);
 		return this;
 	};
 	Room.prototype.fadeToBlack = function() {
-		$("#blackout").fadeIn(2000);
+		$("#blackout").fadeIn(1000);
 		return this;
 	};
 	Room.prototype.announce = function() {
 		// Put Room name briefly on screen
 		$(".announce").html(this.name).show().delay(1500).fadeOut(2000);
 		return this;
+	};
+	Room.prototype.populate = function() {
+		// Loop through all entities and recreate their HTML, attach jqDomNodes:
+		var eid, ent;
+		for (eid in this.entitites) {
+			ent = this.entities[eid];
+			ent.createHTML();
+		}
 	};
 
 
@@ -873,24 +899,33 @@ var MYGAME = (function($) {
 	*/
 	function _BaseObj(options) {	// (id, name, type, layer, width, height, visible)
 		// Essentials:
-		this.id = options.id;							// Everything must have an id
-		this.name = options.name;						// Everything must have a name
+		this.id = options.id;									// Everything must have an id
+		this.name = options.name;								// Everything must have a name
 		this.type = options.type;
-		if (typeof options.visible === "undefined") { options.visible = true; }		// Visible unless declared otherwise
+		this.layer = options.layer;
+		this.width = options.width || null;
+		this.height = options.height || null;
+		if (typeof options.visible === "undefined") { options.visible = true; }	// Visible unless declared otherwise
 		this.visible = options.visible;
-		this.x = 0;						// Everything must have coordinates
-		this.y = 0;
-		this.z = 0;
-		this.anchorOffset = [0,0];		// Every sprite needs an anchor offset
-		this.looksCtr = 0;				// Everything can be looked at 0 or more times
+		this.looksCtr = options.looksCtr || 0;					// Everything can be looked at 0 or more times
+		this.anchorOffset = options.anchorOffset || [0,0];		// Every sprite needs an anchor offset
+		this.x = options.x || 0;								// Everything must have coordinates
+		this.y = options.y || 0;
+		this.z = options.z || 0;
+		this.giveable = false;
+		this.classes = options.classes || null;
+		this.clickable = options.clickable || null;
+		this.descriptions = options.descriptions || null;
+		this.onExamine = options.onExamine || null;
+		this.uses = options.uses || null;
 
+		this.createHTML();	// Sets up the jqDomNode, adds classes, css, etc.
+/*
 		// Create an interactive HTML element on the appropriate layer:
-		$("<div>").attr("id", this.id)
-				  .addClass(this.type)
-				  .appendTo("#"+options.layer);
+		this.jqDomNode = $("<div>", {id: this.id, class: this.type}).appendTo("#"+options.layer);
 //		console.log("@", new Date().getTime(), 'HTML created for', this.id);
 
-		this.jqDomNode = $("#" + this.id);				// Everything must have a jqDomNode
+//		this.jqDomNode = $("#" + this.id);			// Everything must have a jqDomNode
 
 		// Add any extra classes:
 		if (options.classes) {
@@ -904,25 +939,41 @@ var MYGAME = (function($) {
 		if (options.width) {this.jqDomNode.css("width", options.width);}
 		if (options.height) {this.jqDomNode.css("height", options.height);}
 
-		this.giveable = false;
-
-		// Set up any passed uses, onExamine actions, and descriptions:
-		if (options.uses) {this.uses = options.uses; }
-		if (options.onExamine) {this.onExamine = options.onExamine; }
-		if (options.descriptions) {this.descriptions = options.descriptions; }
-
-		// Store by id in entities hash:
-		MYGAME.entities[this.id] = this;
-//		MYGAME.npcs[this.id] = this;
-
 		// Set visibility:
 		if (!this.visible) {
 			this.jqDomNode.hide();
 		}
+*/
+		// Set up any passed uses, onExamine actions, and descriptions:
+//		if (options.uses) {this.uses = options.uses; }
+//		if (options.onExamine) {this.onExamine = options.onExamine; }
+//		if (options.descriptions) {this.descriptions = options.descriptions; }
+
+		// Store by id in entities hash:
+		MYGAME.entities[this.id] = this;
+		MYGAME.curRoom.entities[this.id] = this;	// WHICH ONE SHALL I USE DEFINITIVELY?
+
 		return this;
 	}
+	_BaseObj.prototype.createHTML = function() {
+		// Create an interactive HTML element on the appropriate layer:
+		this.jqDomNode = $("<div>", {id: this.id, class: this.type}).appendTo("#"+this.layer);
+		console.log("@", new Date().getTime(), 'HTML created for', this.id);
+
+		// Add any extra classes:
+		if (this.classes) { this.jqDomNode.addClass(this.classes); }
+		// Set a class if not clickable:
+		if (this.clickable === false) { this.jqDomNode.addClass("dead"); }
+		// Set a non-default width & height, if defined:
+		if (this.width) {this.jqDomNode.css("width", this.width);}
+		if (this.height) {this.jqDomNode.css("height", this.height);}
+		// Set visibility:
+		if (!this.visible) { this.jqDomNode.hide(); }
+
+		return this;
+	};
 	_BaseObj.prototype.placeAt = function(coords) {
-		console.log("@", new Date().getTime(), 'placeAt() called for', this.id);
+//		console.log("@", new Date().getTime(), 'placeAt() called for', this.id);
 		this.jqDomNode.css("left", coords[0] - this.anchorOffset[0]);		// Compensate for anchor point
 		this.jqDomNode.css("top", coords[1] - this.anchorOffset[1]);		// being inside sprite
 		this.updateXYZ();
@@ -933,11 +984,11 @@ var MYGAME = (function($) {
 		else {
 			this.jqDomNode.hide();
 		}
-		this.reportLoc();
+//		this.reportLoc();
 		return this;
 	};
 	_BaseObj.prototype.updateXYZ = function() {
-		console.log("@", new Date().getTime(), 'updateXYZ() called for', this.id);
+//		console.log("@", new Date().getTime(), 'updateXYZ() called for', this.id);
 		// Set sprite's anchor coords:
 		this.x = this.jqDomNode.position().left + this.anchorOffset[0];		// Object's own x & y are INSIDE the div
 		this.y = this.jqDomNode.position().top + this.anchorOffset[1];
@@ -974,6 +1025,10 @@ var MYGAME = (function($) {
 	_BaseObj.prototype.show = function() {
 		this.jqDomNode.show();
 		this.visible = true;
+		return this;
+	};
+	_BaseObj.prototype.save = function() {
+		//
 		return this;
 	};
 
@@ -1245,6 +1300,7 @@ var MYGAME = (function($) {
 		// else return 0;
 	};
 	Character.prototype.walkTo = function(dest) {
+		if (!dest) { return; }
 		var room = MYGAME.curRoom,
 			point;
 		if (dest.hasOwnProperty("id")) {
@@ -1724,11 +1780,11 @@ var MYGAME = (function($) {
 		entityClickHandler: entityClickHandler,
 		// Constructors:
 		Room: Room,
-		Player: Player,
-		Character: Character,
-		Item: Item,
+		Exit: Exit,
 		Scenery: Scenery,
-		Exit: Exit
+		Item: Item,
+		Character: Character,
+		Player: Player
 	};
 }(jQuery));	// end global scoping / namespacing function
 

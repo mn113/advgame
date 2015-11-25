@@ -54,3 +54,6 @@
 22-Nov	dialogue system improvements
 
 23-Nov	created verbs & action line
+
+24-Nov	linked 2 rooms correctly
+24-Nov	room & object state can persist with saving & loading

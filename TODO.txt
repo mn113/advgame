@@ -73,10 +73,11 @@ inventory sandbox?
 //custom sizes for exits, items, scenery etc...
 //selectable verbs
 //action line
+//actions that happen on an examine (name change, icon change, puzzle advance, convos...)
 highlight valid verbs when dragging item
-
-/	link 2 rooms via exits
-when switching rooms, dont necessarily load js file - check rooms object first (preserves state)
+//	link 2 rooms via exits
+//	when switching rooms, dont necessarily load js file - check rooms object first (preserves state)
+//	preserve state of room and everything in it, for switching
 
 R5 parallax backgrounds
 R5 implement y-scaling (per-walkbox value?)
@@ -86,7 +87,6 @@ different option text and dialogue for player
 dialogues where NPC speaks to you first
 dialogues where back n forth continues unprompted
 cutscenes using NPC.say() and NPC.walkTo()
-//actions that happen on an examine (name change, icon change, puzzle advance, convos...)
 
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?
@@ -97,6 +97,7 @@ resolution changer: 1x, 2x, 3x, 4x (css/js)
 smartphone side-mission
 
 autosave feature (every 30 seconds?)
+jStorage plugin?
 save thumbnail of screenshot using html2canvas as base64 with savegames
 vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states?;
 

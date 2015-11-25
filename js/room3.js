@@ -33,7 +33,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	// Exits:
 	var exit1 = new M.Exit({
 		id: "exit1",
-		dest: 3,
+		dest: 2,
 		width: "50px",
 		height: "160px",
 		classes: "left",
@@ -80,7 +80,6 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 	room.load(room._afterLoad);	// load() puts HTML entities into page, the callback wires them up
 
-	console.log(M);
 	console.log("Room initialised.");
 
 	// Create SVG paths (for debug use):

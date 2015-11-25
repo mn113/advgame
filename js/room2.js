@@ -79,7 +79,6 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 	room.load(room._afterLoad);	// load() puts HTML entities into page, the callback wires them up
 
-	console.log(M);
 	console.log("Room initialised.");
 
 		// All descriptions for entities in this level:
