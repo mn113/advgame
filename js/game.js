@@ -472,24 +472,31 @@ var MYGAME = (function($) {
 			},
 			// Search algorithm checks all nodes in nodelist from start until finish is found:
 			breadthFirstSearch: function(startNode, finishNode, room) {	// Ints
-				var frontier = [startNode],		// e.g. 1
+				var frontier = [startNode],		// a queue, i.e. add to the back, take from the front
 					camefrom = {},
 					current;
 				camefrom[startNode] = null;
 
+				console.log("Room nodes:", room.nodes);
+
+				// Visit all nodes:
 				while (frontier.length > 0) {
 					current = frontier.shift();
 					var n = room.nodes[current],
 						i;
+					console.log("Current:", current, "n:", n);
 					for (i = 0; i < n.edges.length; i++) {
 						var edge = n.edges[i];
+						console.log("i:", i, "edge:", edge);
 						if (!camefrom[edge]) {
+							// Expand the frontier to non-visited nodes:
 							frontier.push(edge);
 							camefrom[edge] = current;
 						}
+						console.log("camefrom:", camefrom);
 					}
 				}
-				// Loop finished: every node now visited
+				// Loop finished: every node now visited.
 				// Reconstruct path:
 				var path = [finishNode];
 				current = finishNode;
@@ -628,7 +635,7 @@ var MYGAME = (function($) {
 				// Set current room as previous:
 				MYGAME.prevRoom = current;
 				// Unload:
-				current.unload();
+				current.unload();	// NOT QUICK ENOUGH
 
 				// Check if dest in rooms:
 				if (typeof MYGAME.rooms[dest] === 'object' ) {
@@ -640,13 +647,13 @@ var MYGAME = (function($) {
 					// Add room's entities back in, after a delay:
 					setTimeout(function() {
 						newroom.populate();
-					}, 1000);
+					}, 1500);
 				}
 				else {
 					// Load from file:
 					setTimeout(function() {
 						utils.misc.loadScript("room" + dest);	// Script includes Room loading
-					}, 1000);
+					}, 1500);
 				}
 			},
 			// Scroll the screen left or right by some amount:
@@ -846,7 +853,7 @@ var MYGAME = (function($) {
 			$("#foreground *").remove();
 			$("#pathsvg *").remove();
 			console.info("@", new Date().getTime(), 'unload() completed for Room', this.id);
-		}, 1000);
+		}, 800);
 		return this;
 	};
 	Room.prototype.fadeIn = function() {
@@ -906,10 +913,12 @@ var MYGAME = (function($) {
 		this.layer = options.layer;
 		this.width = options.width || null;
 		this.height = options.height || null;
+		this.scale = options.scale || 1;
 		if (typeof options.visible === "undefined") { options.visible = true; }	// Visible unless declared otherwise
 		this.visible = options.visible;
 		this.looksCtr = options.looksCtr || 0;					// Everything can be looked at 0 or more times
 		this.anchorOffset = options.anchorOffset || [0,0];		// Every sprite needs an anchor offset
+		this.anchorOffsetDefault = options.anchorOffsetDefault || [0,0];
 		this.x = options.x || 0;								// Everything must have coordinates
 		this.y = options.y || 0;
 		this.z = options.z || 0;
@@ -921,34 +930,6 @@ var MYGAME = (function($) {
 		this.uses = options.uses || null;
 
 		this.createHTML();	// Sets up the jqDomNode, adds classes, css, etc.
-/*
-		// Create an interactive HTML element on the appropriate layer:
-		this.jqDomNode = $("<div>", {id: this.id, class: this.type}).appendTo("#"+options.layer);
-//		console.log("@", new Date().getTime(), 'HTML created for', this.id);
-
-//		this.jqDomNode = $("#" + this.id);			// Everything must have a jqDomNode
-
-		// Add any extra classes:
-		if (options.classes) {
-			this.jqDomNode.addClass(options.classes);
-		}
-		// Set a class if not clickable:
-		if (options.clickable === false) {
-			this.jqDomNode.addClass("dead");
-		}
-		// Set a non-default width & height, if defined:
-		if (options.width) {this.jqDomNode.css("width", options.width);}
-		if (options.height) {this.jqDomNode.css("height", options.height);}
-
-		// Set visibility:
-		if (!this.visible) {
-			this.jqDomNode.hide();
-		}
-*/
-		// Set up any passed uses, onExamine actions, and descriptions:
-//		if (options.uses) {this.uses = options.uses; }
-//		if (options.onExamine) {this.onExamine = options.onExamine; }
-//		if (options.descriptions) {this.descriptions = options.descriptions; }
 
 		// Store by id in entities hash:
 		MYGAME.entities[this.id] = this;
@@ -958,7 +939,7 @@ var MYGAME = (function($) {
 	}
 	_BaseObj.prototype.createHTML = function() {
 		// Create an interactive HTML element on the appropriate layer:
-		this.jqDomNode = $("<div>", {'id': this.id, 'class': this.type}).appendTo("#"+this.layer);
+		this.jqDomNode = $("<div>", {'id': this.id, 'class': this.type}).addClass("scale10").appendTo("#"+this.layer);
 		console.log("@", new Date().getTime(), 'HTML created for', this.id);
 
 		// Add any extra classes:
@@ -1007,7 +988,7 @@ var MYGAME = (function($) {
 		return [gridx, gridy];
 	};
 	_BaseObj.prototype.reportLoc = function() {
-		console.log(this.id + ": I'm at (" + this.x + ', ' + this.y + '), Z-' + this.z + ", visibility " + this.visible);
+		console.log(this.id + ": I'm at (" + this.x + ', ' + this.y + '), Z-' + this.z + ", scale " + this.scale + ", visibility " + this.visible);
 	};
 	_BaseObj.prototype.remove = function() {
 		// From DOM:
@@ -1030,6 +1011,24 @@ var MYGAME = (function($) {
 	};
 	_BaseObj.prototype.save = function() {
 		//
+		return this;
+	};
+	_BaseObj.prototype.scaleBy = function(multiplier) {
+		var mult = parseFloat(multiplier, 10).toFixed(1);
+		if (mult > 0 && mult <= 1) {
+			this.scale = mult;
+			console.log("Scaling to", mult);
+			// Apply scaling CSS:
+			var intscale = Math.ceil(mult*10);
+			var newclass = (intscale <= 9) ? "scale0" : "scale";
+			newclass += intscale;
+			this.jqDomNode.removeClass("scale05 scale06 scale07 scale08 scale09 scale10").addClass(newclass);
+
+			// Adjust my anchorOffset:
+			this.anchorOffset[0] = mult * this.anchorOffsetDefault[0];
+			this.anchorOffset[1] = mult * this.anchorOffsetDefault[1];
+		}
+		this.updateXYZ;
 		return this;
 	};
 
@@ -1099,6 +1098,7 @@ var MYGAME = (function($) {
 		// Item-specific properties:
 		this.giveable = true;
 		this.anchorOffset = [16,28];	// corrects for 32x32 sprite
+		this.anchorOffsetDefault = [16,28];
 		this.pickable = true;
 		this.pickedUp = false;
 	}
@@ -1176,6 +1176,7 @@ var MYGAME = (function($) {
 		// Character-specific properties:
 		this.giveable = true;
 		this.anchorOffset = [16,44];	// corrects for 32x48 sprite
+		this.anchorOffsetDefault = [16,44];
 		this.textColour = options.colour;
 		this.talksCtr = 0;
 		this.convos = [];
@@ -1381,6 +1382,7 @@ var MYGAME = (function($) {
 		// Player-specific properties:
 		this.inventory = [];			// Hash of inventory item ids
 		this.anchorOffset = [40,170];	// offset for argyle_guy (40x88)
+		this.anchorOffsetDefault = [40,170];
 	}
 	// Inheritance: Player extends Character
 	Player.prototype = Object.create(Character.prototype, {
@@ -1611,8 +1613,8 @@ var MYGAME = (function($) {
 					}
 				}
 				// No specific object clicked, so just walk to the point:
-				this.player.jqDomNode.stop(true);
-				utils.pf.pathFind(this.player.coords(), evxy, this.curRoom);
+				MYGAME.player.jqDomNode.stop(true);
+				utils.pf.pathFind(MYGAME.player.coords(), evxy, MYGAME.curRoom);
 			}
 		}
 	}
@@ -1712,6 +1714,26 @@ var MYGAME = (function($) {
 					else if (e.keyCode === 85) {									// press 'u'
 						MYGAME.utils.ui.toolMode('use');
 					}
+/***************************************************************************************************/
+					else if (e.keyCode === 90) {									// press 'z'
+						MYGAME.player.scaleBy(0.5);
+					}
+					else if (e.keyCode === 88) {									// press 'x'
+						MYGAME.player.scaleBy(0.6);
+					}
+					else if (e.keyCode === 67) {									// press 'c'
+						MYGAME.player.scaleBy(0.7);
+					}
+					else if (e.keyCode === 86) {									// press 'v'
+						MYGAME.player.scaleBy(0.8);
+					}
+					else if (e.keyCode === 66) {									// press 'b'
+						MYGAME.player.scaleBy(0.9);
+					}
+					else if (e.keyCode === 78) {									// press 'n'
+						MYGAME.player.scaleBy(1);
+					}
+/***************************************************************************************************/
 					else if (e.keyCode === 68) {									// press 'd'
 						// Toggle debug state:
 						$("body").toggleClass("debug");
@@ -1724,22 +1746,26 @@ var MYGAME = (function($) {
 						// Toggle SVG layer:
 						$("svg").toggle();
 					}
+/***************************************************************************************************/
 					else if (e.keyCode === 37) {									// press 'left'
 						MYGAME.utils.room.scrollX("L", 20);
 					}
 					else if (e.keyCode === 39) {									// press 'right'
 						MYGAME.utils.room.scrollX("R", 20);
 					}
+/***************************************************************************************************/
 					else if (e.keyCode >= 48 && e.keyCode <= 57) {					// press '0-9'
 						// Change room:
 						MYGAME.utils.room.change(e.keyCode - 48);
 					}
+/***************************************************************************************************/
 					else if (e.keyCode === 116) {									// press 'F5'
 						MYGAME.utils.session.saveGame();
 					}
 					else if (e.keyCode === 117) {									// press 'F6'
 						MYGAME.utils.session.chooseSavedGame();
 					}
+/***************************************************************************************************/
 					else {															// any other keypress
 						$("body").removeClass();	// unset all modes
 						MYGAME.state.cursor.mode = 'default';
@@ -1789,4 +1815,4 @@ var MYGAME = (function($) {
 	};
 }(jQuery));	// end global scoping / namespacing function
 
-MYGAME.init(2);
+MYGAME.init(4);

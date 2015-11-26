@@ -136,13 +136,53 @@
 	position: absolute;
 	z-index: 1;
 	background: url(../img/argyle_guy_walking_2x.png);
+	-o-transform-origin: bottom center;
+	-webkit-transform-origin: bottom center;
+	-ms-transform-origin: bottom center;
+	transform-origin: bottom center;
 }
+.scale09 {
+    -moz-transform: scale(.9,.9);
+	-o-transform: scale(.9,.9);
+	-webkit-transform: scale(.9,.9);
+	transform: scale(.9,.9);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.9, M12=0, M21=0, M22=0.9, SizingMethod='auto expand')";
+}
+.scale08 {
+    -moz-transform: scale(.8,.8);
+	-o-transform: scale(.8,.8);
+	-webkit-transform: scale(.8,.8);
+	transform: scale(.8,.8);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.8, M12=0, M21=0, M22=0.8, SizingMethod='auto expand')";
+}
+.scale07 {
+    -moz-transform: scale(.7,.7);
+	-o-transform: scale(.7,.7);
+	-webkit-transform: scale(.7,.7);
+	transform: scale(.7,.7);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.7, M12=0, M21=0, M22=0.7, SizingMethod='auto expand')";
+}
+.scale06 {
+    -moz-transform: scale(.6,.6);
+	-o-transform: scale(.6,.6);
+	-webkit-transform: scale(.6,.6);
+	transform: scale(.6,.6);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.6, M12=0, M21=0, M22=0.6, SizingMethod='auto expand')";
+}
+.scale05 {
+    -moz-transform: scale(.5,.5);
+	-o-transform: scale(.5,.5);
+	-webkit-transform: scale(.5,.5);
+	transform: scale(.5,.5);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.5, M12=0, M21=0, M22=0.5, SizingMethod='auto expand')";
+}
+
 #argyle_guy.ss { background-position: 0 0; }
 #argyle_guy.nn { background-position: 0 -176px; }
 #argyle_guy.ee { background-position: 0 -352px; }
 #argyle_guy.ww {	/* Flip East to get West */
 	background-position: 0 -352px;
-   -moz-transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
 	-o-transform: scaleX(-1);
 	-webkit-transform: scaleX(-1);
 	transform: scaleX(-1);

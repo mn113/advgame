@@ -79,9 +79,10 @@ highlight valid verbs when dragging item
 //when switching rooms, dont necessarily load js file - check rooms object first (preserves state)
 //preserve state of room and everything in it, for switching
 
-R5 parallax backgrounds
-R5 implement y-scaling (per-walkbox value?)
+/R5 implement sprite scaling (per-walkbox value?)
 R5 vertical walk speed < horizontal walk speed (depending on perspective)
+R5 parallax backgrounds/foregrounds
+css blend-mode lighting effects
 
 different option text and dialogue for player
 dialogues where NPC speaks to you first

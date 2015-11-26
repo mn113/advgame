@@ -73,10 +73,9 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	room.nodes = {};
 	room.baseline = 178;	// pixels from top that walkable area starts
 	room.exits = {
-		0: {dest: 2},	// where entering player stands
+		0: {dest: 2},
 		1: {dest: 4}
 	};
-	room.entities = {};	// Could store fixed items and default items/characters in this object
 	room.spawnPoints = {
 		0: {x: 50, y: 235, face: 'ee'},
 		1: {x: 1185, y: 235, face: 'ww'}

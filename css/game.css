@@ -15,7 +15,7 @@ body {
 	border: 1px solid black;
 	background: #aaa;
 	width: 640px;
-	height: 400px;
+	height: 450px;
 	overflow: hidden;
 	z-index: 0;
 }
@@ -95,13 +95,13 @@ body {
 	width: 1280px;
 	height: 256px;
 }
-.room3 #background {
+.room4 #background {
 	top: 0px;
 	width: 1280px;
 	height: 344px;
 	background: url(../img/kscumm_bg.png) 0 0 no-repeat;
 }
-.room3 #midground {
+.room4 #midground {
 	top: 0;
 	width: 1280px;
 	height: 344px;

@@ -69,14 +69,13 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 			wb2: {points: [{x:129,y:178}, {x:287,y:178}, {x:263,y:226}, {x:89,y:226}], scale: 1}
 		};
 	room.nodes = {
-			1: {x: 283, y: 196, edges: [1]}
+			1: {x: 283, y: 196, edges: [1]}	// edges are the other nodes this node can see
 		};
 	room.baseline = 178;	// pixels from top that walkable area starts
 	room.exits = {
-		0: {dest: 3}	// where entering player stands
+		0: {dest: 3}
 	};
 	room.spawnPoints = {0: {x: 585, y: 215, face: 'ww'}};
-	room.entities = {};	// Could store fixed items and default items/characters in this object
 
 	room.load(room._afterLoad);	// load() puts HTML entities into page, the callback wires them up
 
