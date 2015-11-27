@@ -15,7 +15,8 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		id: 1,
 		name: "Flatroom",
 		unlocked: true,
-		entry: M.prevRoom
+		entry: M.prevRoom,
+		monoscale: false
 	});
 	M.curRoom = room;
 
@@ -33,12 +34,12 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 	// Define the geometry of room1:
 	room.walkboxes = {
-			wb1: {points: [{x:84,y:91}, {x:131,y:224}, {x:115,y:323}, {x:2,y:399}], scale: 1},
-			wb2: {points: [{x:84,y:91}, {x:131,y:224}, {x:282,y:232}, {x:343,y:209}, {x:340,y:141}], scale: 1},
-			wb3: {points: [{x:84,y:91}, {x:340,y:141}, {x:476,y:134}, {x:557,y:91}], scale: 1},
+			wb1: {points: [{x:84,y:91}, {x:131,y:224}, {x:115,y:323}, {x:2,y:399}], scale: 0.8},
+			wb2: {points: [{x:84,y:91}, {x:131,y:224}, {x:282,y:232}, {x:343,y:209}, {x:340,y:141}], scale: 0.6},
+			wb3: {points: [{x:84,y:91}, {x:340,y:141}, {x:476,y:134}, {x:557,y:91}], scale: 0.5},
 			wb4: {points: [{x:2,y:399}, {x:115,y:323}, {x:286,y:323}, {x:638,y:399}], scale: 1},
-			wb5: {points: [{x:638,y:399}, {x:286,y:323}, {x:282,y:232}, {x:343,y:209}, {x:488,y:210}], scale: 1},
-			wb6: {points: [{x:638,y:399}, {x:488,y:210}, {x:476,y:134}, {x:557,y:91}], scale: 1}
+			wb5: {points: [{x:638,y:399}, {x:286,y:323}, {x:282,y:232}, {x:343,y:209}, {x:488,y:210}], scale: 0.9},
+			wb6: {points: [{x:638,y:399}, {x:488,y:210}, {x:476,y:134}, {x:557,y:91}], scale: 0.7}
 		};
 	room.nodes = {
 			1: {x: 329, y: 134, edges: [2,3,4]},	// edges are the other nodes this node can see
@@ -54,7 +55,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		0: {dest: 2}
 	};
 	room.spawnPoints = {
-		0: {x: 300, y: 200, face: 'ww'},
+		0: {x: 300, y: 200, face: 'ww'}
 	};
 
 	room.load(M.Room.prototype._afterLoad);	// load() puts HTML entities into page, the callback wires them up

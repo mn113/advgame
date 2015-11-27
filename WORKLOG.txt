@@ -59,3 +59,5 @@
 24-Nov	room & object state can persist with saving & loading
 
 25-Nov	added spawnpoints & room scrollTo
+
+27-Nov	ironed out scaling & animation issues with walkTo

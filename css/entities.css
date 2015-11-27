@@ -180,20 +180,25 @@
 #argyle_guy.ss { background-position: 0 0; }
 #argyle_guy.nn { background-position: 0 -176px; }
 #argyle_guy.ee { background-position: 0 -352px; }
-#argyle_guy.ww {	/* Flip East to get West */
-	background-position: 0 -352px;
+#argyle_guy.ww { background-position: 0 -528px; }
+	/* Flip East to get West */
+/*	background-position: 0 -352px;
     -moz-transform: scaleX(-1);
 	-o-transform: scaleX(-1);
 	-webkit-transform: scaleX(-1);
 	transform: scaleX(-1);
 	filter: FlipH;
 	-ms-filter: "FlipH";
-}
+}*/
 #argyle_guy.walking.ss { animation: walk-arg-ss .9s 0s steps(6) infinite; }
 #argyle_guy.walking.nn { animation: walk-arg-nn .9s 0s steps(6) infinite; }
 #argyle_guy.walking.ee { animation: walk-arg-ee .9s 0s steps(8) infinite; }
-#argyle_guy.walking.ww { animation: walk-arg-ee .9s 0s steps(8) infinite; }
+#argyle_guy.walking.ww { animation: walk-arg-ww .9s 0s steps(8) infinite; }
 
+@keyframes walk-arg-ww {
+	from { background-position: -80px -528px; }
+	to   { background-position: -720px -528px; }
+}
 @keyframes walk-arg-ee {
 	from { background-position: -80px -352px; }
 	to   { background-position: -720px -352px; }
