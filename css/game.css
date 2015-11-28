@@ -99,9 +99,9 @@ body {
 	top: 0px;
 	width: 1280px;
 	height: 344px;
-	background: url(../img/kscumm_bg.png) 0 0 no-repeat;
+	xbackground: url(../img/kscumm_bg.png) 0 0 no-repeat;
 }
-.room4 #midground {
+.room4 #midground, .room4 #foreground {
 	top: 0;
 	width: 1280px;
 	height: 344px;

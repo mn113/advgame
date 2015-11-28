@@ -674,31 +674,44 @@ var MYGAME = (function($) {
 			// Scroll the screen left or right by some amount:
 			scrollX: function(dir, amount) {		// e.g. "L", 50
 				var $bg = $("#background"),
-					$fg = $("#midground"),
+					$mg = $("#midground, #pathsvg"),
+					$fg = $("#foreground"),
 					$svg = $("#pathsvg"),
-					// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
-					bgPos = -1 * parseInt($bg.position().left, 10),
+					$bg1 = $bg.children(":nth-child(1)"),
+					$bg2 = $bg.children(":nth-child(2)"),
+					$bg3 = $bg.children(":nth-child(3)"),
+					$mid = $mg.add($bg3);
+
+				// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
+				var bgPos = -1 * parseInt($bg3.position().left, 10),
 					min = 0,
-					max = parseInt($bg.css("width"), 10) - 640;
+					max = parseInt($bg3.css("width"), 10) - 640;
+
 				// Check if scroll possible first:
 				if ((dir === 'L' && bgPos - 5 < min) || (dir === 'R' && bgPos + 5 > max)) {
 					console.log("Cannot scroll out-of-bounds.");
 					return;
 				}
 
-				var delta;
-				if (dir === 'L') { delta = '+=5px'; }
-				else if (dir === 'R') { delta = '-=5px'; }
+				// Prepare animation values:
+				var delta = [];
+				if (dir === 'L') {
+					delta = ['+=15px', '+=30px', '+=60px'];	// trees; buildings; grasses
+				}
+				else if (dir === 'R') {
+					delta = ['-=15px', '-=30px', '-=60px'];
+				}
+				console.log(delta);
 
 				// Scroll incrementally:
 				var scrolledpx = 0;
 				while (scrolledpx < amount) {
-					$bg.animate({"left": delta}, 10, 'linear');
-					$fg.animate({"left": delta}, 10, 'linear');
-					$svg.animate({"left": delta}, 10, 'linear');
+					$bg2.animate({"left": delta[0]}, 75, 'swing');
+					$mid.animate({"left": delta[1]}, 75, 'swing');	// includes $bg3 and $svg
+					$fg.animate({"left": delta[2]}, 75, 'swing');
 					scrolledpx += 5;
 					// Are we too close to left or right limit?:
-					bgPos = -1 * parseInt($bg.position().left, 10);
+					bgPos = -1 * parseInt($bg3.position().left, 10);
 					if ((dir === 'L' && bgPos - 10 < min) || (dir === 'R' && bgPos + 10 > max)) {
 						break;
 					}
@@ -727,11 +740,11 @@ var MYGAME = (function($) {
 
 				// Scroll if click not central:
 				console.log(point[0] - bgPos + "px relative to gamebox.");
-				if (point[0] - bgPos < 160 && bgPos > min) {		// click in first quarter of viewport
-					utils.room.scrollX("L", 160);
+				if (point[0] - bgPos < 200 && bgPos > min) {		// click in first quarter of viewport
+					utils.room.scrollX("L", 200);
 				}
-				else if (point[0] - bgPos > 480 && bgPos < max) {	// click in final quarter of viewport
-					utils.room.scrollX("R", 160);
+				else if (point[0] - bgPos > 440 && bgPos < max) {	// click in final quarter of viewport
+					utils.room.scrollX("R", 200);
 				}
 			}
 		},
@@ -1775,10 +1788,10 @@ var MYGAME = (function($) {
 					}
 /***************************************************************************************************/
 					else if (e.keyCode === 37) {									// press 'left'
-						MYGAME.utils.room.scrollX("L", 20);
+						MYGAME.utils.room.scrollX("L", 30);
 					}
 					else if (e.keyCode === 39) {									// press 'right'
-						MYGAME.utils.room.scrollX("R", 20);
+						MYGAME.utils.room.scrollX("R", 30);
 					}
 /***************************************************************************************************/
 					else if (e.keyCode >= 48 && e.keyCode <= 57) {					// press '0-9'
@@ -1842,5 +1855,4 @@ var MYGAME = (function($) {
 	};
 }(jQuery));	// end global scoping / namespacing function
 
-MYGAME.init(1);
-window.intervals = 0;
+MYGAME.init(4);

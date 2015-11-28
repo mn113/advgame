@@ -61,3 +61,4 @@
 25-Nov	added spawnpoints & room scrollTo
 
 27-Nov	ironed out scaling & animation issues with walkTo
+27-Nov	lighting effect and parallax implemented

@@ -16,7 +16,8 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		name: "KSCUMM radio station",
 		unlocked: true,
 		scrollable: true,
-		defaultScroll: [640,0]
+		defaultScroll: [0,0],
+		monoscale: false
 	});
 	M.curRoom = room;
 

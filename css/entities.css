@@ -29,6 +29,24 @@
 	top: 80px;
 }
 
+#background {
+	xperspective: 1px;
+	xwidth: 100vw;
+}
+
+.parallax {
+	position: absolute;
+	width: 1280px;
+	height: 344px;
+	xtransform-style: preserve-3d;
+	xbackground-position: 50% 50%;
+	xbackground-repeat: no-repeat;
+	xbackground-attachment: fixed;
+	xbackground-size: cover;
+}
+.bg1 { background: url(../img/kscumm_bg1.png); z-index: 0;   xtransform: translateZ(0); }
+.bg2 { background: url(../img/kscumm_bg2.png); z-index: -20; xtransform: translateZ(-10px) scale(11); }
+.bg3 { background: url(../img/kscumm_bg3.png); z-index: -40; xtransform: translateZ(-20px) scale(21); }
 
 /* Foreground: */
 .scenery {
@@ -43,12 +61,28 @@
 	left: 0;
 	z-index: 230;
 }
-.grass {
+.grass1 {
+	width: 264px;
+	height: 84px;
+	background: url(../img/kscumm_grass1.png);
+	bottom: 0;
+	left: 0;
+	z-index: 400;
+}
+.grass2 {
 	width: 456px;
 	height: 167px;
-	background: url(../img/kscumm_fg.png);
+	background: url(../img/kscumm_grass2.png);
 	bottom: 0;
 	right: 0;
+	z-index: 400;
+}
+.yellow {
+	width: 400px;
+	height: 400px;
+	background: url(../img/yellow_light_test.png);
+	bottom: 0;
+	left: 0;
 	z-index: 400;
 }
 
