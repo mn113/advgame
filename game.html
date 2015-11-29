@@ -15,7 +15,16 @@
 		<link rel="stylesheet" href="css/entities.css">
 	</head>
 	<body>
-		<div id="gamebox">
+		<div id="gamewrap">
+			<div id="innerwrap">
+				<div id="saveload">
+					<div id="saveload_inner">
+						<h2>Load game</h2>
+						<img src="img/zak_bedroom.png"><p>29 November 2015 01:50</p>
+						<img src="img/zak_bedroom.png"><p>29 November 2015 01:50</p>
+					</div>
+				</div>
+				<div id="gamebox">
 			<!-- The stage: -->
 			<div id="background"><!-- static visual layer - loaded from roomX.html -->
 			</div>
@@ -50,8 +59,10 @@
 				</svg>
 			</div>
 		</div>
-			<div id="keypress" class="debug"></div>
-			<div id="mousexy" class="debug"></div>
+			</div>
+		</div>
+		<div id="keypress" class="debug"></div>
+		<div id="mousexy" class="debug"></div>
 
 		<script src="js/jquery-1.11.3.js"></script>
 		<script src="js/jquery-ui.min.js"></script>

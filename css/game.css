@@ -9,10 +9,60 @@ body {
 	z-index: 0;
 }
 
-#gamebox {
-	position: relative;
+#gamewrap {
+	position: absolute;
 	margin: 30px;
 	border: 1px solid black;
+	background: black;
+	width: 640px;
+	height: 450px;
+	overflow: hidden;
+	-webkit-perspective: 640px;
+	perspective: 640px;
+}
+#innerwrap {
+	position: relative;
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+	-webkit-transform: rotateY(-90deg) translateX(-320px) translateZ(0px);
+	transform: rotateY(-90deg) translateX(-320px) translateZ(0px);
+	-webkit-transition: -webkit-transform 1.5s ease;
+	transition: transform 1.5s ease;
+}
+
+#gamewrap.saveload #innerwrap {
+	-webkit-transform: rotateY(0) translateX(0px) translateZ(-320px);
+	transform: rotateY(0) translateX(0px) translateZ(-320px);
+	-webkit-transition: -webkit-transform 1.5s ease;
+	transition: transform 1.5s ease;
+}
+
+#saveload {
+	position: absolute;
+	left: 0;
+	background: blue;
+	color: white;
+	font: 16px DOS437;
+	width: 640px;
+	height: 450px;
+
+	-webkit-transform: rotateY(0deg) translateZ(320px);
+	transform: rotateY(0deg) translateZ(320px);
+	-webkit-backface-visibility: visible;
+	backface-visibility: visible;
+}
+#saveload_inner {
+	margin: 20px;
+}
+
+#gamebox {
+	-webkit-transform: rotateY(90deg) translateZ(320px);
+	transform: rotateY(90deg) translateZ(320px);
+	-webkit-backface-visibility: visible;
+	backface-visibility: visible;
+
+	position: absolute;
+	right: 0;
 	background: #aaa;
 	width: 640px;
 	height: 450px;

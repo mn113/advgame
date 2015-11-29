@@ -62,3 +62,5 @@
 
 27-Nov	ironed out scaling & animation issues with walkTo
 27-Nov	lighting effect and parallax implemented
+
+29-Nov	savegame screen with 3d cube transform added

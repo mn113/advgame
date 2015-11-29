@@ -688,7 +688,13 @@ var MYGAME = (function($) {
 					max = parseInt($bg3.css("width"), 10) - 640;
 
 				// Check if scroll possible first:
-				if ((dir === 'L' && bgPos - 5 < min) || (dir === 'R' && bgPos + 5 > max)) {
+				if (dir === 'L' && bgPos - 30 < min) {
+					utils.room.scrollTo([min,0]);
+					console.log("Cannot scroll out-of-bounds.");
+					return;
+				}
+				else if (dir === 'R' && bgPos + 30 > max) {
+					utils.room.scrollTo([max,0]);
 					console.log("Cannot scroll out-of-bounds.");
 					return;
 				}
@@ -705,14 +711,19 @@ var MYGAME = (function($) {
 
 				// Scroll incrementally:
 				var scrolledpx = 0;
-				while (scrolledpx < amount) {
-					$bg2.animate({"left": delta[0]}, 75, 'swing');
-					$mid.animate({"left": delta[1]}, 75, 'swing');	// includes $bg3 and $svg
-					$fg.animate({"left": delta[2]}, 75, 'swing');
-					scrolledpx += 5;
+				while (scrolledpx < amount) {	// THIS WHILE LOOP CAUSES THE OVERSCROLLING
+					$bg2.animate({"left": delta[0]},
+								 {queue: "scroll", duration: 75, easing: 'swing'});
+					$mid.animate({"left": delta[1]},
+								 {queue: "scroll", duration: 75, easing: 'swing'});	// includes $bg3 and $svg
+					$fg.animate( {"left": delta[2]},
+								 {queue: "scroll", duration: 75, easing: 'swing'});
+					scrolledpx += 30;
+
 					// Are we too close to left or right limit?:
 					bgPos = -1 * parseInt($bg3.position().left, 10);
-					if ((dir === 'L' && bgPos - 10 < min) || (dir === 'R' && bgPos + 10 > max)) {
+					if ((dir === 'L' && bgPos - 30 < min) || (dir === 'R' && bgPos + 30 > max)) {
+						$bg2.add($mid).add($fg).stop("scroll", true, false);	// clearQueue, don't complete
 						break;
 					}
 				}
@@ -727,7 +738,6 @@ var MYGAME = (function($) {
 			// Run this when player is moving about to decide when scrolling is necessary:
 			scrollDecide: function(point) {
 				var $bg = $("#background"),
-					$gbox = $("#gamebox"),
 					// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
 					bgPos = -1 * parseInt($bg.position().left, 10),
 					min = 0,
@@ -745,6 +755,21 @@ var MYGAME = (function($) {
 				}
 				else if (point[0] - bgPos > 440 && bgPos < max) {	// click in final quarter of viewport
 					utils.room.scrollX("R", 200);
+				}
+			},
+			//
+			keepPlayerCentral: function() {
+				var player = MYGAME.player,
+					midpoint = [320,0],
+					mgposX = $("#midground").position().left,
+					relX = player.x - mgposX,
+					offCentreX = relX - midpoint[0];
+				// Correct scroll to keep player central:
+				if (offCentreX < -100) {
+					utils.room.scrollX("R", -1 * offCentreX);
+				}
+				else if (offCentreX > 100) {
+					utils.room.scrollX("L", offCentreX);
 				}
 			}
 		},
@@ -1362,7 +1387,6 @@ var MYGAME = (function($) {
 								queue: "walk",
 								easing: "linear",
 								start: function() {
-//									me.jqDomNode.addClass("walking");
 									var dx = point[0] - me.x,
 										dy = point[1] - me.y,
 										angle = (360 / 6.28) * Math.atan2(dy,dx);
@@ -1382,6 +1406,8 @@ var MYGAME = (function($) {
 											me.scaleBy(wb.scale);
 										}
 									}
+									// Scrolling:
+									utils.room.keepPlayerCentral();
 								},
 								complete: function() {
 									me.reportLoc();
@@ -1804,6 +1830,10 @@ var MYGAME = (function($) {
 					}
 					else if (e.keyCode === 117) {									// press 'F6'
 						MYGAME.utils.session.chooseSavedGame();
+					}
+/***************************************************************************************************/
+					else if (e.keyCode === 27) {									// press 'Esc'
+						$("#gamewrap").toggleClass("saveload");
 					}
 /***************************************************************************************************/
 					else {															// any other keypress
