@@ -64,3 +64,6 @@
 27-Nov	lighting effect and parallax implemented
 
 29-Nov	savegame screen with 3d cube transform added
+
+3-Dec	dialogue system improvements
+3-Dec	cutscenes implemented

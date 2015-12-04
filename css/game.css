@@ -167,6 +167,11 @@ body {
 	z-index: 1000;
 }}
 
+/* DISABLED INPUT STATE */
+.noinput #gamebox {
+	pointer-events: none;
+}
+
 
 /* GRID STUFF */
 #tablecloth {

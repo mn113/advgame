@@ -39,6 +39,18 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		visible: true,
 		active:true
 	}).placeAt([590,70]);
+	// Characters:
+	var malin = new M.Character({
+		id: "malin",
+		name: "Malin",
+		colour: "pink",
+		anchorOffset: [27,170],
+		anchorOffsetDefault: [27,170],
+		convos: {
+			active: [1],
+			passive: [1,5]
+		}
+	}).placeAt([400,250]).face('ss');
 	// Scenery:
 	var catclock = new M.Scenery({
 		id: "cat_clock_tail",

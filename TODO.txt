@@ -84,10 +84,13 @@ highlight valid verbs when dragging item
 R5 vertical walk speed < horizontal walk speed (depending on perspective) - not worth doing?
 //3d transform to bring in save/load screen
 
-different option text and dialogue for player
-dialogues where NPC speaks to you first
-dialogues where back n forth continues unprompted
-cutscenes using NPC.say() and NPC.walkTo()
+//dialogues where back n forth continues unprompted
+//different option text and dialogue for player
+//cutscenes using NPC.say() and NPC.walkTo()
+//disable + enable input
+//dialogues where NPC speaks to you first
+//allow multiple dialogue texts on screen simultaneously
+basic mouth animation
 
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?

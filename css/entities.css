@@ -44,9 +44,9 @@
 	xbackground-attachment: fixed;
 	xbackground-size: cover;
 }
-.bg1 { background: url(../img/kscumm_bg1.png); z-index: 0;   xtransform: translateZ(0); }
-.bg2 { background: url(../img/kscumm_bg2.png); z-index: -20; xtransform: translateZ(-10px) scale(11); }
-.bg3 { background: url(../img/kscumm_bg3.png); z-index: -40; xtransform: translateZ(-20px) scale(21); }
+.room4 .bg1 { background: url(../img/kscumm_bg1.png); z-index: 0;   xtransform: translateZ(0); }
+.room4 .bg2 { background: url(../img/kscumm_bg2.png); z-index: -20; xtransform: translateZ(-10px) scale(11); }
+.room4 .bg3 { background: url(../img/kscumm_bg3.png); z-index: -40; xtransform: translateZ(-20px) scale(21); }
 
 /* Foreground: */
 .scenery {
@@ -258,6 +258,11 @@
 }
 
 /* Need graceful fallback for IE with its lack of clipping path support */
+#malin {
+	background: url(../img/malin.png);
+	height: 176px;
+	width: 54px;
+}
 #pepper { background: url(../img/pepperpotts.png); }
 #pepper:hover { background: red url(../img/pepperpotts.png); }
 #steve { background: url(../img/steverogers.png); }

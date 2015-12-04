@@ -33,6 +33,7 @@ var MYGAME = (function($) {
 		noun1: null,
 		noun2: null
 	};
+	this.cutscenes = null;
 
 	// REALLY USEFUL DEBUGGING CANVAS:
 	this.canvas = document.createElement("canvas");
@@ -220,6 +221,14 @@ var MYGAME = (function($) {
 			//
 			selectVerb: function(verb) {
 
+			},
+			// Disable keyboard & mouse input to the game:
+			disableInput: function() {
+				$("body").addClass("noinput");
+			},
+			// Enable keyboard & mouse input to the game:
+			enableInput: function() {
+				$("body").removeClass("noinput");
 			}
 		},
 		grid: {
@@ -409,7 +418,7 @@ var MYGAME = (function($) {
 			scaleAtPoint: function(point) {
 				var wbname = utils.grid.whichWalkbox(point);
 				var wb = MYGAME.curRoom.walkboxes[wbname];
-				return wb.scale;
+				return (typeof wb.scale !== 'undefined') ? wb.scale : 1;
 			}
 		},
 		pathfinding: {
@@ -676,16 +685,15 @@ var MYGAME = (function($) {
 				var $bg = $("#background"),
 					$mg = $("#midground, #pathsvg"),
 					$fg = $("#foreground"),
-					$svg = $("#pathsvg"),
-					$bg1 = $bg.children(":nth-child(1)"),
-					$bg2 = $bg.children(":nth-child(2)"),
-					$bg3 = $bg.children(":nth-child(3)"),
-					$mid = $mg.add($bg3);
+					$bg1 = $bg.children(".bg1"),
+					$bg2 = $bg.children(".bg2"),
+					$bg3 = $bg.children(".bg3"),
+					$mid = $mg.add($bg1);
 
 				// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
-				var bgPos = -1 * parseInt($bg3.position().left, 10),
+				var bgPos = -1 * parseInt($bg1.position().left, 10),
 					min = 0,
-					max = parseInt($bg3.css("width"), 10) - 640;
+					max = parseInt($bg1.css("width"), 10) - 640;
 
 				// Check if scroll possible first:
 				if (dir === 'L' && bgPos - 30 < min) {
@@ -712,16 +720,20 @@ var MYGAME = (function($) {
 				// Scroll incrementally:
 				var scrolledpx = 0;
 				while (scrolledpx < amount) {	// THIS WHILE LOOP CAUSES THE OVERSCROLLING
+					// $bg3 doesn't scroll at all (horizon)
+					// $bg2 scrolls a little:
 					$bg2.animate({"left": delta[0]},
 								 {queue: "scroll", duration: 75, easing: 'swing'});
+					// Midground + bg1 + svg scroll normally:
 					$mid.animate({"left": delta[1]},
-								 {queue: "scroll", duration: 75, easing: 'swing'});	// includes $bg3 and $svg
+								 {queue: "scroll", duration: 75, easing: 'swing'});
+					// Foreground objects scroll exaggerated:
 					$fg.animate( {"left": delta[2]},
 								 {queue: "scroll", duration: 75, easing: 'swing'});
 					scrolledpx += 30;
 
 					// Are we too close to left or right limit?:
-					bgPos = -1 * parseInt($bg3.position().left, 10);
+					bgPos = -1 * parseInt($bg1.position().left, 10);
 					if ((dir === 'L' && bgPos - 30 < min) || (dir === 'R' && bgPos + 30 > max)) {
 						$bg2.add($mid).add($fg).stop("scroll", true, false);	// clearQueue, don't complete
 						break;
@@ -1230,11 +1242,11 @@ var MYGAME = (function($) {
 
 		// Character-specific properties:
 		this.giveable = true;
-		this.anchorOffset = [16,44];	// corrects for 32x48 sprite
-		this.anchorOffsetDefault = [16,44];
-		this.textColour = options.colour;
+//		this.anchorOffset = [16,44];	// corrects for 32x48 sprite
+//		this.anchorOffsetDefault = [16,44];
+		this.textColour = options.colour || 'black';
+		this.convos = options.convos || null;
 		this.talksCtr = 0;
-		this.convos = [];
 		this.state = 0;					// advances as gameplay dictates
 		this.walkData = [];
 	}
@@ -1246,8 +1258,8 @@ var MYGAME = (function($) {
 	Character.prototype.say = function(sentences, _callback) {	// Array or string
 		// Wait for previous lines to finish:
 
-		// Clear out previous lines:
-		$("#dialogue").html('');
+		// Clear out this Character's previous lines:
+		$("#dialogue .dia").filter('.' + this.id).html('');
 
 		// Got input?
 		if (sentences) {
@@ -1256,14 +1268,12 @@ var MYGAME = (function($) {
 				sentences = [sentences];
 			}
 
-//			var me = this;		// Store 'this' (me/Character) to pass to function below
-
 			// Set first timed sayLoop iteration going:
 			this._sayLoop(sentences, 0);
 
-			// Activate callback after waiting (roughly) for all the talking to finish:
+			// Activate say() callback after waiting (roughly) for all the talking to finish:
 			if (_callback && typeof _callback === "function") {
-				setTimeout(_callback, 100 * sentences[0].length * sentences.length);
+				setTimeout(_callback, 120 * sentences[0].length * sentences.length);
 			}
 		}
 		return this;
@@ -1274,19 +1284,20 @@ var MYGAME = (function($) {
 
 		// Figure out optimal duration and positioning of dialogue line:
 		line = sentences[i];
-		duration = line.length * 100;
-		top = Math.max(0, (this.y - 200));		// NOT VERY SCIENTIFIC DIALOGUE POSITIONING
+		duration = line.length * 120;
+		top = Math.max(0, (this.y - 200));		// NOT VERY SCIENTIFIC DIALOGUE V-POSITIONING
 		left = Math.max(0, (this.x - 100));			// prevent offscreen text
 		right = Math.min(640, (this.x + 100));		// prevent offscreen text
-		left = Math.min(left, right);
+		left = (left + right - 200) / 2;
 
 		// Add a new text div to #dialogue:
-		$("<div class='dia'>").appendTo($("#dialogue"))
-							  .css("color", this.textColour)
-							  .css("top", top)
-							  .css("left", left)
-							  .html(line).show()
-							  .delay(duration).fadeOut(1500);
+		$("<p class='dia'>").appendTo($("#dialogue"))
+							.addClass(this.id)
+							.css("color", this.textColour)
+							.css("top", top)
+							.css("left", left)
+							.html(line).show()
+							.delay(duration).fadeOut(1500);
 		i++;
 		// Not done? Initiate the next one:
 		if (i < sentences.length) {
@@ -1407,7 +1418,9 @@ var MYGAME = (function($) {
 										}
 									}
 									// Scrolling:
-									utils.room.keepPlayerCentral();
+									if (MYGAME.curRoom.scrollable) {
+										utils.room.keepPlayerCentral();
+									}
 								},
 								complete: function() {
 									me.reportLoc();
@@ -1476,7 +1489,14 @@ var MYGAME = (function($) {
 	};
 	Player.prototype.talkTo = function(character) {
 		if (character.hasOwnProperty('name')) {
-			MYGAME.dialogues.choicesFromOpts(character, null, true);
+			if (character.convos.active) {
+				// Active means NPC wants to initiate a convo:
+				MYGAME.dialogues.doNPCDialogue(character, character.convos.active[0]);
+			}
+			else {
+				// Player gets to initiate:
+				MYGAME.dialogues.lookupDialogueChoices(character, null, true);
+			}
 		}
 	};
 //	Player.prototype.canUse = function(item1, item2) {
@@ -1763,6 +1783,10 @@ var MYGAME = (function($) {
 				/* INPUT */
 				// Register keypress events on the whole document:
 				$(document).keydown(function(e) {	// keydown is Safari-compatible; keypress allows holding a key to send continuous events
+					if ($("body").hasClass("noinput")) {
+						return;
+					}
+
 					MYGAME.utils.ui.toolMode(null);
 
 					if (e.keyCode === 87) {											// press 'w'
@@ -1870,6 +1894,7 @@ var MYGAME = (function($) {
 		ctx: this.ctx,
 		state: this.state,
 		commandObj: this.commandObj,
+		cutscenes: this.cutscenes,
 		// Declared as vars (var a = ):
 		utils: utils,
 		// Declared as functions:
@@ -1885,4 +1910,4 @@ var MYGAME = (function($) {
 	};
 }(jQuery));	// end global scoping / namespacing function
 
-MYGAME.init(4);
+MYGAME.init(2);
