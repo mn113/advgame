@@ -171,9 +171,9 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		id: 0,
 		name: "Grassy Knoll",
 		unlocked: true,
-		entry: M.prevRoom
+		entry: M.rooms.previous
 	});
-	M.curRoom = room;
+	M.rooms.current = room;
 	room.walkboxes = {
 			wb1: {points: [{x:60,y:10}, {x:140,y:10}, {x:140,y:40}, {x:60,y:40}], scale: 1},
 			wb2: {points: [{x:140,y:10}, {x:200,y:50}, {x:200,y:90}, {x:140,y:150}], scale: 1},

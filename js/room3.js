@@ -17,7 +17,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		unlocked: true,
 		scrollable: true
 	});
-	M.curRoom = room;
+	M.rooms.current = room;
 
 	// Define the content:
 	var cheese = new M.Item({id: "cheese", name: "Cheese"}).placeAt([200,250]);

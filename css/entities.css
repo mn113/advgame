@@ -1,6 +1,6 @@
 /* SCENERY */
 #background .hole {
-	background: url(../img/terrain_2.png) -585px -69px;
+	background: url(../img/_old/terrain_2.png) -585px -69px;
 	width: 80px;
 	height: 80px;
 	position: absolute;
@@ -8,7 +8,7 @@
 	left: 60px;
 }
 #background .wall {
-	background: url(../img/dungeon.png) -69px -64px;
+	background: url(../img/_old/dungeon.png) -69px -64px;
 	width: 60px;
 	height: 32px;
 	position: absolute;
@@ -24,7 +24,7 @@
 #cat_clock_tail {
 	width: 18px;
 	height: 14px;
-	background: url(../img/cat_clock_tail.gif);
+	background: url(../img/props/cat_clock_tail.gif);
 	left: 305px;
 	top: 80px;
 }
@@ -44,9 +44,9 @@
 	xbackground-attachment: fixed;
 	xbackground-size: cover;
 }
-.room4 .bg1 { background: url(../img/kscumm_bg1.png); z-index: 0;   xtransform: translateZ(0); }
-.room4 .bg2 { background: url(../img/kscumm_bg2.png); z-index: -20; xtransform: translateZ(-10px) scale(11); }
-.room4 .bg3 { background: url(../img/kscumm_bg3.png); z-index: -40; xtransform: translateZ(-20px) scale(21); }
+.room4 .bg1 { background: url(../img/scenes/kscumm_bg1.png); z-index: 0;   xtransform: translateZ(0); }
+.room4 .bg2 { background: url(../img/scenes/kscumm_bg2.png); z-index: -20; xtransform: translateZ(-10px) scale(11); }
+.room4 .bg3 { background: url(../img/scenes/kscumm_bg3.png); z-index: -40; xtransform: translateZ(-20px) scale(21); }
 
 /* Foreground: */
 .scenery {
@@ -56,7 +56,7 @@
 #bed {
 	width: 262px;
 	height: 86px;
-	background: url(../img/zak_bed_fg_2x.png);
+	background: url(../img/scenes/zak_bed_fg_2x.png);
 	bottom: 0;
 	left: 0;
 	z-index: 230;
@@ -64,7 +64,7 @@
 .grass1 {
 	width: 264px;
 	height: 84px;
-	background: url(../img/kscumm_grass1.png);
+	background: url(../img/scenes/kscumm_grass1.png);
 	bottom: 0;
 	left: 0;
 	z-index: 400;
@@ -72,7 +72,7 @@
 .grass2 {
 	width: 456px;
 	height: 167px;
-	background: url(../img/kscumm_grass2.png);
+	background: url(../img/scenes/kscumm_grass2.png);
 	bottom: 0;
 	right: 0;
 	z-index: 400;
@@ -80,7 +80,7 @@
 .yellow {
 	width: 400px;
 	height: 400px;
-	background: url(../img/yellow_light_test.png);
+	background: url(../img/scenes/yellow_light_test.png);
 	bottom: 0;
 	left: 0;
 	z-index: 400;
@@ -101,7 +101,7 @@
 	background: none;
 }
 .door.closed {
-	background: url(../img/city_inside.png) -512px -65px;
+	background: url(../img/_old/city_inside.png) -512px -65px;
 }
 
 /* ITEMS */
@@ -112,54 +112,54 @@
 	z-index: 100;
 }
 #bread {
-	background: url(../img/bread.png);
+	background: url(../img/props/bread.png);
 }
 #slicedbread {
-	background: url(../img/slicedbread.png);
+	background: url(../img/props/slicedbread.png);
 }
 #sandwich {
-	background: url(../img/sandwich.png);
+	background: url(../img/props/sandwich.png);
 }
 #cheese {
-	background: url(../img/cheese.png);
+	background: url(../img/props/cheese.png);
 }
 #chest.closed {
-	background: url(../img/chest.png);
+	background: url(../img/props/chest.png);
 }
 #chest.open {
-	background: url(../img/openchest.png);
+	background: url(../img/props/openchest.png);
 }
 #knife {
-	background: url(../img/knife.png);
+	background: url(../img/props/knife.png);
 }
 #key {
-	background: url(../img/key.png);
+	background: url(../img/props/key.png);
 }
 #chicken {
-	background: url(../img/chicken.png);
+	background: url(../img/props/chicken.png);
 }
 
-/* These hover states wil later be done with bg-position shift :*/
+/* These hover states will later be done with bg-position shift :*/
 #inventory #bread:hover {
-	background: url(../img/bread_outline.png);
+	background: url(../img/props/bread_outline.png);
 }
 #inventory #slicedbread:hover {
-	background: url(../img/slicedbread_outline.png);
+	background: url(../img/props/slicedbread_outline.png);
 }
 #inventory #cheese:hover {
-	background: url(../img/cheese_outline.png);
+	background: url(../img/props/cheese_outline.png);
 }
 #inventory #sandwich:hover {
-	background: url(../img/sandwich_outline.png);
+	background: url(../img/props/sandwich_outline.png);
 }
 #inventory #knife:hover {
-	background: url(../img/knife_outline.png);
+	background: url(../img/props/knife_outline.png);
 }
 #inventory #key:hover {
-	background: url(../img/key_outline.png);
+	background: url(../img/props/key_outline.png);
 }
 #inventory #chicken:hover {
-	background: url(../img/chicken_outline.png);
+	background: url(../img/props/chicken_outline.png);
 }
 
 /* CHARACTERS */
@@ -169,7 +169,7 @@
 	height: 176px;
 	position: absolute;
 	z-index: 1;
-	background: url(../img/argyle_guy_walking_2x.png);
+	background: url(../img/characters/argyle_guy_walking_2x.png);
 	-o-transform-origin: bottom center;
 	-webkit-transform-origin: bottom center;
 	-ms-transform-origin: bottom center;
@@ -259,16 +259,16 @@
 
 /* Need graceful fallback for IE with its lack of clipping path support */
 #malin {
-	background: url(../img/malin.png);
+	background: url(../img/characters/malin.png);
 	height: 176px;
 	width: 54px;
 }
-#pepper { background: url(../img/pepperpotts.png); }
-#pepper:hover { background: red url(../img/pepperpotts.png); }
-#steve { background: url(../img/steverogers.png); }
-#steve:hover { background: yellow url(../img/steverogers.png); }
-#john { background: url(../img/john.png); }
-#john:hover { background: lightblue url(../img/john.png); }
+#pepper { background: url(../img/characters/pepperpotts.png); }
+#pepper:hover { background: red url(../img/characters/pepperpotts.png); }
+#steve { background: url(../img/characters/steverogers.png); }
+#steve:hover { background: yellow url(../img/characters/steverogers.png); }
+#john { background: url(../img/characters/john.png); }
+#john:hover { background: lightblue url(../img/characters/john.png); }
 
 .ss, .ss:hover { background-position: 0 0 }
 .ww, .ww:hover { background-position: 0 -48px }

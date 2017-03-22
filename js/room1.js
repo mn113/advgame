@@ -15,15 +15,14 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		id: 1,
 		name: "Flatroom",
 		unlocked: true,
-		entry: M.prevRoom,
+		entry: M.rooms.previous,
 		monoscale: false
 	});
-	M.curRoom = room;
+	M.rooms.current = room;
 
 	// Define the content:
 	// Exits:
 	var exit1 = new M.Exit({
-		domNode: $("#exit1"),
 		id: "exit1",
 		dest: 0,
 		visible: true,

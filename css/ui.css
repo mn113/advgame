@@ -215,10 +215,10 @@ ul#toolMenu2 li.disabled {
 	font: 16px DOS437, Helvetica;
 	font-weight: bold;
 	text-shadow:
-	   -1px -1px 0 #000,
-		1px -1px 0 #000,
-		-1px 1px 0 #000,
-		 1px 1px 0 #000;
+	   -2px -2px 0 #000,
+		2px -2px 0 #000,
+		-2px 2px 0 #000,
+		 2px 2px 0 #000;
 	width: 100%;
 	height: 400px;
 	xpadding: 3px 4px;

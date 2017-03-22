@@ -20,45 +20,44 @@
 				<div id="saveload">
 					<div id="saveload_inner">
 						<h2>Load game</h2>
-						<img src="img/zak_bedroom.png"><p>29 November 2015 01:50</p>
-						<img src="img/zak_bedroom.png"><p>29 November 2015 01:50</p>
+						<ol id="saves"></ol>
 					</div>
 				</div>
 				<div id="gamebox">
-			<!-- The stage: -->
-			<div id="background"><!-- static visual layer - loaded from roomX.html -->
-			</div>
-			<div id="midground"><!-- interactive layer - loaded by js -->
-			</div>
-			<div id="foreground"><!-- static visual layer - loaded from roomX.html -->
-			</div>
+					<!-- The stage: -->
+					<div id="background"><!-- static visual layer - loaded from roomX.html -->
+					</div>
+					<div id="midground"><!-- interactive layer - loaded by js -->
+					</div>
+					<div id="foreground"><!-- static visual layer - loaded from roomX.html -->
+					</div>
 
-			<!-- UI outside the stage: -->
-			<p class="announce"></p>
-			<p id="command"></p>
-			<div id="inventory">
-				<div><div class="item chicken" id="chicken"></div></div>
-			</div>
-			<div id="dialogue"></div>
-			<div id="displayChoices"></div>
-			<img id="phone" src="img/simplephone.png">
-			<ul id="toolMenu2" class="verbs">
-				<li id="walkto">Walk to</li>
-				<li id="examine">Examine</li>
-				<li id="pickup">Pick up</li>
-				<li id="talkto">Talk to</li>
-				<li class="disabled">Give</li>
-				<li class="disabled">Move</li>
-				<li id="use">Use</li>
-				<li class="disabled">Abuse</li>
-				<li class="disabled">Hack</li>
-			</ul>
-			<div id="blackout"></div>
-			<div id="svgwrap">
-				<svg id="pathsvg" width="1280px" height="400px" viewBox="0 0 1280 400" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug"><!-- loaded by js -->
-				</svg>
-			</div>
-		</div>
+					<!-- UI outside the stage: -->
+					<p class="announce"></p>
+					<p id="command"></p>
+					<div id="inventory">
+						<div><div class="item chicken" id="chicken"></div></div>
+					</div>
+					<div id="dialogue"></div>
+					<div id="displayChoices"></div>
+					<img id="phone" src="img/simplephone.png" alt="phone">
+					<ul id="toolMenu2" class="verbs">
+						<li id="walkto">Walk to</li>
+						<li id="examine">Examine</li>
+						<li id="pickup">Pick up</li>
+						<li id="talkto">Talk to</li>
+						<li class="disabled">Give</li>
+						<li class="disabled">Move</li>
+						<li id="use">Use</li>
+						<li class="disabled">Abuse</li>
+						<li class="disabled">Hack</li>
+					</ul>
+					<div id="blackout"></div>
+					<div id="svgwrap">
+						<svg id="pathsvg" width="1280px" height="400px" viewBox="0 0 1280 400" version="1.1" xmlns="http://www.w3.org/2000/svg" class="debug"><!-- loaded by js -->
+						</svg>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div id="keypress" class="debug"></div>

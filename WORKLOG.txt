@@ -67,3 +67,6 @@
 
 3-Dec	dialogue system improvements
 3-Dec	cutscenes implemented
+
+4-Dec	save/load improvements, autosave added
+4-Dec	basic pause/unpause added

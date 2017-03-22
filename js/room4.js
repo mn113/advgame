@@ -19,7 +19,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		defaultScroll: [0,0],
 		monoscale: false
 	});
-	M.curRoom = room;
+	M.rooms.current = room;
 
 	// Define the content:
 	// Exits:

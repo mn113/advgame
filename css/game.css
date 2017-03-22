@@ -55,6 +55,25 @@ body {
 	margin: 20px;
 }
 
+ol#saves {
+	list-style: none;
+}
+
+ol#saves li {
+	
+}
+
+ol#saves li img {
+	width: 160px;
+	height: 100px;
+	display: block;
+}
+
+ol#saves li img:hover {
+	box-shadow: white 0 0 2px 2px white;
+	cursor: pointer;
+}
+
 #gamebox {
 	-webkit-transform: rotateY(90deg) translateZ(320px);
 	transform: rotateY(90deg) translateZ(320px);
@@ -111,7 +130,7 @@ body {
 	top: 0px;
 	width: 640px;
 	height: 400px;
-	background: url(../img/room2.png) 0 0 no-repeat;
+	background: url(../img/scenes/room2.png) 0 0 no-repeat;
 }
 .room1 #midground {
 	top: 0;
@@ -122,7 +141,7 @@ body {
 	top: 0px;
 	width: 640px;
 	height: 400px;
-	background: url(../img/zak_bedroom_2x.png) 0 0 no-repeat;
+	background: url(../img/scenes/zak_bedroom_2x.png) 0 0 no-repeat;
 }
 .room2 #midground {
 	top: 0;
@@ -138,7 +157,7 @@ body {
 	top: 0px;
 	width: 1280px;
 	height: 400px;
-	background: url(../img/zak_livingroom_2x.png) 0 0 no-repeat;
+	background: url(../img/scenes/zak_livingroom_2x.png) 0 0 no-repeat;
 }
 .room3 #midground {
 	top: 0;
@@ -149,7 +168,7 @@ body {
 	top: 0px;
 	width: 1280px;
 	height: 344px;
-	xbackground: url(../img/kscumm_bg.png) 0 0 no-repeat;
+	xbackground: url(../img/scenes/kscumm_bg.png) 0 0 no-repeat;
 }
 .room4 #midground, .room4 #foreground {
 	top: 0;

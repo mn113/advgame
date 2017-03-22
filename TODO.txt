@@ -83,14 +83,13 @@ highlight valid verbs when dragging item
 //R5 parallax backgrounds/foregrounds
 R5 vertical walk speed < horizontal walk speed (depending on perspective) - not worth doing?
 //3d transform to bring in save/load screen
-
 //dialogues where back n forth continues unprompted
 //different option text and dialogue for player
 //cutscenes using NPC.say() and NPC.walkTo()
 //disable + enable input
 //dialogues where NPC speaks to you first
 //allow multiple dialogue texts on screen simultaneously
-basic mouth animation
+basic mouth animation (eyes, eyebrows...)
 
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?
@@ -100,8 +99,8 @@ resolution changer: 1x, 2x, 3x, 4x (css/js)
 
 smartphone side-mission
 
-autosave feature (every 30 seconds?)
-jStorage plugin?
+//thumbnail based on background image
+//autosave feature (every 60 seconds?)
 save thumbnail of screenshot using html2canvas as base64 with savegames
 vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states?;
 

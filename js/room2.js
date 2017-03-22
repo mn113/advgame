@@ -16,7 +16,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		name: "Zak's bedroom",
 		unlocked: true
 	});
-	M.curRoom = room;
+	M.rooms.current = room;
 
 	// Define the content:
 	var cheese = new M.Item({
@@ -93,7 +93,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 	console.log("Room initialised.");
 
-		// All descriptions for entities in this level:
+	// All descriptions for entities in this level:
 	cheese.descriptions = [
 		"Strange to find a half-eaten brie here.",
 		"It looks fresh and tasty",

@@ -3,37 +3,34 @@
 
 // Global scoping / namespacing function:
 var MYGAME = (function($) {
+	// Immutable properties:
 	this.config = {
+		language: 'en',
 		chapter: 0,
-		stage: 0,
-		language: 'en'
+		stage: 0
 	};
+	// Dynamic game data (must be saved/loaded):
 	this.state = {
 		cursor: {mode: 'default'},
 		paused: false,
 		gametime: 0		// count seconds elapsed
 	};
-	this.doordirs = {
-		'n': 90,
-		'e': 180,
-		's': -90,
-		'w': 0
-	};		// constant
-	this.rooms = [];			// filled by external files
-	this.prevRoom = null;		// previous room id
-	this.curRoom = null;		// current room object
-	this.player = null;
-	// Entities within the game (characters, items, scenery...) stored by id
-	this.entities = {};
-	this.npcs = {};
-	this.progress = {};
-	this.dialogues = {};		// Filled by external file
+	this.player = null;		// player object
+	this.entities = {};		// entities within the game (characters, items, scenery...) stored by id
+	this.rooms = {
+		previous: null,		// previous room id
+		current: {}			// current room object
+	};
+	this.progress = {};		// puzzle statuses?
+	// Static game data:
+	this.dialogues = {};		// methods & data in external file
+	this.cutscenes = null;		// data in external file
+	// Temporary data:
 	this.commandObj = {
 		verb: null,
 		noun1: null,
 		noun2: null
 	};
-	this.cutscenes = null;
 
 	// REALLY USEFUL DEBUGGING CANVAS:
 	this.canvas = document.createElement("canvas");
@@ -232,78 +229,7 @@ var MYGAME = (function($) {
 			}
 		},
 		grid: {
-			// Looks up the Boolean value for a tile in the binary NavMesh
-/*			tileLookup: function(gridref) {
-				var x = gridref[0],
-					y = gridref[1];
-				return MYGAME.maps.demograph.grid[x][y].isWall();
-			},
-			// Returns all valid neighbour tiles of a given tile
-			// CAN REPLACE THIS WITH Graph.neighbors() FROM ASTAR
-			neighbours: function(gridref) {
-				var r1 = gridref[0],
-					c1 = gridref[1],
-					r0 = r1 - 1,
-					r2 = r1 + 1,
-					c0 = c1 - 1,
-					c2 = c1 + 1,
-					// Compile the 8 neighbouring refs:
-					allneighbs = [[r0,c0], [r0,c1], [r0,c2], [r1,c0], [r1,c2], [r2,c0], [r2,c1], [r2,c2]],
-					validneighbs = [];
-
-				//	console.log("Neighbours?:", allneighbs);
-				var i;
-				for (i = 0; i < allneighbs.length; i++) {
-					var nb = allneighbs[i];
-					if (MYGAME.utils.grid.tileLookup(nb, MYGAME.maps.demograph)) {	// valid tiles return 1
-						validneighbs.push(nb);
-					}
-				}
-				console.log("Valid:", validneighbs);
-				return validneighbs;
-			},
-			// Checks if two tiles are adjacent:
-			isAdjacent: function(ref1, ref2) {
-				if (Math.abs(ref1[0] - ref2[0]) < 2) {			// x within 1
-					if (Math.abs(ref1[1] - ref2[1]) < 2) {		// y within 1
-						return true;
-					}
-				}
-				return false;
-			},
-			// Lights up a single tile e.g. J4
-			highlightTile: function(gridref) {
-				var col = gridref[0],
-					row = gridref[1];
-				// Add highlighting div to DOM and position at gridref:
-				$("<div class='highlight'>").appendTo("#background")
-											.css("left", col * 20 + "px")
-											.css("top", (row * 20) + 40 + "px");
-			},
-			// Loop through a list of tiles and highlight them all
-			highlightTiles: function(list) {
-				var i;
-				for (i = 0; i < list.length; i++) {
-					MYGAME.utils.grid.highlightTile(list[i]);
-				}
-			},
-			// Remove all current tile highlights
-			highlightsOff: function() {
-				$("div.highlight").remove();
-			},
-			// Returns the 'base' coordinates of a DOM object:
-			baseCoords: function(obj) {
-				var hx = $(obj).position().left + 16,	// NEEDS TO HANDLE DIFFERENT SPRITE SIZES
-					hy = $(obj).position().top + 44;	// + $obj.css("height") - 4
-				return [hx,hy];
-			},
-			// Converts [x,y] coordinates to a grid reference:
-			gridref: function(coords) {
-				var gridx = Math.ceil(coords[0] / 20) - 1,
-					gridy = Math.ceil(coords[1] / 20) - 1;
-				return [gridx, gridy];
-			},
-*/			// Returns a random point on the stage (NOT NECESSARILY VALID YET):
+			// Returns a random point on the stage (NOT NECESSARILY VALID YET):
 			randomPoint: function() {
 				var rndx = Math.random() * $("#midground").width,
 					rndy = Math.random() * $("#midground").height;
@@ -363,10 +289,10 @@ var MYGAME = (function($) {
 			// Checks all walkboxes to see which (if any) a point lies in:
 			whichWalkbox: function(point) {		// Point array e.g. [0,0]
 				var wbname,
-					curRoom = MYGAME.curRoom;
-				for (wbname in curRoom.walkboxes) {
+					current = MYGAME.rooms.current;
+				for (wbname in current.walkboxes) {
 					// Extract the points array from the walkboxes member:
-					var polygon = curRoom.walkboxes[wbname].points,
+					var polygon = current.walkboxes[wbname].points,
 						// Convert our point to {x,y}
 						pxy = { x: point[0], y: point[1] };
 					if (MYGAME.utils.grid.pointIsInPoly(pxy, polygon)) {
@@ -379,7 +305,7 @@ var MYGAME = (function($) {
 			// Prepare SVG details attribute from walkbox coordinates object:
 			walkboxes2svg: function() {
 				// First up are the paths:
-				var walkboxes = MYGAME.curRoom.walkboxes;
+				var walkboxes = MYGAME.rooms.current.walkboxes;
 				var deets, wb, pts, pt, p;
 				for (wb in walkboxes) {
 					deets = "M";
@@ -401,7 +327,7 @@ var MYGAME = (function($) {
 				}
 
 				// Next up are the nodes (a bit simpler):
-				var nodes = MYGAME.curRoom.nodes;
+				var nodes = MYGAME.rooms.current.nodes;
 				var nid, n;
 				for (nid in nodes) {
 					n = nodes[nid];
@@ -417,14 +343,14 @@ var MYGAME = (function($) {
 			// Looks up the walkbox scale value at any given point:
 			scaleAtPoint: function(point) {
 				var wbname = utils.grid.whichWalkbox(point);
-				var wb = MYGAME.curRoom.walkboxes[wbname];
+				var wb = MYGAME.rooms.current.walkboxes[wbname];
 				return (typeof wb.scale !== 'undefined') ? wb.scale : 1;
 			}
 		},
 		pathfinding: {
 			// Converts a node (e.g. 1) to a point array e.g. [0,0]:
 			node2point: function(node) {
-				var room = MYGAME.curRoom;
+				var room = MYGAME.rooms.current;
 				return [room.nodes[node].x, room.nodes[node].y];
 			},
 			// Point to point distance calculation:
@@ -642,7 +568,7 @@ var MYGAME = (function($) {
 				}
 				// Reset and decrease Y incrementally;
 				newpoint = point;
-				while (newpoint[1] > MYGAME.curRoom.baseline) {
+				while (newpoint[1] > MYGAME.rooms.curret.baseline) {
 					newpoint[1] -= 5;
 					if ( utils.grid.whichWalkbox(newpoint) !== false ) { return newpoint; }
 				}
@@ -654,10 +580,10 @@ var MYGAME = (function($) {
 		room: {
 			// Switch to another room:
 			change: function(dest) {	// Int
-				var current = MYGAME.curRoom;
+				var current = MYGAME.rooms.current;
 				console.warn("Moving from room", current.id, "to", dest);
 				// Set current room as previous:
-				MYGAME.prevRoom = current;
+				MYGAME.rooms.previous = current.id;
 				// Unload:
 				current.unload();	// NOT QUICK ENOUGH
 
@@ -786,8 +712,7 @@ var MYGAME = (function($) {
 			}
 		},
 		misc: {
-			disableInput: function() {},
-			enableInput: function() {},
+			//
 			loadScript: function(name) {
 				console.warn("Fetching script", name + ".js");
 				var script= document.createElement('script');
@@ -795,28 +720,36 @@ var MYGAME = (function($) {
 			   script.src= '/js/' + name + '.js';
 			   script.async = true;
 			   document.body.appendChild(script);
+			},
+			//
+			pauseUnpause: function() {
+				MYGAME.state.paused = !MYGAME.state.paused;
+				console.info("Game", (MYGAME.state.paused) ? "paused." : "unpaused.");
+				// TODO: Start/stop game timer
+				// TODO: Pause & resume running animations
 			}
 		},
 		session: {
 			// Save the state of the game to browser storage:
-			saveGame: function() {
+			saveGame: function(type) {
 				// Check for localStorage:
 				if (typeof Storage !== "undefined") {
 					var s = MYGAME.state,
-						n = MYGAME.npcs,
-						i = MYGAME.player.inventory,
 						p = MYGAME.progress,
-						e = MYGAME.entities,
-						r = MYGAME.rooms;
-					var ts = new Date();
-					var saveObj = JSON.stringify([s,n,i,p,e,r]);
-					console.log(saveObj);
+						i = MYGAME.player.inventory,
+						r = MYGAME.rooms,
+						e = MYGAME.entities;
+					var saveObj = JSON.stringify([s,p,i,r,e]);
+//					console.log(saveObj);
 					// Save:
-					localStorage.setItem("SavedGame" + ts, saveObj);
-					console.log("Game saved at", ts);
+					var prefix = (type === 'auto') ? '[Autosave] ' : '[Usersave] ';
+					var d = new Date();
+					var ts = prefix + d.toDateString() + ', ' + d.toLocaleTimeString();
+					localStorage.setItem(ts, saveObj);
+					console.info("Game saved:", ts);
 				}
 				else {
-					console.log("No Web Storage support.");
+					console.error("No Web Storage support.");
 				}
 			},
 			// Restore a saved game stored in browser storage:
@@ -824,30 +757,73 @@ var MYGAME = (function($) {
 				var loadObj = JSON.parse(localStorage.getItem(ts));
 				// Restore all data:
 				MYGAME.state = loadObj[0];
-				MYGAME.npcs = loadObj[1];
+				MYGAME.progress = loadObj[1];
 				MYGAME.player.inventory = loadObj[2];
-				MYGAME.progress = loadObj[3];
+				MYGAME.rooms = loadObj[3];
 				MYGAME.entities = loadObj[4];
-				MYGAME.rooms = loadObj[5];
-				// Further loading code...
-				console.log("Game loaded.");
+				// Actually load the loaded room:
+				MYGAME.rooms.current.load();
+				console.info("Game loaded.");
+			},
+			// Empty localStorage:
+			flushStorage: function() {
+				localStorage.clear();
+				console.info("LocalStorage flushed.", localStorage);
+				$("#saves").html('');			
 			},
 			// Present dialog for user to select a previously saved game to load:
-			chooseSavedGame: function() {
-				var thing;
+			buildSaveScreen: function() {
+				$("#saves").html('');
 				// Access browser storage:
+				var thing;
 				for (thing in localStorage) {
 					// Build a basic chooser:
-					var $a = $("<a>").html(thing);
-					$a.appendTo("#displayChoices");
+					var $li = $("<li>");
+					var $thumb = MYGAME.utils.session.makeThumbnail();
+					$("<span>").html(thing).appendTo($li);
+					$thumb.appendTo($li);
+					$li.appendTo("#saves");
 				}
-				$("#displayChoices").on("click", "a", function() {
+				// Click handler
+				$("#saves").on("click", "li", function() {
 					// Load the savegame with the clicked timestamp:
-					utils.session.loadGame($(this).html());
-					// Clean up:
-					$("#displayChoices").html('');
+					utils.session.loadGame($(this).find("span").html());
+					// Clean up screen & return to game:
+					$("#saves").html('');
+					$("#gamewrap").toggleClass("saveload");
+					if (MYGAME.state.paused) { utils.misc.pauseUnpause(); }
 					return;
 				});
+			},
+			// Fetch room's background image to use as a savegame thumbnail:
+			makeThumbnail: function() {
+				var src = "/img/room" + MYGAME.rooms.current.id + ".png";
+				var $thumb = $("<img>");
+				$thumb.attr("src", src);
+				return $thumb;
+			},
+			// Save status every 60 seconds during gameplay, always overwriting last autosave:
+			autosaveLoop: function() {
+				console.info("autosaveLoop started");
+				var asaveLoop;
+
+				// Clear interval so we can start it anew:
+				if (typeof asaveLoop !== "undefined") {
+					clearInterval(asaveLoop);
+				}
+
+				asaveLoop = setInterval(function() {
+					if (!MYGAME.state.paused) {
+						// Find last autosave:
+						var autosave = Object.keys(localStorage).filter(function(k) {
+							return k.indexOf("[Autosave]") === 0;
+						});
+						// And delete it:
+						localStorage.removeItem(autosave);
+						// Do new autosave:
+						utils.session.saveGame('auto');
+					}
+				}, 60000);
 			}
 		}
 	};
@@ -863,6 +839,7 @@ var MYGAME = (function($) {
 	* @param {Boolean}	options.unlocked
 	* @param {Boolean}	options.scrollable
 	* @param {int}		options.entry
+					var ts = new Date();
 	*/
 	function Room(options) {	// (id, name, unlocked, scrollable, entry)
 		// Essentials:
@@ -907,6 +884,7 @@ var MYGAME = (function($) {
 			}
 		});
 		setTimeout(this.spawnPlayer.bind(this), 1000);
+		setTimeout(utils.session.autosaveLoop, 2000);
 	};
 	Room.prototype.unload = function() {
 		var me = this;
@@ -998,7 +976,7 @@ var MYGAME = (function($) {
 
 		// Store by id in entities hash:
 		MYGAME.entities[this.id] = this;
-		MYGAME.curRoom.entities[this.id] = this;	// WHICH ONE SHALL I USE DEFINITIVELY?
+		MYGAME.rooms.current.entities[this.id] = this;	// WHICH ONE SHALL I USE DEFINITIVELY?
 
 		return this;
 	}
@@ -1342,7 +1320,7 @@ var MYGAME = (function($) {
 			distance = utils.pf.p2pDist(this, dest);
 		}
 
-		var room = MYGAME.curRoom,
+		var room = MYGAME.rooms.current,
 			point;
 		if (dest.hasOwnProperty("id")) {
 			// Object passed in:
@@ -1386,7 +1364,7 @@ var MYGAME = (function($) {
 		this.jqDomNode.addClass("walking")
 						.queue("walk", function(next) {
 							console.warn("Animation queued with duration", duration);
-							var isMonoscaleRoom = MYGAME.curRoom.monoscale;
+							var isMonoscaleRoom = MYGAME.rooms.current.monoscale;
 
 							$(this).animate(
 							{
@@ -1411,14 +1389,14 @@ var MYGAME = (function($) {
 									if (!isMonoscaleRoom) {
 										// Scale sprite:
 										var wbname = utils.grid.whichWalkbox([me.x, me.y]);
-										var wb = MYGAME.curRoom.walkboxes[wbname];
+										var wb = MYGAME.rooms.current.walkboxes[wbname];
 										console.log(wbname + ", scale: " + wb.scale);
 										if (wb.scale && wb.scale !== me.scale) {
 											me.scaleBy(wb.scale);
 										}
 									}
 									// Scrolling:
-									if (MYGAME.curRoom.scrollable) {
+									if (MYGAME.rooms.current.scrollable) {
 										utils.room.keepPlayerCentral();
 									}
 								},
@@ -1499,34 +1477,6 @@ var MYGAME = (function($) {
 			}
 		}
 	};
-//	Player.prototype.canUse = function(item1, item2) {
-/*		var item2id = (item2) ? item2.id : 'itself';	// This string will be used for looking up in Item.uses
-
-		// 2 items passed:
-//		if (item2id !== 'itself') {
-//			// Sort item1 & item2 alphabetically, to avoid doubling up on Item.uses:
-//			if (item1.id > item2.id) {
-//				var flip = this.canUse(item2, item1);
-//				return flip;
-//			}
-//		}
-
-		// Use X with Y (or 'itself'), as per Item.uses definition:
-//		if (!($.isEmptyObject(item1.uses))) {
-//			if (item1.uses.hasOwnProperty(item2id)) {
-//				if (typeof item1.uses[item2id] === 'function') {
-//					return true;
-//				}
-//			}
-//			else {
-//				return false;
-//			}
-//		}
-//		else {
-//			return false;
-//		}
-//	};
-*/
 	Player.prototype.use = function(item1, item2, goThrough) {
 		var item2id = (item2) ? item2.id : 'itself';	// This string will be used for looking up in Item.uses
 		goThrough = goThrough || true;					// True: go through with usage. False: just test usability.
@@ -1629,8 +1579,10 @@ var MYGAME = (function($) {
 
 	// Process clicks in game area:
 	function entityClickHandler(event) {
+		var room = this.rooms.current;
+		var player = this.player;
 		// Make sure game setup is complete:
-		if (this.curRoom !== null && this.player !== null) {
+		if (room !== null && player !== null) {
 			// Where was clicked? Set the target (Take parent element's offset into account!)
 			var fgOffset = $("#midground").offset();
 			var evxy = [event.pageX - fgOffset.left, event.pageY - fgOffset.top];
@@ -1638,8 +1590,8 @@ var MYGAME = (function($) {
 			var path;
 
 			// Fix negative y clicks:
-			if (evxy[1] < this.curRoom.baseline) {
-				evxy[1] = this.curRoom.baseline;
+			if (evxy[1] < room.baseline) {
+				evxy[1] = room.baseline;
 			}
 			console.log("click @", evxy, event.target.id);
 
@@ -1658,14 +1610,14 @@ var MYGAME = (function($) {
 				}
 				utils.ui.addToCommand('item', targetObj.name);
 
-				// If Steve NEAR targetObj, ok, otherwise walk to it first
-				var dist = utils.grid.dist(this.player, targetObj);
+				// Is player NEAR targetObj?
+				var dist = utils.grid.dist(player, targetObj);
 				if (dist > 30) {
 					// Walk to it first:
 					console.log("Not near enough. (dist: " + dist + ")");
-					MYGAME.player.jqDomNode.stop("walk", true, false);
-					path = utils.pf.pathFind(MYGAME.player.coords(), evxy, MYGAME.curRoom);
-					if (path) { MYGAME.player.walkPath(path); }
+					player.jqDomNode.stop("walk", true, false);
+					path = utils.pf.pathFind(player.coords(), evxy, room);
+					if (path) { player.walkPath(path); }
 
 					return;		// Will need to click targetObj again when nearer...
 				}
@@ -1698,9 +1650,9 @@ var MYGAME = (function($) {
 					}
 				}
 				// No specific object clicked, so just walk to the point:
-				MYGAME.player.jqDomNode.stop("walk", true, false);
-				path = utils.pf.pathFind(MYGAME.player.coords(), evxy, MYGAME.curRoom);
-				if (path) { MYGAME.player.walkPath(path); }
+				player.jqDomNode.stop("walk", true, false);
+				path = utils.pf.pathFind(player.coords(), evxy, room);
+				if (path) { player.walkPath(path); }
 			}
 		}
 	}
@@ -1715,8 +1667,8 @@ var MYGAME = (function($) {
 			game.player = new Player({
 				id: "argyle_guy",
 				name: "Argyle Guy",
-				colour: "#f99",
-				visible: false		// invisible until placed via Room.load()
+				colour: "#96c",
+				visible: false		// invisible until placed via Room.spawnPlayer()
 			});
 			_createDroppables();
 			// Tooltips:
@@ -1849,15 +1801,17 @@ var MYGAME = (function($) {
 						MYGAME.utils.room.change(e.keyCode - 48);
 					}
 /***************************************************************************************************/
-					else if (e.keyCode === 116) {									// press 'F5'
-						MYGAME.utils.session.saveGame();
+					else if (e.keyCode === 115) {									// press 'F4'
+						MYGAME.utils.session.flushStorage();
 					}
-					else if (e.keyCode === 117) {									// press 'F6'
-						MYGAME.utils.session.chooseSavedGame();
+					else if (e.keyCode === 116) {									// press 'F5'
+						MYGAME.utils.session.saveGame('user');
 					}
 /***************************************************************************************************/
 					else if (e.keyCode === 27) {									// press 'Esc'
+						MYGAME.utils.session.buildSaveScreen();
 						$("#gamewrap").toggleClass("saveload");
+						utils.misc.pauseUnpause();
 					}
 /***************************************************************************************************/
 					else {															// any other keypress
@@ -1887,10 +1841,8 @@ var MYGAME = (function($) {
 		player: this.player,
 		dialogues: this.dialogues,
 		entities: this.entities,
-		curRoom: this.curRoom,
 		rooms: this.rooms,
 		canvas: this.canvas,
-		doordirs: this.doordirs,
 		ctx: this.ctx,
 		state: this.state,
 		commandObj: this.commandObj,

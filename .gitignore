@@ -1,13 +1,11 @@
 .DS_Store
-/jQuery UI Sortable grid.html
-/jQuery UI Sortable grid_files/
-/game art/
-/ubuntu-logo.png
-/logo.png
-/js/steganography.js
+.gitignore
+.brackets.json
+*.graffle
+artists.rtf
+STORY.txt
 /path.svg
 /js/astar.js
 /js/scale.js
-/MyGame (Autosaved).graffle
-/franceflag.js
-/.brackets.json
+/js/steganography.js
+/game art/
