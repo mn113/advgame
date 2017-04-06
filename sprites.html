@@ -7,32 +7,32 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Sprite Test</title>
 		<style>
-			div {display: inline-block;}
+			div {display: inline-block; margin: 20px; background: teal;}
 			.argyle_guy {
 				width:40px;
 				height:88px;
-				background: url("game art/argyle_guy_walking.png");
+				background: url("img/characters/argyle_guy_walking.png");
 				border-bottom: 2px solid #333;
 			}
-			.front {
+			.argyle_guy.front {
 				background-position: 0px 0px;
 			}
-			.front.walk {
+			.argyle_guy.front.walk {
 				animation: walk-ss .9s 0s steps(6) infinite;
 			}
-			.back {
+			.argyle_guy.back {
 				background-position: 0px -88px;
 			}
-			.back.walk {
+			.argyle_guy.back.walk {
 				animation: walk-nn .9s 0s steps(6) infinite;
 			}
-			.right {
+			.argyle_guy.right {
 				background-position: 0px -176px;
 			}
-			.right.walk {
+			.argyle_guy.right.walk {
 				animation: walk-ee .9s 0s steps(8) infinite;
 			}
-			.left {
+			.argyle_guy.left {
 				background-position: 0px -176px;
 			   -moz-transform: scaleX(-1);
 				-o-transform: scaleX(-1);
@@ -41,7 +41,7 @@
 				filter: FlipH;
 				-ms-filter: "FlipH";
 			}
-			.left.walk {
+			.argyle_guy.left.walk {
 				animation: walk-ee .9s 0s steps(8) infinite;
 			}
 			@keyframes walk-ee {
@@ -56,68 +56,84 @@
 				from { background-position: -40px 0px; }
 				to   { background-position: -280px 0px; }
 			}
+			.hero {
+				width:50px;
+				height:90px;
+				background: url("img/characters/HeroAnim.png");
+				border-bottom: 2px solid black;
+			}
+			.hero.front {
+				background-position: 0px 0px;				
+			}
+			.hero.front.walk {
+				animation: herowalk-ss 1s 0s steps(8) infinite;
+			}
+			.hero.back {
+				background-position: 0px -90px;				
+			}
+			.hero.back.walk {
+				animation: herowalk-nn 1s 0s steps(8) infinite;
+			}
+			.hero.right {
+				background-position: 0px -180px;
+			}
+			.hero.right.walk {
+				animation: herowalk-ee 1s 0s steps(8) infinite;
+			}
+			.hero.left {
+				background-position: 0px -180px;
+			   -moz-transform: scaleX(-1);
+				-o-transform: scaleX(-1);
+				-webkit-transform: scaleX(-1);
+				transform: scaleX(-1);
+				filter: FlipH;
+				-ms-filter: "FlipH";
+			}
+			.hero.left.walk {
+				animation: herowalk-ee 1s 0s steps(8) infinite;
+			}
+			@keyframes herowalk-ss {
+				from { background-position: -50px 0px; }
+				to   { background-position: -450px 0px; }
+			}
+			@keyframes herowalk-nn {
+				from { background-position: -50px -90px; }
+				to   { background-position: -450px -90px; }
+			}
+			@keyframes herowalk-ee {
+				from { background-position: -50px -180px; }
+				to   { background-position: -450px -180px; }
+			}
 		</style>
 	</head>
 	<body>
-		<div class="argyle_guy front"></div>
-		<div class="argyle_guy front walk"></div>
-		<br>
-		<div class="argyle_guy back"></div>
-		<div class="argyle_guy back walk"></div>
-		<br>
-		<div class="argyle_guy right"></div>
-		<div class="argyle_guy right walk"></div>
-		<br>
-		<div class="argyle_guy left"></div>
-		<div class="argyle_guy left walk"></div>
-		<br>
-		<img id="img1" src="ubuntu-logo.png "/>
-		<img id="img2" />
-		<p id="plain"></p>
+		<div id="argyleanim">
+			<div class="argyle_guy front"></div>
+			<div class="argyle_guy front walk"></div>
+			<br>
+			<div class="argyle_guy back"></div>
+			<div class="argyle_guy back walk"></div>
+			<br>
+			<div class="argyle_guy right"></div>
+			<div class="argyle_guy right walk"></div>
+			<br>
+			<div class="argyle_guy left"></div>
+			<div class="argyle_guy left walk"></div>
+		</div>		
+		<div id="heroanim">
+			<div class="hero front"></div>
+			<div class="hero front walk"></div>
+			<br>
+			<div class="hero back"></div>
+			<div class="hero back walk"></div>
+			<br>
+			<div class="hero right"></div>
+			<div class="hero right walk"></div>
+			<br>
+			<div class="hero left"></div>
+			<div class="hero left walk"></div>
+		</div>		
+		
 
-		<script src="js/steganography.js"></script>
-		<script>
-			function getBase64Image(img) {
-				// Create an empty canvas element
-				var canvas = document.createElement("canvas");
-				canvas.width = img.width;
-				canvas.height = img.height;
-
-				// Copy the image contents to the canvas
-				var ctx = canvas.getContext("2d");
-				ctx.drawImage(img, 0, 0);
-
-				// Get the data-URL formatted image
-				// Firefox supports PNG and JPEG. You could check img.src to
-				// guess the original format, but be aware the using "image/jpg"
-				// will re-encode the image.
-				var dataURL = canvas.toDataURL("image/png");
-
-				canvas = null;
-				return dataURL;
-			}
-
-			var plaintext = "var john = new Character($('#john'), 'John', 'lightblue').placeAt([30,160]).face(180).setZIndex();";
-
-			// Get image data:
-			var img1 = document.getElementById("img1");
-			var container = getBase64Image(img1);
-			console.log(container);	// OK
-
-			// Steg functions:
-			console.log(steg.getHidingCapacity(container, null));
-			var	ciphertext = steg.encode(plaintext, container);
-			var	decoded = steg.decode(ciphertext);
-
-			// Load results:
-			document.getElementById("img2").src = ciphertext;
-			document.getElementById("plain").innerHTML = decoded;	// 192 chars
-
-			console.log(ciphertext);
-			console.log(decoded);
-
-			// Run code:
-			eval(decoded);
-		</script>
 	</body>
 </html>

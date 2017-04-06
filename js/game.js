@@ -998,7 +998,7 @@ var MYGAME = (function($) {
 		return this;
 	};
 	_BaseObj.prototype.placeAt = function(coords) {
-//		console.log("@", new Date().getTime(), 'placeAt() called for', this.id);
+		console.log("@", new Date().getTime(), 'placeAt() called for', this.id);
 		this.jqDomNode.css("left", coords[0] - this.anchorOffset[0]);		// Compensate for anchor point
 		this.jqDomNode.css("top", coords[1] - this.anchorOffset[1]);		// being inside sprite
 		this.updateXYZ();

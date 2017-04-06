@@ -48,6 +48,9 @@
 .room4 .bg2 { background: url(../img/scenes/kscumm_bg2.png); z-index: -20; xtransform: translateZ(-10px) scale(11); }
 .room4 .bg3 { background: url(../img/scenes/kscumm_bg3.png); z-index: -40; xtransform: translateZ(-20px) scale(21); }
 
+.room5 .bg1 { background: url(../img/scenes/Hotel-lobby.png); z-index: 0; }
+.room5 .hotel_pillars  { background: url(../img/scenes/Hotel-lobby-fg.png); z-index: 0; }
+
 /* Foreground: */
 .scenery {
 	position: absolute;
@@ -165,11 +168,11 @@
 /* CHARACTERS */
 
 #argyle_guy {
-	width: 80px;
-	height: 176px;
+	width: 100px;
+	height: 180px;
 	position: absolute;
 	z-index: 1;
-	background: url(../img/characters/argyle_guy_walking_2x.png);
+	background: url(../img/characters/HeroAnim_2x.png);
 	-o-transform-origin: bottom center;
 	-webkit-transform-origin: bottom center;
 	-ms-transform-origin: bottom center;
@@ -212,9 +215,9 @@
 }
 
 #argyle_guy.ss { background-position: 0 0; }
-#argyle_guy.nn { background-position: 0 -176px; }
-#argyle_guy.ee { background-position: 0 -352px; }
-#argyle_guy.ww { background-position: 0 -528px; }
+#argyle_guy.nn { background-position: 0 -180px; }
+#argyle_guy.ee { background-position: 0 -360px; }
+#argyle_guy.ww { background-position: 0 -540px; }
 	/* Flip East to get West */
 /*	background-position: 0 -352px;
     -moz-transform: scaleX(-1);
@@ -224,26 +227,26 @@
 	filter: FlipH;
 	-ms-filter: "FlipH";
 }*/
-#argyle_guy.walking.ss { animation: walk-arg-ss .9s 0s steps(6) infinite; }
-#argyle_guy.walking.nn { animation: walk-arg-nn .9s 0s steps(6) infinite; }
+#argyle_guy.walking.ss { animation: walk-arg-ss .9s 0s steps(8) infinite; }
+#argyle_guy.walking.nn { animation: walk-arg-nn .9s 0s steps(8) infinite; }
 #argyle_guy.walking.ee { animation: walk-arg-ee .9s 0s steps(8) infinite; }
 #argyle_guy.walking.ww { animation: walk-arg-ww .9s 0s steps(8) infinite; }
 
 @keyframes walk-arg-ww {
-	from { background-position: -80px -528px; }
-	to   { background-position: -720px -528px; }
+	from { background-position: -100px -540px; }
+	to   { background-position: -900px -540px; }
 }
 @keyframes walk-arg-ee {
-	from { background-position: -80px -352px; }
-	to   { background-position: -720px -352px; }
+	from { background-position: -100px -360px; }
+	to   { background-position: -900px -360px; }
 }
 @keyframes walk-arg-nn {
-	from { background-position: -80px -176px; }
-	to   { background-position: -560px -176px; }
+	from { background-position: -100px -180px; }
+	to   { background-position: -900px -180px; }
 }
 @keyframes walk-arg-ss {
-	from { background-position: -80px 0px; }
-	to   { background-position: -560px 0px; }
+	from { background-position: -100px 0px; }
+	to   { background-position: -900px 0px; }
 }
 
 #steve, #argyle_guy {pointer-events: none;}

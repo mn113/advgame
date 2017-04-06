@@ -1,3 +1,5 @@
+2015
+====
 2-Nov	searching for artwork
 3-Nov	created project, html+css+js
 4-Nov	started developing story
@@ -70,3 +72,9 @@
 
 4-Dec	save/load improvements, autosave added
 4-Dec	basic pause/unpause added
+====
+2017
+====
+22-Mar	rewired img assets
+
+6-Apr	new hero basic walk animations
