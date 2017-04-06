@@ -16,7 +16,8 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		name: "Hotel Lobby",
 		unlocked: true,
 		entry: M.rooms.previous,
-		monoscale: true
+		scrollable: true,
+		monoscale: false
 	});
 	M.rooms.current = room;
 
@@ -39,28 +40,23 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 
 	// Define the geometry of room1:
 	room.walkboxes = {
-			wb1: {points: [{x:84,y:91}, {x:131,y:224}, {x:115,y:323}, {x:2,y:399}], scale: 0.8},
-			wb2: {points: [{x:84,y:91}, {x:131,y:224}, {x:282,y:232}, {x:343,y:209}, {x:340,y:141}], scale: 0.6},
-			wb3: {points: [{x:84,y:91}, {x:340,y:141}, {x:476,y:134}, {x:557,y:91}], scale: 0.5},
-			wb4: {points: [{x:2,y:399}, {x:115,y:323}, {x:286,y:323}, {x:638,y:399}], scale: 1},
-			wb5: {points: [{x:638,y:399}, {x:286,y:323}, {x:282,y:232}, {x:343,y:209}, {x:488,y:210}], scale: 0.9},
-			wb6: {points: [{x:638,y:399}, {x:488,y:210}, {x:476,y:134}, {x:557,y:91}], scale: 0.7}
+			wb1: {points: [{x:48,y:399}, {x:145,y:299}, {x:958,y:299}, {x:1156,y:399}], scale: 1},
+			wb2: {points: [{x:170,y:274}, {x:408,y:274}, {x:408,y:299}, {x:145,y:299}], scale: 0.9},
+			wb3: {points: [{x:237,y:274}, {x:403,y:274}, {x:356,y:215}, {x:282,y:215}], scale: 0.8},
+			wb4: {points: [{x:966,y:313}, {x:1019,y:399}, {x:1156,y:399}, {x:1127,y:313}], scale: 1}
 		};
 	room.nodes = {
-			1: {x: 329, y: 134, edges: [2,3,4]},	// edges are the other nodes this node can see
-			2: {x: 484, y: 126, edges: [1,5]},
-			3: {x: 126, y: 212, edges: [1,4,6]},
-			4: {x: 314, y: 221, edges: [1,3,5,7]},
-			5: {x: 494, y: 214, edges: [2,4,7]},
-			6: {x: 104, y: 329, edges: [3,7]},
-			7: {x: 295, y: 328, edges: [4,5,6]}
+			1: {x: 320, y: 274, edges: [2]},	// edges are the other nodes this node can see
+			2: {x: 394, y: 299, edges: [1,3]},
+			3: {x: 970, y: 337, edges: [2]}
 		};
-	room.baseline = 93;	// pixels from top that walkable area starts
+	room.baseline = 213;	// pixels from top that walkable area starts
 	room.exits = {
-		0: {dest: 2}
+		0: {dest: 2},
+		1: {dest: 2}
 	};
 	room.spawnPoints = {
-		0: {x: 300, y: 200, face: 'ss'}
+		0: {x: 300, y: 350, face: 'ss'}
 	};
 
 	room.load(M.Room.prototype._afterLoad);	// load() puts HTML entities into page, the callback wires them up

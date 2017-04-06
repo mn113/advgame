@@ -610,16 +610,17 @@ var MYGAME = (function($) {
 			scrollX: function(dir, amount) {		// e.g. "L", 50
 				var $bg = $("#background"),
 					$mg = $("#midground, #pathsvg"),
-					$fg = $("#foreground"),
-					$bg1 = $bg.children(".bg1"),
-					$bg2 = $bg.children(".bg2"),
+					$fg = $("#foreground"),			// fg scrolls differently
+					$bg1 = $("#background .bg1"),	// default bg image
+					$bg2 = $bg.children(".bg2"),	// only parallax scenes have .bg2, .bg3 etc
 					$bg3 = $bg.children(".bg3"),
 					$mid = $mg.add($bg1);
-
+				
 				// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
 				var bgPos = -1 * parseInt($bg1.position().left, 10),
 					min = 0,
 					max = parseInt($bg1.css("width"), 10) - 640;
+				console.log(dir, bgPos, min, max);	// ok
 
 				// Check if scroll possible first:
 				if (dir === 'L' && bgPos - 30 < min) {
@@ -646,6 +647,7 @@ var MYGAME = (function($) {
 				// Scroll incrementally:
 				var scrolledpx = 0;
 				while (scrolledpx < amount) {	// THIS WHILE LOOP CAUSES THE OVERSCROLLING
+					console.log(scrolledpx, amount);
 					// $bg3 doesn't scroll at all (horizon)
 					// $bg2 scrolls a little:
 					$bg2.animate({"left": delta[0]},
@@ -660,12 +662,18 @@ var MYGAME = (function($) {
 
 					// Are we too close to left or right limit?:
 					bgPos = -1 * parseInt($bg1.position().left, 10);
-					if ((dir === 'L' && bgPos - 30 < min) || (dir === 'R' && bgPos + 30 > max)) {
+					if (dir === 'L' && bgPos - 30 < min) {
 						$bg2.add($mid).add($fg).stop("scroll", true, false);	// clearQueue, don't complete
+						console.log("Stopping scroll L.", bgPos);
+						break;
+					}
+					else if (dir === 'R' && bgPos + 30 > max) {
+						$bg2.add($mid).add($fg).stop("scroll", true, false);	// clearQueue, don't complete
+						console.log("Stopping scroll R.", bgPos);
 						break;
 					}
 				}
-				console.log("BG @", bgPos);
+				console.log("BG @", bgPos);	// ALWAYS == 0
 				return;
 			},
 			// Scroll the screen to a particular spot e.g. [0,0]:
@@ -697,17 +705,20 @@ var MYGAME = (function($) {
 			},
 			//
 			keepPlayerCentral: function() {
-				var player = MYGAME.player,
-					midpoint = [320,0],
+				var	viewportMidpoint = [320,0],
 					mgposX = $("#midground").position().left,
-					relX = player.x - mgposX,
-					offCentreX = relX - midpoint[0];
+					relX = MYGAME.player.x + mgposX,
+					offCentreX = relX - viewportMidpoint[0];
+					console.log(mgposX, relX, 320);
+					console.log(offCentreX + "px off centre");
 				// Correct scroll to keep player central:
 				if (offCentreX < -100) {
-					utils.room.scrollX("R", -1 * offCentreX);
+					console.log("Try to scroll", offCentreX, "left...");
+					utils.room.scrollX("L", -1 * offCentreX);
 				}
 				else if (offCentreX > 100) {
-					utils.room.scrollX("L", offCentreX);
+					console.log("Try to scroll", offCentreX, "right...");
+					utils.room.scrollX("R", offCentreX);
 				}
 			}
 		},
@@ -838,8 +849,8 @@ var MYGAME = (function($) {
 	* @param {string}	options.name
 	* @param {Boolean}	options.unlocked
 	* @param {Boolean}	options.scrollable
-	* @param {int}		options.entry
-					var ts = new Date();
+* @param {int}		options.entry
+					var ts = new Date();		// ??
 	*/
 	function Room(options) {	// (id, name, unlocked, scrollable, entry)
 		// Essentials:
@@ -1862,4 +1873,4 @@ var MYGAME = (function($) {
 	};
 }(jQuery));	// end global scoping / namespacing function
 
-MYGAME.init(2);
+MYGAME.init(5);

@@ -15,7 +15,7 @@ body {
 	border: 1px solid black;
 	background: black;
 	width: 640px;
-	height: 450px;
+	height: 510px;
 	overflow: hidden;
 	-webkit-perspective: 640px;
 	perspective: 640px;
@@ -44,7 +44,7 @@ body {
 	color: white;
 	font: 16px DOS437;
 	width: 640px;
-	height: 450px;
+	height: 510px;
 
 	-webkit-transform: rotateY(0deg) translateZ(320px);
 	transform: rotateY(0deg) translateZ(320px);
@@ -84,7 +84,7 @@ ol#saves li img:hover {
 	right: 0;
 	background: #aaa;
 	width: 640px;
-	height: 450px;
+	height: 510px;
 	overflow: hidden;
 	z-index: 0;
 }
@@ -113,7 +113,7 @@ ol#saves li img:hover {
 	top: 60px;
 }
 .room1 #players {
-	top: 0px;
+	top: 0;
 }
 .room0 #background {
 	top: 20px;
@@ -127,7 +127,7 @@ ol#saves li img:hover {
 	height: 300px;
 }
 .room1 #background {
-	top: 0px;
+	top: 0;
 	width: 640px;
 	height: 400px;
 	background: url(../img/scenes/room2.png) 0 0 no-repeat;
@@ -138,7 +138,7 @@ ol#saves li img:hover {
 	height: 400px;
 }
 .room2 #background {
-	top: 0px;
+	top: 0;
 	width: 640px;
 	height: 400px;
 	background: url(../img/scenes/zak_bedroom_2x.png) 0 0 no-repeat;
@@ -154,7 +154,7 @@ ol#saves li img:hover {
 	height: 256px;
 }
 .room3 #background {
-	top: 0px;
+	top: 0;
 	width: 1280px;
 	height: 400px;
 	background: url(../img/scenes/zak_livingroom_2x.png) 0 0 no-repeat;
@@ -164,16 +164,26 @@ ol#saves li img:hover {
 	width: 1280px;
 	height: 256px;
 }
+/* Parallax room assets are being loaded in entities.css at this time */
 .room4 #background {
-	top: 0px;
+	top: 0;
 	width: 1280px;
 	height: 344px;
-	xbackground: url(../img/scenes/kscumm_bg.png) 0 0 no-repeat;
 }
 .room4 #midground, .room4 #foreground {
 	top: 0;
 	width: 1280px;
 	height: 344px;
+}
+.room5 #background {
+	top: 0;
+	width: 1200px;
+	height: 400px;
+}
+.room5 #midground, .room5 #foreground {
+	top: 0;
+	width: 1200px;
+	height: 400px;
 }
 
 #blackout {
@@ -242,6 +252,9 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 	right: 0;
 	z-index: 500;
 }
+#svgwrap {
+	display: none;
+}
 #svgwrap,
 #pathsvg {
 	position: absolute;
@@ -277,3 +290,4 @@ body.debug .scenery {border: 1px dotted blue;}
 body.debug .item {border: 1px dotted yellow;}
 body.debug #midground {border: 1px solid fuchsia;}
 body.debug #background {border: 1px solid teal;}
+body.debug #svgwrap {display:block;}

@@ -78,3 +78,4 @@
 22-Mar	rewired img assets
 
 6-Apr	new hero basic walk animations
+6-Apr	added room5: hotel

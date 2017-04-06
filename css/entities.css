@@ -34,7 +34,13 @@
 	xwidth: 100vw;
 }
 
-.parallax {
+#background div {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
+
+.room4 .parallax {
 	position: absolute;
 	width: 1280px;
 	height: 344px;
@@ -44,11 +50,12 @@
 	xbackground-attachment: fixed;
 	xbackground-size: cover;
 }
+
 .room4 .bg1 { background: url(../img/scenes/kscumm_bg1.png); z-index: 0;   xtransform: translateZ(0); }
 .room4 .bg2 { background: url(../img/scenes/kscumm_bg2.png); z-index: -20; xtransform: translateZ(-10px) scale(11); }
 .room4 .bg3 { background: url(../img/scenes/kscumm_bg3.png); z-index: -40; xtransform: translateZ(-20px) scale(21); }
 
-.room5 .bg1 { background: url(../img/scenes/Hotel-lobby.png); z-index: 0; }
+.room5 .bg1	{ background: url(../img/scenes/Hotel-lobby-2x.png); z-index: 0; }
 .room5 .hotel_pillars  { background: url(../img/scenes/Hotel-lobby-fg.png); z-index: 0; }
 
 /* Foreground: */
