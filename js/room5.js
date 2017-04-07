@@ -25,16 +25,20 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	// Exits:
 	var exit1 = new M.Exit({
 		id: "exit1",
-		dest: 0,
+		dest: 4,
+		width: 120,
+		height: 220,
 		visible: true,
 		active: true
-	}).placeAt([0,196]);
+	}).placeAt([0,100]);
 	var exit2 = new M.Exit({
 		id: "exit2",
 		dest: 0,
+		width: 120,
+		height: 220,
 		visible: true,
 		active: true
-	}).placeAt([608,196]);
+	}).placeAt([1080,100]);
 
 	console.log("All objects initialised.");
 

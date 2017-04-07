@@ -89,21 +89,21 @@ R5 vertical walk speed < horizontal walk speed (depending on perspective) - not 
 //disable + enable input
 //dialogues where NPC speaks to you first
 //allow multiple dialogue texts on screen simultaneously
-	
-/fix auto-scroll
-lock down to bg1 & define sizes of exit boxes
-revert inactive player to forward-facing
-allow reverse-facing
-
-resolution changer: 1x, 2x, 3x, 4x (css/js)
-basic mouth animation (eyes, eyebrows...)
-
-rewrite geometry functions to all use {x:0,y:0} point objects
-
 //thumbnail based on background image
 //autosave feature (every 60 seconds?)
 save thumbnail of screenshot using html2canvas as base64 with savegames
 vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states?;
+//lock down to bg1 & define sizes of exit boxes
+	
+/fix auto-scroll
+double speed walking
+try velocity.js and/or transit
+revert inactive player to forward-facing (unless rear-facing)
+couple of idle animations for hero
+basic mouth animation (eyes, eyebrows...)
+
+rewrite geometry functions to all use {x:0,y:0} point objects
+resolution changer: 1x, 2x, 3x, 4x (css/js)
 
 steganographic obfuscation of new items?
 should each item have a special code to prevent fake instantiations?

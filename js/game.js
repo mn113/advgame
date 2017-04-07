@@ -36,7 +36,7 @@ var MYGAME = (function($) {
 	this.canvas = document.createElement("canvas");
 	this.canvas.setAttribute("width", 640);
 	this.canvas.setAttribute("height", 400);
-	document.getElementById("gamebox").appendChild(this.canvas);
+	document.getElementById("innerwrap").appendChild(this.canvas);
 	this.ctx = this.canvas.getContext("2d");
 	// Then you can draw a point at (x,y) like this: ctx.fillRect(x,y,1,1);
 	
@@ -614,7 +614,7 @@ var MYGAME = (function($) {
 					$bg1 = $("#background .bg1"),	// default bg image
 					$bg2 = $bg.children(".bg2"),	// only parallax scenes have .bg2, .bg3 etc
 					$bg3 = $bg.children(".bg3"),
-					$mid = $mg.add($bg1);
+					$mids = $mg.add($bg1);
 				
 				// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
 				var bgPos = -1 * parseInt($bg1.position().left, 10),
@@ -623,27 +623,30 @@ var MYGAME = (function($) {
 				console.log(dir, bgPos, min, max);	// ok
 
 				// Check if scroll possible first:
-				if (dir === 'L' && bgPos - 30 < min) {
+				if (dir === 'L' && bgPos - 50 < min) {
 					utils.room.scrollTo([min,0]);
-					console.log("Cannot scroll out-of-bounds.");
+					console.warn("Cannot scroll out-of-bounds.");
 					return;
 				}
-				else if (dir === 'R' && bgPos + 30 > max) {
+				else if (dir === 'R' && bgPos + 50 > max) {
 					utils.room.scrollTo([max,0]);
-					console.log("Cannot scroll out-of-bounds.");
+					console.warn("Cannot scroll out-of-bounds.");
 					return;
 				}
 
-				// Prepare animation values:
+				// Prepare animation values for background / midground / foreground:
 				var delta = [];
 				if (dir === 'L') {
-					delta = ['+=15px', '+=30px', '+=60px'];	// trees; buildings; grasses
+					delta = ['+=25px', '+=50px', '+=100px'];
 				}
 				else if (dir === 'R') {
-					delta = ['-=15px', '-=30px', '-=60px'];
+					delta = ['-=25px', '-=50px', '-=100px'];
 				}
-				console.log(delta);
-
+				
+				var pollWalkAnims = setInterval(function() {
+					$("#scrollanims span").text("?")//$mids.queue("scroll").length);
+				}, 100);
+				
 				// Scroll incrementally:
 				var scrolledpx = 0;
 				while (scrolledpx < amount) {	// THIS WHILE LOOP CAUSES THE OVERSCROLLING
@@ -651,29 +654,30 @@ var MYGAME = (function($) {
 					// $bg3 doesn't scroll at all (horizon)
 					// $bg2 scrolls a little:
 					$bg2.animate({"left": delta[0]},
-								 {queue: "scroll", duration: 75, easing: 'swing'});
+								 {queue: "scroll", duration: 90, easing: 'swing'}).dequeue("scroll");
 					// Midground + bg1 + svg scroll normally:
-					$mid.animate({"left": delta[1]},
-								 {queue: "scroll", duration: 75, easing: 'swing'});
+					$mids.animate({"left": delta[1]},
+								 {queue: "scroll", duration: 90, easing: 'swing'}).dequeue("scroll");
 					// Foreground objects scroll exaggerated:
 					$fg.animate( {"left": delta[2]},
-								 {queue: "scroll", duration: 75, easing: 'swing'});
-					scrolledpx += 30;
-
+								 {queue: "scroll", duration: 90, easing: 'swing'}).dequeue("scroll");
+					scrolledpx += 50;
+					
 					// Are we too close to left or right limit?:
 					bgPos = -1 * parseInt($bg1.position().left, 10);
-					if (dir === 'L' && bgPos - 30 < min) {
-						$bg2.add($mid).add($fg).stop("scroll", true, false);	// clearQueue, don't complete
-						console.log("Stopping scroll L.", bgPos);
+					console.log("BG @", bgPos);	// ALWAYS == 0
+					if (dir === 'L' && bgPos - 50 < min) {
+						$mids.add($bg2).add($fg).stop("scroll", true, false);	// clearQueue, don't complete
+						console.info("Stopping scroll L.", bgPos);
 						break;
 					}
-					else if (dir === 'R' && bgPos + 30 > max) {
-						$bg2.add($mid).add($fg).stop("scroll", true, false);	// clearQueue, don't complete
-						console.log("Stopping scroll R.", bgPos);
+					else if (dir === 'R' && bgPos + 50 > max) {
+						$mids.add($bg2).add($fg).stop("scroll", true, false);	// clearQueue, don't complete
+						console.info("Stopping scroll R.", bgPos);
 						break;
 					}
 				}
-				console.log("BG @", bgPos);	// ALWAYS == 0
+				clearInterval(pollWalkAnims);
 				return;
 			},
 			// Scroll the screen to a particular spot e.g. [0,0]:
@@ -682,8 +686,8 @@ var MYGAME = (function($) {
 				$layers.css({"left": -1 * origin[0], "top": -1 * origin[1]});
 			},
 			// Run this when player is moving about to decide when scrolling is necessary:
-			scrollDecide: function(point) {
-				var $bg = $("#background"),
+			/*scrollDecide: function(point) {
+				var $bg = $("#background .bg1"),
 					// Note: CSS left becomes negative as we scroll. Multiplying it by -1 makes the maths saner.
 					bgPos = -1 * parseInt($bg.position().left, 10),
 					min = 0,
@@ -696,14 +700,15 @@ var MYGAME = (function($) {
 
 				// Scroll if click not central:
 				console.log(point[0] - bgPos + "px relative to gamebox.");
-				if (point[0] - bgPos < 200 && bgPos > min) {		// click in first quarter of viewport
+				if (point[0] - bgPos < 200 && bgPos > min) {		// click in first third of viewport
 					utils.room.scrollX("L", 200);
 				}
-				else if (point[0] - bgPos > 440 && bgPos < max) {	// click in final quarter of viewport
+				else if (point[0] - bgPos > 440 && bgPos < max) {	// click in final third of viewport
 					utils.room.scrollX("R", 200);
 				}
 			},
-			//
+			*/
+			// When the player is moving about, scroll the room to keep him central:
 			keepPlayerCentral: function() {
 				var	viewportMidpoint = [320,0],
 					mgposX = $("#midground").position().left,
@@ -712,12 +717,12 @@ var MYGAME = (function($) {
 					console.log(mgposX, relX, 320);
 					console.log(offCentreX + "px off centre");
 				// Correct scroll to keep player central:
-				if (offCentreX < -100) {
-					console.log("Try to scroll", offCentreX, "left...");
+				if (offCentreX < -160) {
+					console.info("Try to scroll", offCentreX, "left...");
 					utils.room.scrollX("L", -1 * offCentreX);
 				}
-				else if (offCentreX > 100) {
-					console.log("Try to scroll", offCentreX, "right...");
+				else if (offCentreX > 160) {
+					console.info("Try to scroll", offCentreX, "right...");
 					utils.room.scrollX("R", offCentreX);
 				}
 			}
@@ -849,8 +854,7 @@ var MYGAME = (function($) {
 	* @param {string}	options.name
 	* @param {Boolean}	options.unlocked
 	* @param {Boolean}	options.scrollable
-* @param {int}		options.entry
-					var ts = new Date();		// ??
+	* @param {int}		options.entry
 	*/
 	function Room(options) {	// (id, name, unlocked, scrollable, entry)
 		// Essentials:
@@ -1352,21 +1356,21 @@ var MYGAME = (function($) {
 
 		console.log("Walk to:", point);
 		// Is scrolling necessary?
-		if (room.scrollable) {
-			utils.room.scrollDecide(point);
-		}
+		//if (room.scrollable) {
+		//	utils.room.scrollDecide(point);
+		//}
 		this._directWalkTo(point, distance);
 	};
 	Character.prototype._directWalkTo = function(point, distance) {
 		// Draw a dot at dest:
 		MYGAME.ctx.clearRect(0,0,640,400);
 		MYGAME.ctx.fillStyle = "#FFFF00";
-		MYGAME.ctx.fillRect(point[0],point[1],3,3);
+		MYGAME.ctx.fillRect(point[0],point[1],3,3);		// GETS OUT OF SYNC WHEN ROOM SCROLLS
 
 		// Will this walk change player scale from start to finish?
-		var ptscale = utils.grid.scaleAtPoint(point);
-		var monoscale = (this.scale === ptscale) ? true : false;
-		if (monoscale) { console.log("MONOSCALE!"); }
+		//var ptscale = utils.grid.scaleAtPoint(point);
+		//var monoscale = (this.scale === ptscale) ? true : false;
+		//if (monoscale) { console.log("MONOSCALE!"); }
 
 		// Start walking, boots!
 		var me = this;
@@ -1375,7 +1379,8 @@ var MYGAME = (function($) {
 		this.jqDomNode.addClass("walking")
 						.queue("walk", function(next) {
 							console.warn("Animation queued with duration", duration);
-							var isMonoscaleRoom = MYGAME.rooms.current.monoscale;
+							var isMonoscaleRoom = MYGAME.rooms.current.monoscale,
+								isScrollingRoom = MYGAME.rooms.current.scrollable;
 
 							$(this).animate(
 							{
@@ -1387,31 +1392,42 @@ var MYGAME = (function($) {
 								queue: "walk",
 								easing: "linear",
 								start: function() {
+									// Work out direction to face:
 									var dx = point[0] - me.x,
 										dy = point[1] - me.y,
 										angle = (360 / 6.28) * Math.atan2(dy,dx);
 									me.face(angle);
+									
 									console.info("Starting animation with dest:", point, "d:", distance.toFixed(3), "t:", duration.toFixed(3), "angle:", angle.toFixed(3));
+
+									// Start regular check if scrolling is needed:
+									if (isScrollingRoom) {
+										me.scrollChecker = setInterval(function() {
+											utils.room.keepPlayerCentral();
+										}, 40);
+									}
+									
+									me.walkbox = utils.grid.whichWalkbox([me.x, me.y]);
 								},
 								progress: function() {
 									// Do something hundreds of times per animation
 									console.log("progress");
 									me.updateXYZ();
 									if (!isMonoscaleRoom) {
-										// Scale sprite:
 										var wbname = utils.grid.whichWalkbox([me.x, me.y]);
-										var wb = MYGAME.rooms.current.walkboxes[wbname];
-										console.log(wbname + ", scale: " + wb.scale);
-										if (wb.scale && wb.scale !== me.scale) {
-											me.scaleBy(wb.scale);
+										// Scale sprite on walkbox change:
+										if (wbname !== me.walkbox) {
+											me.walkbox = wbname;
+											var wb = MYGAME.rooms.current.walkboxes[wbname];
+											console.log(wbname + ", scale: " + wb.scale);
+											if (wb.scale && wb.scale !== me.scale) {
+												me.scaleBy(wb.scale);
+											}
 										}
-									}
-									// Scrolling:
-									if (MYGAME.rooms.current.scrollable) {
-										utils.room.keepPlayerCentral();
 									}
 								},
 								complete: function() {
+									clearInterval(me.scrollChecker);
 									me.reportLoc();
 									var q = $(this).queue("walk");
 									if (q.length < 1 && !$(this).is(':animated')) {
