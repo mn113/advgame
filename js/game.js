@@ -465,43 +465,36 @@ var MYGAME = (function($) {
 			},
 			// Pathfinding algorithm:
 			pathFind: function(start, finish, room) {	// Point arrays e.g. [0,0]
-//				console.log("pf", room);
+				console.log("pathFind() in room", room.id);
 				var player = MYGAME.player;
 				var fwb = utils.grid.whichWalkbox(finish),
 					pwb = utils.grid.whichWalkbox(start),
-					dist;
-				// Test for trivial (nodeless) solution:
+					nearestNodeA = utils.pf.nearestNode(start, room),
+					nearestNodeZ = utils.pf.nearestNode(finish, room);
+				
+				// Test for trivial line-of-sight (nodeless) solution:
 				if (fwb === pwb || utils.pf.lineOfSight(start, finish)) {
-					dist = utils.pf.p2pDist(start, finish);
-					player.walkTo(finish, dist);
-					return false;
+					return [start, finish];
 				}
-				else {	//	No line-of-sight; BF pathfinding required:
-					// Prelim tests:
-					var nrNodeA = utils.pf.nearestNode(start, room),
-						nrNodeZ = utils.pf.nearestNode(finish, room),
-						dist1 = utils.pf.p2pDist(start, nrNodeA),
-						dist2 = utils.pf.p2pDist(nrNodeZ, finish);
+				// No line-of-sight; check for single-node route:
+				else if (nearestNodeA === nearestNodeZ) {
 					// Get to destination in 2 hops:
-					if (nrNodeA === nrNodeZ) {
-						player.walkTo(nrNodeA, dist1);
-						player.walkTo(finish, dist2);
-						return false;
-					}
-
-					// More than 2 nodes required (proper big-boy algorithm):
-					var path = utils.pf.breadthFirstSearch(nrNodeA, nrNodeZ, room); // path returned is just nodes, e.g. [1,3,5]
+					return [start, nearestNodeA, finish];
+				}
+				// More than 2 nodes required (proper big-boy BF pathfinding required):
+				else {
+					var path = utils.pf.breadthFirstSearch(nearestNodeA, nearestNodeZ, room); // path returned is just nodes, e.g. [1,3,5]
 					var pl = path.length;
 					var i;
 					console.log(1, path);
-
+					
 					// Convert path of nodes to path of coords:
 					for (i = 0; i < pl; i++) {
 						var node = path[i];
 						path[i] = [room.nodes[node].x, room.nodes[node].y];
 					}
 					console.log(2, path.toString());
-
+					
 					// Mark any redundant nodes from the start:
 					for (i = 0; i < pl - 1; i++) {
 						var nextNode = path[i+1];
@@ -519,43 +512,22 @@ var MYGAME = (function($) {
 						}
 					}
 					console.log(3, path.toString());
-
+					
 					// Now prune nulls:
 					var shortPath = [];
 					for (i = 0; i < pl; i++) {
 						if (path[i] !== null) { shortPath.push(path[i]); }
 					}
 					console.log(4, shortPath.toString());
-
+					
 					// Add on start and end coords:
 					shortPath.unshift(player.coords());
 					shortPath.push(finish);
 					console.log(5, shortPath.toString());
-
+					
 					return shortPath;
 				}
 			},
-			// Smooth out a path by removing middle nodes from straight sections:	// BAD ALGO
-			/*smoothPath: function(path) {		// Array
-				var savedPath = $.extend({}, path);		// Clone path by value (shallow copy)
-				var i;
-				// Loop through a copy of pathNodes as trios:
-				for (i = 0; i < path.length - 2; i++) {
-					var n1 = path[i],
-						n2 = path[i+1],
-						n3 = path[i+2];
-					if (utils.pf.lineOfSight(n1,n3)) {
-						// point n2 superfluous; set to null:
-						savedPath[i+1] = null;
-					}
-				}
-				// Now prune nulls:
-				var shortPath = [];
-				for (i = 0; i < savedPath.length; i++) {
-					if (savedPath[i] !== null) { shortPath.push(savedPath[i]); }
-				}
-				return shortPath;
-			}*/
 			// Puts high or wall clicks down into the appropriate walkbox:
 			correctY: function(point) {	// Point array e.g. [0,0]
 				var newpoint = point,
@@ -1313,32 +1285,20 @@ var MYGAME = (function($) {
 
 		return this;
 	};
-	Character.prototype.walkPath = function(path) {
-		// Compute distance of each path segment:
-		var distances = [],
-			i;
-		for (i = 0; i < path.length - 1; i++) {
-			var d = utils.pf.p2pDist(path[i], path[i+1]);
-			distances.push(d);
-		}
-		console.log(6, distances);	// OK
-
-		// Traverse all coords of new fancy path:
+	Character.prototype.walkPath = function(path, speed) {
+		// Traverse all coords of new fancy path (except start point!):
 		for (i = 1; i < path.length; i++) {
-			this.walkTo(path[i], distances[i-1]);
+			this.walkTo(path[i], speed);
 		}
-		// If still not at finish, too bad. Hopefully we are cloesr.
 		return this;
 	};
-	Character.prototype.walkTo = function(dest, distance) {
+	Character.prototype.walkTo = function(dest, speed) {
 		if (!dest) { return; }
-
-		if (!distance) {
-			distance = utils.pf.p2pDist(this, dest);
-		}
 
 		var room = MYGAME.rooms.current,
 			point;
+		
+		// Nail down the {x,y} point to walk to:
 		if (dest.hasOwnProperty("id")) {
 			// Object passed in:
 			point = [dest.x, dest.y];
@@ -1357,13 +1317,11 @@ var MYGAME = (function($) {
 		if (this.coords() === point) { return; }
 
 		console.log("Walk to:", point);
-		// Is scrolling necessary?
-		//if (room.scrollable) {
-		//	utils.room.scrollDecide(point);
-		//}
-		this._directWalkTo(point, distance);
+		this._directWalkTo(point, speed);
 	};
-	Character.prototype._directWalkTo = function(point, distance) {
+	Character.prototype._directWalkTo = function(point, speed) {
+		var distance = utils.pf.p2pDist(this, point);
+		
 		// Draw a dot at dest:
 		MYGAME.ctx.clearRect(0,0,640,400);
 		MYGAME.ctx.fillStyle = "#FFFF00";
@@ -1376,75 +1334,77 @@ var MYGAME = (function($) {
 
 		// Start walking, boots!
 		var me = this;
-		var duration = distance * 8;
+		var duration = 7 * distance / speed;
+		console.log(speed, duration);
 		var el_dest = [point[0] - me.anchorOffsetDefault[0], point[1] - me.anchorOffsetDefault[1]];
-		this.jqDomNode.addClass("walking")
-						.queue("walk", function(next) {
-							console.warn("Animation queued with duration", duration);
-							var isMonoscaleRoom = MYGAME.rooms.current.monoscale,
-								isScrollingRoom = MYGAME.rooms.current.scrollable;
+		if (speed === 2) this.jqDomNode.addClass("fast");
+		this.jqDomNode.addClass("walking");
+		this.jqDomNode.queue("walk", function(next) {
+			console.warn("Animation queued with duration", duration);
+			var isMonoscaleRoom = MYGAME.rooms.current.monoscale,
+				isScrollingRoom = MYGAME.rooms.current.scrollable;
 
-							$(this).animate(
-							{
-								"left": el_dest[0],
-								"top": el_dest[1]
-							},
-							{
-								duration: duration,
-								queue: "walk",
-								easing: "linear",
-								start: function() {
-									me.animationState = 'walking';
-									
-									// Work out direction to face:
-									var dx = point[0] - me.x,
-										dy = point[1] - me.y,
-										angle = (360 / 6.28) * Math.atan2(dy,dx);
-									me.face(angle);
-									
-									console.info("Starting animation with dest:", point, "d:", distance.toFixed(3), "t:", duration.toFixed(3), "angle:", angle.toFixed(3));
+			$(this).animate(
+			{
+				"left": el_dest[0],
+				"top": el_dest[1]
+			},
+			{
+				duration: duration,
+				queue: "walk",
+				easing: "linear",
+				start: function() {
+					me.animationState = 'walking';
 
-									// Start regular check if scrolling is needed:
-									if (isScrollingRoom) {
-										me.scrollChecker = setInterval(function() {
-											utils.room.keepPlayerCentral();
-										}, 40);
-									}
-									
-									me.walkbox = utils.grid.whichWalkbox([me.x, me.y]);
-								},
-								progress: function() {
-									// Do something hundreds of times per animation
-									console.log("progress");
-									me.updateXYZ();
-									if (!isMonoscaleRoom) {
-										var wbname = utils.grid.whichWalkbox([me.x, me.y]);
-										// Scale sprite on walkbox change:
-										if (wbname !== me.walkbox) {
-											me.walkbox = wbname;
-											var wb = MYGAME.rooms.current.walkboxes[wbname];
-											console.log(wbname + ", scale: " + wb.scale);
-											if (wb.scale && wb.scale !== me.scale) {
-												me.scaleBy(wb.scale);
-											}
-										}
-									}
-								},
-								complete: function() {
-									clearInterval(me.scrollChecker);
-									me.reportLoc();
-									var q = $(this).queue("walk");
-									if (q.length < 1 && !$(this).is(':animated')) {
-										me.animationState = 'idle';
-										me.jqDomNode.removeClass("walking");	// only stop anim after last queue item
-										console.warn("Stopped animating.");
-										return;
-									}
-								}
-							});
-							// Continue:
-							next();
-						});
+					// Work out direction to face:
+					var dx = point[0] - me.x,
+						dy = point[1] - me.y,
+						angle = (360 / 6.28) * Math.atan2(dy,dx);
+					me.face(angle);
+
+					console.info("Starting animation with dest:", point, "d:", distance.toFixed(3), "t:", duration.toFixed(3), "angle:", angle.toFixed(3));
+
+					// Start regular check if scrolling is needed:
+					if (isScrollingRoom) {
+						me.scrollChecker = setInterval(function() {
+							utils.room.keepPlayerCentral();
+						}, 40);		// NOT SMOOTH ENOUGH
+					}
+
+					me.walkbox = utils.grid.whichWalkbox([me.x, me.y]);
+				},
+				progress: function() {
+					// Do something hundreds of times per animation
+					console.log("progress");
+					me.updateXYZ();
+					if (!isMonoscaleRoom) {
+						var wbname = utils.grid.whichWalkbox([me.x, me.y]);
+						// Scale sprite on walkbox change:
+						if (wbname !== me.walkbox) {
+							me.walkbox = wbname;
+							var wb = MYGAME.rooms.current.walkboxes[wbname];
+							console.log(wbname + ", scale: " + wb.scale);
+							if (wb.scale && wb.scale !== me.scale) {
+								me.scaleBy(wb.scale);
+							}
+						}
+					}
+				},
+				complete: function() {
+					clearInterval(me.scrollChecker);
+					me.reportLoc();
+					var q = $(this).queue("walk");
+					if (q.length < 1 && !$(this).is(':animated')) {
+						me.jqDomNode.removeClass("walking fast");	// only stop anim after last queue item
+						me.animationState = 'idle';
+						console.warn("Stopped animating.");
+						return;
+					}
+				}
+			});
+			// Continue:
+			next();
+		});
 		if (!this.jqDomNode.is(":animated")) {
 			this.jqDomNode.dequeue("walk");	// Starts animation
 		}
@@ -1616,7 +1576,7 @@ var MYGAME = (function($) {
 	}
 
 	// Process clicks in game area:
-	function entityClickHandler(event) {
+	function entityClickHandler(event, options) {
 		var room = this.rooms.current;
 		var player = this.player;
 		// Make sure game setup is complete:
@@ -1626,6 +1586,8 @@ var MYGAME = (function($) {
 			var evxy = [event.pageX - fgOffset.left, event.pageY - fgOffset.top];
 			var targetObj = null;
 			var path;
+			var speed = options.speed;
+			console.log("Speed1:", speed);
 
 			// Fix negative y clicks:
 			if (evxy[1] < room.baseline) {
@@ -1655,7 +1617,9 @@ var MYGAME = (function($) {
 					console.log("Not near enough. (dist: " + dist + ")");
 					player.jqDomNode.stop("walk", true, false);
 					path = utils.pf.pathFind(player.coords(), evxy, room);
-					if (path) { player.walkPath(path); }
+					console.log(path);
+					console.log("Speed2a:", speed);
+					if (path) { player.walkPath(path, speed); }
 
 					return;		// Will need to click targetObj again when nearer...
 				}
@@ -1690,7 +1654,9 @@ var MYGAME = (function($) {
 				// No specific object clicked, so just walk to the point:
 				player.jqDomNode.stop("walk", true, false);
 				path = utils.pf.pathFind(player.coords(), evxy, room);
-				if (path) { player.walkPath(path); }
+				console.log(path);
+				console.log("Speed2b:", speed);
+				if (path) { player.walkPath(path, speed); }
 			}
 		}
 	}
@@ -1714,10 +1680,17 @@ var MYGAME = (function($) {
 
 			// jQuery ready function:
 			$(document).ready(function() {
+				var clickDelay;
 
 				// Stage click handler:
 				$("#midground").on("click", function(event) {
-					MYGAME.entityClickHandler(event);
+					// Delay click in case it's a double click:
+					clickDelay = setTimeout(function() {
+						MYGAME.entityClickHandler(event, {speed: 1});
+					}, 100);
+				}).on("dblclick", function(event) {
+					clearTimeout(clickDelay);
+					MYGAME.entityClickHandler(event, {speed: 2});
 				});
 
 				// Item hover handler:

@@ -234,10 +234,14 @@
 	filter: FlipH;
 	-ms-filter: "FlipH";
 }*/
-#argyle_guy.walking.ss { animation: walk-arg-ss .9s 0s steps(8) infinite; }
-#argyle_guy.walking.nn { animation: walk-arg-nn .9s 0s steps(8) infinite; }
-#argyle_guy.walking.ee { animation: walk-arg-ee .9s 0s steps(8) infinite; }
-#argyle_guy.walking.ww { animation: walk-arg-ww .9s 0s steps(8) infinite; }
+#argyle_guy.walking.ss { animation: walk-arg-ss 1s 0s steps(8) infinite; }
+#argyle_guy.walking.nn { animation: walk-arg-nn 1s 0s steps(8) infinite; }
+#argyle_guy.walking.ee { animation: walk-arg-ee 1s 0s steps(8) infinite; }
+#argyle_guy.walking.ww { animation: walk-arg-ww 1s 0s steps(8) infinite; }
+#argyle_guy.walking.fast.ss { animation: walk-arg-ss .5s 0s steps(8) infinite; }
+#argyle_guy.walking.fast.nn { animation: walk-arg-nn .5s 0s steps(8) infinite; }
+#argyle_guy.walking.fast.ee { animation: walk-arg-ee .5s 0s steps(8) infinite; }
+#argyle_guy.walking.fast.ww { animation: walk-arg-ww .5s 0s steps(8) infinite; }
 
 @keyframes walk-arg-ww {
 	from { background-position: -100px -540px; }
