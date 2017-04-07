@@ -94,11 +94,11 @@ R5 vertical walk speed < horizontal walk speed (depending on perspective) - not 
 save thumbnail of screenshot using html2canvas as base64 with savegames
 vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states?;
 //lock down to bg1 & define sizes of exit boxes
+//revert inactive player to forward-facing (unless rear-facing)
 	
 /fix auto-scroll
 double speed walking
 try velocity.js and/or transit
-revert inactive player to forward-facing (unless rear-facing)
 couple of idle animations for hero
 basic mouth animation (eyes, eyebrows...)
 

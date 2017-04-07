@@ -79,3 +79,6 @@
 
 6-Apr	new hero basic walk animations
 6-Apr	added room5: hotel
+
+7-Apr	resized exits
+7-Apr	gave player an idle animation loop

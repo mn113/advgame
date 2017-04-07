@@ -1242,6 +1242,8 @@ var MYGAME = (function($) {
 		this.talksCtr = 0;
 		this.state = 0;					// advances as gameplay dictates
 		this.walkData = [];
+		this.animationState = options.animationState || 'idle';		// idle / walking / talking / permanent...
+		this.animationLoop = options.animationLoop || null;			// holds the setInterval governing animation
 	}
 	// Inheritance: Character extends _BaseObj
 	Character.prototype = Object.create(_BaseObj.prototype, {
@@ -1392,6 +1394,8 @@ var MYGAME = (function($) {
 								queue: "walk",
 								easing: "linear",
 								start: function() {
+									me.animationState = 'walking';
+									
 									// Work out direction to face:
 									var dx = point[0] - me.x,
 										dy = point[1] - me.y,
@@ -1431,7 +1435,8 @@ var MYGAME = (function($) {
 									me.reportLoc();
 									var q = $(this).queue("walk");
 									if (q.length < 1 && !$(this).is(':animated')) {
-										me.jqDomNode.removeClass("walking");	// only stop after last queue item
+										me.animationState = 'idle';
+										me.jqDomNode.removeClass("walking");	// only stop anim after last queue item
 										console.warn("Stopped animating.");
 										return;
 									}
@@ -1460,8 +1465,14 @@ var MYGAME = (function($) {
 
 		// Player-specific properties:
 		this.inventory = [];			// Hash of inventory item ids
-		this.anchorOffset = [40,170];	// offset for argyle_guy (40x88)
-		this.anchorOffsetDefault = [40,170];
+		this.anchorOffset = [50,172];	// offset for feet of hero_2x (100x180)
+		this.anchorOffsetDefault = [50,172];
+		this.animationLoop = setInterval(function() {
+			if (this.animationState == 'idle' && (this.jqDomNode.hasClass('ww') || this.jqDomNode.hasClass('ee'))) {
+				console.log('turn?');
+				if (Math.random() > 0.5) this.face('ss');
+			}
+		}.bind(this), 5000)	// runs on loop for the entire life of the player object
 	}
 	// Inheritance: Player extends Character
 	Player.prototype = Object.create(Character.prototype, {
