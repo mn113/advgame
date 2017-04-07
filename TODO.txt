@@ -104,6 +104,8 @@ basic mouth animation (eyes, eyebrows...)
 
 add a NPC
 
+put each rooms js with its html
+
 resolution changer: 1x, 2x, 3x, 4x (css/js)
 
 rewrite geometry functions to all use {x:0,y:0} point objects [DANGEROUS!]

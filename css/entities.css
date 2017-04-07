@@ -238,14 +238,11 @@
 #argyle_guy.walking.nn { animation: walk-arg-nn 1s 0s steps(8) infinite; }
 #argyle_guy.walking.ee { animation: walk-arg-ee 1s 0s steps(8) infinite; }
 #argyle_guy.walking.ww { animation: walk-arg-ww 1s 0s steps(8) infinite; }
-#argyle_guy.walking.fast.ss { animation: walk-arg-ss .5s 0s steps(8) infinite; }
-#argyle_guy.walking.fast.nn { animation: walk-arg-nn .5s 0s steps(8) infinite; }
-#argyle_guy.walking.fast.ee { animation: walk-arg-ee .5s 0s steps(8) infinite; }
-#argyle_guy.walking.fast.ww { animation: walk-arg-ww .5s 0s steps(8) infinite; }
+#argyle_guy.walking.fast { animation-duration: .5s}
 
 @keyframes walk-arg-ww {
-	from { background-position: -100px -540px; }
-	to   { background-position: -900px -540px; }
+	from { background-position: -900px -540px; }
+	to   { background-position: -100px -540px; }
 }
 @keyframes walk-arg-ee {
 	from { background-position: -100px -360px; }

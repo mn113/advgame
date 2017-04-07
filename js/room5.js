@@ -28,6 +28,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		dest: 4,
 		width: 120,
 		height: 220,
+		direction: "left",
 		visible: true,
 		active: true
 	}).placeAt([0,100]);
@@ -36,23 +37,35 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		dest: 0,
 		width: 120,
 		height: 220,
+		direction: "right",
 		visible: true,
 		active: true
 	}).placeAt([1080,100]);
+	var exit3 = new M.Exit({
+		id: "exit3",
+		dest: 0,
+		width: 115,
+		height: 116,
+		direction: "up",
+		visible: true,
+		active: true
+	}).placeAt([930,0]);
 
 	console.log("All objects initialised.");
 
-	// Define the geometry of room1:
+	// Define the geometry of room5:
 	room.walkboxes = {
 			wb1: {points: [{x:48,y:399}, {x:145,y:299}, {x:958,y:299}, {x:1019,y:399}], scale: 1},
 			wb2: {points: [{x:170,y:274}, {x:408,y:274}, {x:408,y:299}, {x:145,y:299}], scale: 0.9},
 			wb3: {points: [{x:237,y:274}, {x:403,y:274}, {x:356,y:215}, {x:282,y:215}], scale: 0.8},
-			wb4: {points: [{x:966,y:313}, {x:1019,y:399}, {x:1156,y:399}, {x:1127,y:313}], scale: 1}
+			wb4: {points: [{x:710,y:299}, {x:816,y:182}, {x:925,y:116}, {x:1014,y:116}, {x:843,y:299}], scale: 0.9},
+			wb5: {points: [{x:966,y:313}, {x:1019,y:399}, {x:1156,y:399}, {x:1127,y:313}], scale: 1}
 		};
 	room.nodes = {
 			1: {x: 320, y: 274, edges: [2]},	// edges are the other nodes this node can see
-			2: {x: 394, y: 299, edges: [1,3]},
-			3: {x: 985, y: 337, edges: [2]}
+			2: {x: 394, y: 299, edges: [1,3,4]},
+			3: {x: 780, y: 299, edges: [2,4]},
+			4: {x: 985, y: 337, edges: [2,3]}
 		};
 	room.baseline = 213;	// pixels from top that walkable area starts
 	room.exits = {

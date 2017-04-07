@@ -1083,6 +1083,7 @@ var MYGAME = (function($) {
 		// Item-specific properties:
 		this.dest = options.dest || null;		// Another room id
 		this.active = options.active || true;	// Can it currently be used?
+		this.jqDomNode.addClass(options.direction);
 	}
 	// Inheritance: Exit extends _BaseObj
 	Exit.prototype = Object.create(_BaseObj.prototype, {
