@@ -85,4 +85,11 @@
 	left: 0;
 	z-index: 400;
 }
-.room5 .hotel_pillars  { background: url(../img/scenes/Hotel-lobby-fg.png); z-index: 0; }
+.room5 .hotel_pillars {
+	width: 1200px;
+	height: 400px;
+	background: url(../img/scenes/Hotel-lobby-fg-2x.png);
+	bottom: 0;
+	left: 0;
+	z-index: 400;
+}
