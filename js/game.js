@@ -655,7 +655,7 @@ var MYGAME = (function($) {
 			// Scroll the screen to a particular spot e.g. [0,0]:
 			scrollTo: function(origin) {
 				var $layers = $("#background, #midground, #foreground, #pathsvg");
-				$layers.css({"left": -1 * origin[0], "top": -1 * origin[1]});
+				$layers.animate({"left": -1 * origin[0], "top": -1 * origin[1]}, 2000);
 			},
 			// Run this when player is moving about to decide when scrolling is necessary:
 			/*scrollDecide: function(point) {
@@ -681,19 +681,15 @@ var MYGAME = (function($) {
 			},
 			*/
 			// When the player is moving about, scroll the room to keep him central:
-			keepPlayerCentral: function() {
-				var	viewportMidpoint = [320,0],
-					mgposX = $("#midground").position().left,
-					relX = MYGAME.player.x + mgposX,
-					offCentreX = relX - viewportMidpoint[0];
-					console.log(mgposX, relX, 320);
-					console.log(offCentreX + "px off centre");
+			keepPlayerCentral: function(dir) {
+				var	offCentreX = MYGAME.player.x + $("#midground").position().left - 320;
+				console.log(offCentreX + "px off centre");
 				// Correct scroll to keep player central:
-				if (offCentreX < -160) {
+				if (dir === "L" && offCentreX < -160) {
 					console.info("Try to scroll", offCentreX, "left...");
 					utils.room.scrollX("L", -1 * offCentreX);
 				}
-				else if (offCentreX > 160) {
+				else if (dir === "R" && offCentreX > 160) {
 					console.info("Try to scroll", offCentreX, "right...");
 					utils.room.scrollX("R", offCentreX);
 				}
@@ -880,7 +876,7 @@ var MYGAME = (function($) {
 			$("#gamebox").removeClass("room" + me.id);
 			// Remove level-specific elements from HTML:
 			$("#background *").remove();
-			$("#midground *").not("#steve, #argyle_guy").remove();	// REDUNDANT
+			$("#midground *").not("#player").remove();
 			$("#foreground *").remove();
 			$("#pathsvg *").remove();
 			console.info("@", new Date().getTime(), 'unload() completed for Room', this.id);
@@ -1320,9 +1316,7 @@ var MYGAME = (function($) {
 		console.log("Walk to:", point);
 		this._directWalkTo(point, speed);
 	};
-	Character.prototype._directWalkTo = function(point, speed) {
-		var distance = utils.pf.p2pDist(this, point);
-		
+	Character.prototype._directWalkTo = function(point, speed) {		
 		// Draw a dot at dest:
 		MYGAME.ctx.clearRect(0,0,640,400);
 		MYGAME.ctx.fillStyle = "#FFFF00";
@@ -1333,11 +1327,18 @@ var MYGAME = (function($) {
 		//var monoscale = (this.scale === ptscale) ? true : false;
 		//if (monoscale) { console.log("MONOSCALE!"); }
 
-		// Start walking, boots!
 		var me = this;
+		// Precalculate:
+		var distance = utils.pf.p2pDist(me, point);
 		var duration = 7 * distance / speed;
-		console.log(speed, duration);
+		// Work out direction to face:
+		var dx = point[0] - me.x,
+			dy = point[1] - me.y,
+			angle = (360 / 6.28) * Math.atan2(dy,dx),
+			dir = dx < 0 ? 'L' : 'R';
 		var el_dest = [point[0] - me.anchorOffsetDefault[0], point[1] - me.anchorOffsetDefault[1]];
+
+		// Start walking, boots!
 		if (speed === 2) this.jqDomNode.addClass("fast");
 		this.jqDomNode.addClass("walking");
 		this.jqDomNode.queue("walk", function(next) {
@@ -1356,28 +1357,18 @@ var MYGAME = (function($) {
 				easing: "linear",
 				start: function() {
 					me.animationState = 'walking';
-
-					// Work out direction to face:
-					var dx = point[0] - me.x,
-						dy = point[1] - me.y,
-						angle = (360 / 6.28) * Math.atan2(dy,dx);
-					me.face(angle);
-
-					console.info("Starting animation with dest:", point, "d:", distance.toFixed(3), "t:", duration.toFixed(3), "angle:", angle.toFixed(3));
-
-					// Start regular check if scrolling is needed:
-					if (isScrollingRoom) {
-						me.scrollChecker = setInterval(function() {
-							utils.room.keepPlayerCentral();
-						}, 40);		// NOT SMOOTH ENOUGH
-					}
-
 					me.walkbox = utils.grid.whichWalkbox([me.x, me.y]);
+					me.face(angle);
+					console.info("Starting animation with dest:", point, "d:", distance.toFixed(3), "t:", duration.toFixed(3), "angle:", angle.toFixed(3));
 				},
 				progress: function() {
 					// Do something hundreds of times per animation
-					console.log("progress");
 					me.updateXYZ();
+					console.log("progress");
+					// Start regular check if scrolling is needed:
+					if (isScrollingRoom) {
+						utils.room.keepPlayerCentral(dir);
+					}
 					if (!isMonoscaleRoom) {
 						var wbname = utils.grid.whichWalkbox([me.x, me.y]);
 						// Scale sprite on walkbox change:
@@ -1390,9 +1381,9 @@ var MYGAME = (function($) {
 							}
 						}
 					}
+
 				},
 				complete: function() {
-					clearInterval(me.scrollChecker);
 					me.reportLoc();
 					var q = $(this).queue("walk");
 					if (q.length < 1 && !$(this).is(':animated')) {
@@ -1670,8 +1661,8 @@ var MYGAME = (function($) {
 		setTimeout(function() {
 			// Initialise the player [MOST IMPORTANT!]:
 			game.player = new Player({
-				id: "argyle_guy",
-				name: "Argyle Guy",
+				id: "player",
+				name: "Hero Guy",
 				colour: "#96c",
 				visible: false		// invisible until placed via Room.spawnPlayer()
 			});

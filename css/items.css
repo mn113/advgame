@@ -1,0 +1,57 @@
+/* ITEMS */
+.item {
+	width: 32px;
+	height: 32px;
+	position: absolute;
+	z-index: 100;
+}
+#bread {
+	background: url(../img/props/bread.png);
+}
+#slicedbread {
+	background: url(../img/props/slicedbread.png);
+}
+#sandwich {
+	background: url(../img/props/sandwich.png);
+}
+#cheese {
+	background: url(../img/props/cheese.png);
+}
+#chest.closed {
+	background: url(../img/props/chest.png);
+}
+#chest.open {
+	background: url(../img/props/openchest.png);
+}
+#knife {
+	background: url(../img/props/knife.png);
+}
+#key {
+	background: url(../img/props/key.png);
+}
+#chicken {
+	background: url(../img/props/chicken.png);
+}
+
+/* These hover states will later be done with bg-position shift :*/
+#inventory #bread:hover {
+	background: url(../img/props/bread_outline.png);
+}
+#inventory #slicedbread:hover {
+	background: url(../img/props/slicedbread_outline.png);
+}
+#inventory #cheese:hover {
+	background: url(../img/props/cheese_outline.png);
+}
+#inventory #sandwich:hover {
+	background: url(../img/props/sandwich_outline.png);
+}
+#inventory #knife:hover {
+	background: url(../img/props/knife_outline.png);
+}
+#inventory #key:hover {
+	background: url(../img/props/key_outline.png);
+}
+#inventory #chicken:hover {
+	background: url(../img/props/chicken_outline.png);
+}

@@ -69,8 +69,9 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		};
 	room.baseline = 213;	// pixels from top that walkable area starts
 	room.exits = {
-		0: {dest: 2},
-		1: {dest: 2}
+		0: {dest: 5},
+		1: {dest: 5},
+		2: {dest: 5}
 	};
 	room.spawnPoints = {
 		0: {x: 300, y: 300, face: 'ss'}
@@ -87,15 +88,3 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	$("#svgwrap").html($("#svgwrap").html());
 
 }(MYGAME, jQuery));
-
-
-/*
-84,91								557,91
-
-					340,141	476,134
-					343,209	488,210
-	131,224	282,232
-	115,323	286,323
-
-2,399								638,399
-*/

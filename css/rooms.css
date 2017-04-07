@@ -1,0 +1,88 @@
+/* GENERAL */
+.exit {
+	border: 1px solid blue;
+	width: 24px;
+	height: 32px;
+	position: absolute;
+}
+
+#background {
+	xperspective: 1px;
+	xwidth: 100vw;
+}
+
+#background div {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
+.dead { pointer-events: none; }
+
+
+/* GENERAL ROOM BACKGROUNDS */
+.room4 .bg1 { background: url(../img/scenes/kscumm_bg1.png); z-index: 0;   xtransform: translateZ(0); }
+.room5 .bg1	{ background: url(../img/scenes/Hotel-lobby-2x.png); z-index: 0; }
+
+
+/* BACKGROUND PARALLAX LAYERS */
+.room4 .parallax {
+	position: absolute;
+	width: 1280px;
+	height: 344px;
+	xtransform-style: preserve-3d;
+	xbackground-position: 50% 50%;
+	xbackground-repeat: no-repeat;
+	xbackground-attachment: fixed;
+	xbackground-size: cover;
+}
+.room4 .bg2 { background: url(../img/scenes/kscumm_bg2.png); z-index: -20; xtransform: translateZ(-10px) scale(11); }
+.room4 .bg3 { background: url(../img/scenes/kscumm_bg3.png); z-index: -40; xtransform: translateZ(-20px) scale(21); }
+
+
+/* MID-GROUND SCENERY */
+#cat_clock_tail {
+	width: 18px;
+	height: 14px;
+	background: url(../img/props/cat_clock_tail.gif);
+	left: 305px;
+	top: 80px;
+}
+
+/* FOREGROUND PARALLAX LAYERS */
+.scenery {
+	position: absolute;
+	z-index: 1;	
+}
+.room2 #bed {
+	width: 262px;
+	height: 86px;
+	background: url(../img/scenes/zak_bed_fg_2x.png);
+	bottom: 0;
+	left: 0;
+	z-index: 230;
+}
+.room4 .grass1 {
+	width: 264px;
+	height: 84px;
+	background: url(../img/scenes/kscumm_grass1.png);
+	bottom: 0;
+	left: 0;
+	z-index: 400;
+}
+.room4 .grass2 {
+	width: 456px;
+	height: 167px;
+	background: url(../img/scenes/kscumm_grass2.png);
+	bottom: 0;
+	right: 0;
+	z-index: 400;
+}
+.room4 .yellow {
+	width: 400px;
+	height: 400px;
+	background: url(../img/scenes/yellow_light_test.png);
+	bottom: 0;
+	left: 0;
+	z-index: 400;
+}
+.room5 .hotel_pillars  { background: url(../img/scenes/Hotel-lobby-fg.png); z-index: 0; }
