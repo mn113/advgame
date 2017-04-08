@@ -6,6 +6,7 @@
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Sprite Test</title>
+		<link rel="stylesheet" href="css/characters.css">
 		<style>
 			div {display: inline-block; margin: 20px; background: teal;}
 			.argyle_guy {
@@ -61,6 +62,7 @@
 				height:90px;
 				background: url("img/characters/HeroAnim.png");
 				border-bottom: 2px solid black;
+				position: relative;
 			}
 			.hero.front {
 				background-position: 0px 0px;				
@@ -121,7 +123,10 @@
 			<div class="argyle_guy left walk"></div>
 		</div>		
 		<div id="heroanim">
-			<div class="hero front"></div>
+			<div class="hero front">
+				<div class="eyes"></div>
+				<div class="mouth"></div>
+			</div>
 			<div class="hero front walk"></div>
 			<br>
 			<div class="hero back"></div>
@@ -132,8 +137,6 @@
 			<br>
 			<div class="hero left"></div>
 			<div class="hero left walk"></div>
-		</div>		
-		
-
+		</div>
 	</body>
 </html>

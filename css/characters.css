@@ -1,5 +1,4 @@
 /* CHARACTERS */
-
 #player {
 	width: 100px;
 	height: 180px;
@@ -78,3 +77,47 @@
 	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.5, M12=0, M21=0, M22=0.5, SizingMethod='auto expand')";
 }
 
+
+/* SUB-SPRITES */
+.eyes {
+	width: 18px;
+	height: 6px;
+	position: absolute;
+	top: -13px;
+	left: -4px;
+	background-image: url(../img/characters/FaceParts_2x.png);
+	background-position: -4px -2px;
+	xborder: 1px dotted black;
+}
+.eyes.left  { animation: eyes-left 0.5s 0s steps(2) infinite;}
+.eyes.right { animation: eyes-right 0.5s 0s steps(2) infinite; }
+.eyes.blink { animation: eyes-blink 0.5s 0s steps(2) infinite; }
+
+@keyframes eyes-left {
+	from { background-position: -4px -2px; }
+	to   { background-position: -4px -22px; }
+}
+@keyframes eyes-right {
+	from { background-position: -4px -2px; }
+	to   { background-position: -4px -32px; }
+}
+@keyframes eyes-blink {
+	from { background-position: -4px -2px; }
+	to   { background-position: -4px -52px; }
+}
+.mouth {
+	width: 6px;
+	height: 3px;
+	position: absolute;
+	top: -3px;
+	left: 3px;
+	background-image: url(../img/characters/FaceParts_2x.png);
+	background-position: -28px -2px;
+	xborder: 1px dotted black;
+}
+.talking .mouth { animation: mouth-talk 0.5s 0s steps(3) infinite; }
+
+@keyframes mouth-talk {
+	from { background-position: -28px -2px; }
+	to   { background-position: -28px -22px; }
+}
