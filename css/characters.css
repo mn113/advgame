@@ -80,20 +80,19 @@
 
 /* SUB-SPRITES */
 .mouth {
-	width: 6px;
+	width: 7px;
 	height: 4px;
 	position: absolute;
-	top: 38px;
+	top: 37px;
 	left: 48px;
 	background-image: url(../img/characters/FaceParts_2x.png);
-	background-position: -24px -12px;
+	background-position: -24px 0px;
 }
-.talking > .mouth { animation: mouth-talk 1s steps(3) infinite alternate; }
+.talking > .mouth { animation: mouth-talk 0.7s steps(7, start) infinite alternate; }
 
 @keyframes mouth-talk {
 	from { background-position: -24px 0px; }
-	50%  { background-position: -24px -6px; }
-	to   { background-position: -24px -12px; }
+	to   { background-position: -24px -42px; }
 }
 
 .eyes {
@@ -105,24 +104,25 @@
 	background-image: url(../img/characters/FaceParts_2x.png);
 	background-position: 0px 0px;
 }
-.eyes.left  { animation: eyes-left 1s steps(2); }
-.eyes.right { animation: eyes-right 1s steps(2); }
-.eyes.shifty { animation: eyes-shifty 2s steps(3) 1 normal; }
-.eyes.blink { animation: eyes-blink 2s steps(2) 1 normal; }
+.eyes.flickleft  { animation: eyes-flick-left 1s steps(1, start) 1; }
+.eyes.flickright { animation: eyes-flick-right 1s steps(1, start) 1; }
+.eyes.shifty { animation: eyes-shifty 2s steps(1, start) 1; }
+.eyes.blink { animation: eyes-blink 0.5s steps(1, start) 1; }
 
-@keyframes eyes-left {
-	from { background-position: 0px 0px; }
-	to   { background-position: 0px -20px; }
+@keyframes eyes-flick-left {
+	0%,100% { background-position: 0px 0px; }
+	50%  { background-position: 0px -10px; } /* left */
 }
-@keyframes eyes-right {
-	from { background-position: 0px 0px; }
-	to   { background-position: 0px -30px; }
+@keyframes eyes-flick-right {
+	0%,100% { background-position: 0px 0px; }
+	50%  { background-position: 0px -20px; } /* right */
 }
 @keyframes eyes-shifty {
-	0% { background-position: 0px 0px; } /* default */
-	50% { background-position: 0px -10px; } /* left */
-	100% { background-position: 0px -20px; } /* right */
-
+	0%   { background-position: 0px 0px; } /* default */
+	33%  { background-position: 0px -10px; } /* left */
+	67%  { background-position: 0px -20px; } /* right */
+	100% { background-position: 0px -80px; } /* blank space */
+}
 @keyframes eyes-blink {
 	0%,100% { background-position: 0px 0px; } /* default */
 	50%  { background-position: 0px -40px; } /* closed */

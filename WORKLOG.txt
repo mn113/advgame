@@ -84,3 +84,5 @@
 7-Apr	gave player an idle animation loop
 7-Apr	implemented double-speed walking & refactored pathfinding / walking
 7-Apr	split css file
+
+9-Apr	face & mouth animations
