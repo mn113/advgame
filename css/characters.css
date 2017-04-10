@@ -17,10 +17,10 @@
 #player.ee { background-position: 0 -360px; }
 #player.ww { background-position: 0 -540px; }
 
-#player.walking.ss { animation: walk-arg-ss 1s 0s steps(8) infinite; }
-#player.walking.nn { animation: walk-arg-nn 1s 0s steps(8) infinite; }
-#player.walking.ee { animation: walk-arg-ee 1s 0s steps(8) infinite; }
-#player.walking.ww { animation: walk-arg-ww 1s 0s steps(8) infinite; }
+#player.walking.ss { animation: walk-arg-ss 1s steps(8) infinite; }
+#player.walking.nn { animation: walk-arg-nn 1s steps(8) infinite; }
+#player.walking.ee { animation: walk-arg-ee 1s steps(8) infinite; }
+#player.walking.ww { animation: walk-arg-ww 1s steps(8) infinite; }
 #player.walking.fast { animation-duration: .5s}
 
 @keyframes walk-arg-ww {
@@ -79,45 +79,51 @@
 
 
 /* SUB-SPRITES */
+.mouth {
+	width: 6px;
+	height: 4px;
+	position: absolute;
+	top: 38px;
+	left: 48px;
+	background-image: url(../img/characters/FaceParts_2x.png);
+	background-position: -24px -12px;
+}
+.talking > .mouth { animation: mouth-talk 1s steps(3) infinite alternate; }
+
+@keyframes mouth-talk {
+	from { background-position: -24px 0px; }
+	50%  { background-position: -24px -6px; }
+	to   { background-position: -24px -12px; }
+}
+
 .eyes {
 	width: 18px;
 	height: 6px;
 	position: absolute;
-	top: -13px;
-	left: -4px;
+	top: 18px;
+	left: 42px;
 	background-image: url(../img/characters/FaceParts_2x.png);
-	background-position: -4px -2px;
-	xborder: 1px dotted black;
+	background-position: 0px 0px;
 }
-.eyes.left  { animation: eyes-left 0.5s 0s steps(2) infinite;}
-.eyes.right { animation: eyes-right 0.5s 0s steps(2) infinite; }
-.eyes.blink { animation: eyes-blink 0.5s 0s steps(2) infinite; }
+.eyes.left  { animation: eyes-left 1s steps(2); }
+.eyes.right { animation: eyes-right 1s steps(2); }
+.eyes.shifty { animation: eyes-shifty 2s steps(3) 1 normal; }
+.eyes.blink { animation: eyes-blink 2s steps(2) 1 normal; }
 
 @keyframes eyes-left {
-	from { background-position: -4px -2px; }
-	to   { background-position: -4px -22px; }
+	from { background-position: 0px 0px; }
+	to   { background-position: 0px -20px; }
 }
 @keyframes eyes-right {
-	from { background-position: -4px -2px; }
-	to   { background-position: -4px -32px; }
+	from { background-position: 0px 0px; }
+	to   { background-position: 0px -30px; }
 }
-@keyframes eyes-blink {
-	from { background-position: -4px -2px; }
-	to   { background-position: -4px -52px; }
-}
-.mouth {
-	width: 6px;
-	height: 3px;
-	position: absolute;
-	top: -3px;
-	left: 3px;
-	background-image: url(../img/characters/FaceParts_2x.png);
-	background-position: -28px -2px;
-	xborder: 1px dotted black;
-}
-.talking .mouth { animation: mouth-talk 0.5s 0s steps(3) infinite; }
+@keyframes eyes-shifty {
+	0% { background-position: 0px 0px; } /* default */
+	50% { background-position: 0px -10px; } /* left */
+	100% { background-position: 0px -20px; } /* right */
 
-@keyframes mouth-talk {
-	from { background-position: -28px -2px; }
-	to   { background-position: -28px -22px; }
+@keyframes eyes-blink {
+	0%,100% { background-position: 0px 0px; } /* default */
+	50%  { background-position: 0px -40px; } /* closed */
 }

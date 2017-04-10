@@ -1044,6 +1044,11 @@ var MYGAME = (function($) {
 		this.reportLoc();
 		return this;
 	};
+	_BaseObj.prototype.addSubpart = function(name) {
+		// Add a child element to the DOMnode; further details are handled with CSS:
+		this.jqDomNode.append($("<div class='"+ name +"'>"));
+		return this;
+	}
 
 
 	/**
@@ -1402,15 +1407,32 @@ var MYGAME = (function($) {
 	*/
 	function Player(options) {	// (id, name, colour, visible)
 		Character.call(this, options);
+		// HTML:
+		this.addSubpart("eyes").addSubpart("mouth");
 
 		// Player-specific properties:
 		this.inventory = [];			// Hash of inventory item ids
 		this.anchorOffset = [50,172];	// offset for feet of hero_2x (100x180)
 		this.anchorOffsetDefault = [50,172];
 		this.animationLoop = setInterval(function() {
+			// Face south animation:
 			if (this.animationState == 'idle' && (this.jqDomNode.hasClass('ww') || this.jqDomNode.hasClass('ee'))) {
 				console.log('turn?');
 				if (Math.random() > 0.5) this.face('ss');
+			}
+			// Blink animation:
+			if (this.animationState == 'idle' && this.jqDomNode.hasClass('ss')) {
+				var $eyes = this.jqDomNode.find(".eyes");
+				if (Math.random() > 0.5) {
+				console.log('blink eyes');
+					$eyes.addClass('blink');
+					setTimeout(function() { $eyes.removeClass('blink') }, 1500);
+				}
+				else {
+				console.log('shifty eyes');
+					$eyes.addClass('shifty');
+					setTimeout(function() { $eyes.removeClass('shifty') }, 2000);
+				}
 			}
 		}.bind(this), 5000)	// runs on loop for the entire life of the player object
 	}
@@ -1740,6 +1762,7 @@ var MYGAME = (function($) {
 					}
 					else if (e.keyCode === 84) {									// press 't'
 						MYGAME.utils.ui.toolMode('talkto');
+						MYGAME.player.jqDomNode.toggleClass('talking');
 					}
 					else if (e.keyCode === 80) {									// press 'p'
 						MYGAME.utils.ui.toolMode('pickup');
