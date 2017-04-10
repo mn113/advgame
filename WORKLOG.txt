@@ -86,3 +86,4 @@
 7-Apr	split css file
 
 9-Apr	face & mouth animations
+9-Apr	fixed parallax foreground, scrollTo() now deprecates scrollX()

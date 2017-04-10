@@ -579,7 +579,7 @@ var MYGAME = (function($) {
 				}
 			},
 			// Scroll the screen left or right by some amount:
-			scrollX: function(dir, amount) {		// e.g. "L", 50
+			/*scrollX: function(dir, amount) {		// e.g. "L", 50
 				var $bg = $("#background"),
 					$mg = $("#midground, #pathsvg"),
 					$fg = $("#foreground"),			// fg scrolls differently
@@ -651,31 +651,35 @@ var MYGAME = (function($) {
 				}
 				clearInterval(pollWalkAnims);
 				return;
-			},
+			},*/
 			// Smooth-scroll the screen to a particular spot e.g. [0,0]:
 			scrollTo: function(origin, duration) {
 				// How far to scroll to avoid overshooting:
 				var leftmost = 0,
 					rightmost = MYGAME.rooms.current.width-640,
 					currentX = -1 * parseInt($("#midground").position().left, 10),
-					scrollX;
+					scrollposX;
 				console.log(leftmost, rightmost, currentX);
 				if (origin[0] < currentX) {	// direction "L"
 					console.log("Scrolling left...");
-					scrollX = Math.max(leftmost, origin[0]-320);
+					scrollposX = Math.max(leftmost, origin[0]-320);
 				}
 				else {	// direction "R"
 					console.log("Scrolling right...");
-					scrollX = Math.min(rightmost, origin[0]-320);
+					scrollposX = Math.min(rightmost, origin[0]-320);
 				}
-				if (scrollX < leftmost) scrollX = leftmost;
-				if (scrollX > rightmost) scrollX = rightmost;
+				if (scrollposX < leftmost) scrollposX = leftmost;
+				if (scrollposX > rightmost) scrollposX = rightmost;
 				
 				// Perform the scroll:
-				console.log("Scrolling window to", scrollX);
+				console.log("Scrolling window to", scrollposX);
 				var duration = duration || 2000;
-				var $layers = $("#background, #midground, #foreground, #pathsvg");
-				$layers.animate({"left": -1 * scrollX, "top": -1 * origin[1]}, duration);
+				var $bglayers = $("#background .bg2"),
+					$midlayers = $("#background .bg1, #midground, #pathsvg"),
+					$fglayers = $("#foreground");
+				$midlayers.animate({"left": -1 * scrollposX, "top": -1 * origin[1]}, duration);
+				$bglayers.animate({"left": -0.5 * scrollposX, "top": -0.5 * origin[1]}, duration);
+				$fglayers.animate({"left": -1.5 * scrollposX, "top": -1.5 * origin[1]}, duration);
 			}
 		},
 		misc: {
@@ -1412,7 +1416,7 @@ var MYGAME = (function($) {
 
 		// Player-specific properties:
 		this.inventory = [];			// Hash of inventory item ids
-		this.anchorOffset = [50,172];	// offset for feet of hero_2x (100x180)
+		this.anchorOffset = [50,172];	// Offset for feet of hero_2x (100x180)
 		this.anchorOffsetDefault = [50,172];
 		this.animationLoop = setInterval(function() {
 			// Face south animation:
@@ -1420,16 +1424,16 @@ var MYGAME = (function($) {
 				console.log('turn?');
 				if (Math.random() > 0.5) this.face('ss');
 			}
-			// Blink animation:
+			// Eyes idle animation:
 			if (this.animationState == 'idle' && this.jqDomNode.hasClass('ss')) {
 				var $eyes = this.jqDomNode.find(".eyes");
-				if (Math.random() > 0.5) {
-				console.log('blink eyes');
+				if (Math.random() > 0.7) {
+					console.log('blink eyes');
 					$eyes.addClass('blink');
 					setTimeout(function() { $eyes.removeClass('blink') }, 1500);
 				}
-				else {
-				console.log('shifty eyes');
+				else if (Math.random() > 0.7) {
+					console.log('shifty eyes');
 					$eyes.addClass('shifty');
 					setTimeout(function() { $eyes.removeClass('shifty') }, 2000);
 				}
@@ -1804,10 +1808,10 @@ var MYGAME = (function($) {
 					}
 /***************************************************************************************************/
 					else if (e.keyCode === 37) {									// press 'left'
-						MYGAME.utils.room.scrollX("L", 30);
+						MYGAME.utils.room.scrollTo($("#midground.position().left") - 50, 500);
 					}
 					else if (e.keyCode === 39) {									// press 'right'
-						MYGAME.utils.room.scrollX("R", 30);
+						MYGAME.utils.room.scrollTo($("#midground.position().left") + 50, 500);
 					}
 /***************************************************************************************************/
 					else if (e.keyCode >= 48 && e.keyCode <= 57) {					// press '0-9'

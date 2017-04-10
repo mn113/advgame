@@ -79,7 +79,7 @@
 
 
 /* SUB-SPRITES */
-.mouth {
+.ss .mouth {
 	width: 7px;
 	height: 4px;
 	position: absolute;
@@ -88,14 +88,14 @@
 	background-image: url(../img/characters/FaceParts_2x.png);
 	background-position: -24px 0px;
 }
-.talking > .mouth { animation: mouth-talk 0.7s steps(7, start) infinite alternate; }
+.ss.talking .mouth { animation: mouth-talk 0.7s steps(7, start) infinite alternate; }
 
 @keyframes mouth-talk {
 	from { background-position: -24px 0px; }
 	to   { background-position: -24px -42px; }
 }
 
-.eyes {
+.ss .eyes {
 	width: 18px;
 	height: 6px;
 	position: absolute;
@@ -104,10 +104,10 @@
 	background-image: url(../img/characters/FaceParts_2x.png);
 	background-position: 0px 0px;
 }
-.eyes.flickleft  { animation: eyes-flick-left 1s steps(1, start) 1; }
-.eyes.flickright { animation: eyes-flick-right 1s steps(1, start) 1; }
-.eyes.shifty { animation: eyes-shifty 2s steps(1, start) 1; }
-.eyes.blink { animation: eyes-blink 0.5s steps(1, start) 1; }
+.ss .eyes.flickleft  { animation: eyes-flick-left 1s steps(1, start) 1; }
+.ss .eyes.flickright { animation: eyes-flick-right 1s steps(1, start) 1; }
+.ss .eyes.shifty { animation: eyes-shifty 2s steps(1, start) 1; }
+.ss .eyes.blink { animation: eyes-blink 0.5s steps(1, start) 1; }
 
 @keyframes eyes-flick-left {
 	0%,100% { background-position: 0px 0px; }
