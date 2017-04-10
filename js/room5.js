@@ -58,7 +58,14 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		colour: "red",
 		subparts: ["eyes", "mouth", "brows"],
 		facing: "nn"
-	}).placeAt([500,120]);
+	}).placeAt([500,110]);
+	
+	// Scenery:
+	var desk = new M.Scenery({
+		id: "desk",
+		name: "Front desk",
+		layer: "midground"
+	});		// MIGHT NEED CUSTOM Z-INDEX
 
 	console.log("All objects initialised.");
 

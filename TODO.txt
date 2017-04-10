@@ -102,6 +102,8 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 //couple of idle animations for hero
 //add a NPC
 /add static items & free items
+highlighting of interactables
+
 player anims: crouch reach, mid reach, high reach (n,s,e,w)
 
 try velocity.js and/or transit

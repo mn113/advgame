@@ -40,6 +40,10 @@
 
 
 /* MID-GROUND SCENERY */
+.scenery {
+	position: absolute;
+	z-index: 1;	
+}
 #cat_clock_tail {
 	width: 18px;
 	height: 14px;
@@ -47,12 +51,17 @@
 	left: 305px;
 	top: 80px;
 }
+.room5 #desk {
+	width: 306px;
+	height: 160px;
+	background: url(../img/scenes/Hotel-desk-2x.png);
+	top: 140px;
+	left: 408px;
+	z-index: 200;	
+}
+
 
 /* FOREGROUND PARALLAX LAYERS */
-.scenery {
-	position: absolute;
-	z-index: 1;	
-}
 .room2 #bed {
 	width: 262px;
 	height: 86px;
@@ -93,3 +102,4 @@
 	left: 0;
 	z-index: 400;
 }
+
