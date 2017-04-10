@@ -711,7 +711,7 @@ var MYGAME = (function($) {
 						r = MYGAME.rooms,
 						e = MYGAME.entities;
 					var saveObj = JSON.stringify([s,p,i,r,e]);
-//					console.log(saveObj);
+					//console.log(saveObj);
 					// Save:
 					var prefix = (type === 'auto') ? '[Autosave] ' : '[Usersave] ';
 					var d = new Date();
@@ -943,9 +943,10 @@ var MYGAME = (function($) {
 		this.descriptions = options.descriptions || null;
 		this.onExamine = options.onExamine || null;
 		this.uses = options.uses || null;
+		this.subparts = options.subparts || [];
 
-		this.createHTML();	// Sets up the jqDomNode, adds classes, css, etc.
-
+		this.createHTML();	// Sets up the jqDomNode, adds classes, css, subparts, etc.
+		
 		// Store by id in entities hash:
 		MYGAME.entities[this.id] = this;
 		MYGAME.rooms.current.entities[this.id] = this;	// WHICH ONE SHALL I USE DEFINITIVELY?
@@ -962,10 +963,16 @@ var MYGAME = (function($) {
 		// Set a class if not clickable:
 		if (this.clickable === false) { this.jqDomNode.addClass("dead"); }
 		// Set a non-default width & height, if defined:
-		if (this.width) {this.jqDomNode.css("width", this.width);}
-		if (this.height) {this.jqDomNode.css("height", this.height);}
+		if (this.width) { this.jqDomNode.css("width", this.width); }
+		if (this.height) { this.jqDomNode.css("height", this.height); }
+		// Add all requested subparts:
+		while (this.subparts.length > 0) { this.addSubpart(this.subparts.pop()); }
 		// Set visibility:
 		if (!this.visible) { this.jqDomNode.hide(); }
+		
+		// Fill remaining properties:
+		this.width = this.jqDomNode.width;
+		this.height = this.jqDomNode.height;
 
 		return this;
 	};
@@ -1200,6 +1207,8 @@ var MYGAME = (function($) {
 		this.giveable = true;
 //		this.anchorOffset = [16,44];	// corrects for 32x48 sprite
 //		this.anchorOffsetDefault = [16,44];
+		this.facing = options.facing || 'ss';
+		this.face(this.facing);
 		this.textColour = options.colour || 'black';
 		this.convos = options.convos || null;
 		this.talksCtr = 0;
@@ -1271,6 +1280,7 @@ var MYGAME = (function($) {
 			else if (angle < -45 && angle > -135) { dir = 'nn'; }
 			else if (angle > 135 || angle < -135) { dir = 'ww'; }
 		}
+		this.facing = dir;
 		// Give owner the correct class:
 		this.jqDomNode.removeClass("nn ee ss ww").addClass(dir);
 
@@ -1411,8 +1421,6 @@ var MYGAME = (function($) {
 	*/
 	function Player(options) {	// (id, name, colour, visible)
 		Character.call(this, options);
-		// HTML:
-		this.addSubpart("eyes").addSubpart("mouth");
 
 		// Player-specific properties:
 		this.inventory = [];			// Hash of inventory item ids
@@ -1427,16 +1435,29 @@ var MYGAME = (function($) {
 			// Eyes idle animation:
 			if (this.animationState == 'idle' && this.jqDomNode.hasClass('ss')) {
 				var $eyes = this.jqDomNode.find(".eyes");
-				if (Math.random() > 0.7) {
+				if (Math.random() > 0.75) {
 					console.log('blink eyes');
 					$eyes.addClass('blink');
 					setTimeout(function() { $eyes.removeClass('blink') }, 1500);
 				}
-				else if (Math.random() > 0.7) {
+				else if (Math.random() > 0.67) {
 					console.log('shifty eyes');
 					$eyes.addClass('shifty');
 					setTimeout(function() { $eyes.removeClass('shifty') }, 2000);
 				}
+				// Foot tap animation:
+				else if (Math.random() > 0.5) {
+					console.log('foot tap');
+					this.jqDomNode.addClass('anim-foot-tap');
+					setTimeout(function() { this.jqDomNode.removeClass('anim-foot-tap') }.bind(this), 2000);
+				}
+				// Breath animation:
+				else if (Math.random() > 0.25) {
+					console.log('breathe');
+					this.jqDomNode.addClass('anim-deep-breath');
+					setTimeout(function() { this.jqDomNode.removeClass('anim-deep-breath') }.bind(this), 2000);
+				}
+				else console.log("player noop");
 			}
 		}.bind(this), 5000)	// runs on loop for the entire life of the player object
 	}
@@ -1678,6 +1699,7 @@ var MYGAME = (function($) {
 				id: "player",
 				name: "Hero Guy",
 				colour: "#96c",
+				subparts: ["eyes", "mouth"],
 				visible: false		// invisible until placed via Room.spawnPlayer()
 			});
 			_createDroppables();

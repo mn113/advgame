@@ -97,15 +97,19 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 //revert inactive player to forward-facing (unless rear-facing)
 //double speed walking	
 //fix auto-scroll & centering
-/basic mouth animation (eyes, eyebrows...)
-couple of idle animations for hero
+//basic mouth animation (eyes, eyebrows...)
+//fix parallax foreground
+//couple of idle animations for hero
+//add a NPC
+/add static items & free items
+player anims: crouch reach, mid reach, high reach (n,s,e,w)
+
 try velocity.js and/or transit
 do animations with requestAnimationFrame
+sideways talking animation
 
 use CSS for parallax effects?
 
-add a NPC
-add static items & free items
 put each rooms js with its html?
 
 do away with baseline - it can vary

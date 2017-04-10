@@ -50,6 +50,15 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		visible: true,
 		active: true
 	}).placeAt([930,0]);
+	
+	// NPCs:
+	var hotelier = new M.Character({
+		id: "hotelier",
+		name: "Hotel Manager",
+		colour: "red",
+		subparts: ["eyes", "mouth", "brows"],
+		facing: "nn"
+	}).placeAt([500,120]);
 
 	console.log("All objects initialised.");
 
