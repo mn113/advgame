@@ -103,6 +103,7 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 //add a NPC
 //do away with baseline - it can vary
 //add static items & free items
+//fix autosave loop, make it global
 improve look of spoken text
 highlighting of interactables
 
@@ -116,7 +117,6 @@ use CSS for parallax effects?
 put each rooms js with its html?
 make central library of characters, scenery, items etc - so dont have to define each in js
 
-fix autosave loop, make it global
 	
 try scripting a cutscene
 	

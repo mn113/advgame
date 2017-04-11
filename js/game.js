@@ -859,7 +859,6 @@ var MYGAME = (function($) {
 			}
 		});
 		setTimeout(this.spawnPlayer.bind(this), 1000);
-		setTimeout(utils.session.autosaveLoop, 2000);
 	};
 	Room.prototype.unload = function(_callback) {
 		var me = this;
@@ -1884,6 +1883,7 @@ var MYGAME = (function($) {
 			}); // end jQuery function
 
 		}, 1000);		// BIT OF A HACK TO MAKE SURE DOM FILLED FIRST
+		setTimeout(utils.session.autosaveLoop, 2000);
 	}
 
 	// Expose public handles:
