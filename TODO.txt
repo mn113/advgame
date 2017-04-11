@@ -104,7 +104,7 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 //do away with baseline - it can vary
 //add static items & free items
 //fix autosave loop, make it global
-improve look of spoken text
+//improve look of spoken text
 highlighting of interactables
 
 player anims: crouch reach, mid reach, high reach (n,s,e,w)
@@ -116,19 +116,11 @@ use CSS for parallax effects?
 
 put each rooms js with its html?
 make central library of characters, scenery, items etc - so dont have to define each in js
-
-	
-try scripting a cutscene
 	
 resolution changer: 1x, 2x, 3x, 4x (css/js)
 
 rewrite geometry functions to all use {x:0,y:0} point objects [DANGEROUS!]
 
-
-var npcs = {
-	'john': john,
-	'pepper': pepper
-}	// store room + coords + convos
 
 var progress = {
 	picked_bread: false,

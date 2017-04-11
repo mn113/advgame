@@ -94,3 +94,5 @@
 11-Apr	wired room6 to room5
 11-Apr	improved room loading/switching
 11-Apr	moved autosave to top level
+11-Apr	added callback to walk functions
+

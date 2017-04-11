@@ -1269,7 +1269,7 @@ var MYGAME = (function($) {
 		// Figure out optimal duration and positioning of dialogue line:
 		line = sentences[i];
 		duration = line.length * 120;
-		top = Math.max(0, (this.y - 200));		// NOT VERY SCIENTIFIC DIALOGUE V-POSITIONING
+		top = Math.max(0, (this.y - 225));		// NOT VERY SCIENTIFIC DIALOGUE V-POSITIONING
 		left = Math.max(0, (this.x - 100));			// prevent offscreen text
 		right = Math.min(640, (this.x + 100));		// prevent offscreen text
 		left = (left + right - 200) / 2;
@@ -1303,14 +1303,18 @@ var MYGAME = (function($) {
 
 		return this;
 	};
-	Character.prototype.walkPath = function(path, speed) {
+	Character.prototype.walkPath = function(path, speed, _callback) {
+		
 		// Traverse all coords of new fancy path (except start point!):
 		for (i = 1; i < path.length; i++) {
 			this.walkTo(path[i], speed);
 		}
+		if (_callback && typeof _callback === "function") {
+			_callback();
+		}
 		return this;
 	};
-	Character.prototype.walkTo = function(dest, speed) {
+	Character.prototype.walkTo = function(dest, speed, _callback) {
 		if (!dest) { return; }
 
 		var room = MYGAME.rooms.current,
@@ -1335,9 +1339,9 @@ var MYGAME = (function($) {
 		if (this.coords() === point) { return; }
 
 		console.log("Walk to:", point);
-		this._directWalkTo(point, speed);
+		this._directWalkTo(point, speed, _callback);
 	};
-	Character.prototype._directWalkTo = function(point, speed) {		
+	Character.prototype._directWalkTo = function(point, speed, _callback) {		
 		console.log(point);
 		// Draw a dot at dest:
 		MYGAME.ctx.clearRect(0,0,640,400);
@@ -1423,6 +1427,9 @@ var MYGAME = (function($) {
 		});
 		if (!this.jqDomNode.is(":animated")) {
 			this.jqDomNode.dequeue("walk");	// Starts animation
+		}
+		if (_callback && typeof _callback === "function") {
+			_callback();
 		}
 		return this;
 	};

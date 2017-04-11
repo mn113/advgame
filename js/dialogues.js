@@ -295,7 +295,7 @@ MYGAME.dialogues.john = {
 		}
 	}
 };
-MYGAME.dialogues.malin = {
+MYGAME.dialogues.hotelier = {
 	1: {
 		line: "There must be some kind of way out of here.",
 		responses: {
@@ -373,7 +373,7 @@ MYGAME.dialogues.malin = {
 };
 
 MYGAME.cutscenes = function(id) {
-	var malin = MYGAME.entities.malin;
+	var hotelier = MYGAME.entities.hotelier;
 	var player = MYGAME.player;
 
 	// Sleep function (FREEZES BROWSER, SO USE VERY SPARINGLY! Cutscenes ok.):
@@ -397,13 +397,13 @@ MYGAME.cutscenes = function(id) {
 	switch (id) {
 		case 1:
 			var room = id;	// full switch or not?
-			malin.say("This is a cutscene.", function() {
+			hotelier.say("This is a cutscene.", function() {
 				player.say("I know.", function() {
-					malin.walkTo([400,200]);
-					player.walkTo([450,220]);
+					hotelier.walkTo([400,300]);
+					player.walkTo([450,320]);
 					setTimeout(function() {
 						player.say("When will it end?", function() {
-							malin.say("God only knows.", function() {
+							hotelier.say("God only knows.", function() {
 								_endCutscene(1000);
 							});
 						});
@@ -413,11 +413,11 @@ MYGAME.cutscenes = function(id) {
 			break;
 
 		case 2:
-			player.walkTo([500,250]);
+			player.walkTo([500,350]);
 			setTimeout(function() {
 				player.face('ss').say("SOUTH!", function() {
 					player.face('ww').say("WEST|STREET!", function() {
-						malin.say("YO!");
+						hotelier.say("YO!");
 						player.face('nn').say("NORTH|IS|GREAT!", function() {
 							player.face('ee').say("EAST|RULES!", function() {
 								player.face('ss');
@@ -429,5 +429,5 @@ MYGAME.cutscenes = function(id) {
 			}, 500);
 			break;
 
-}	// end switch
+	}	// end switch
 };
