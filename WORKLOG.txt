@@ -90,3 +90,5 @@
 10-Apr	fixed parallax foreground, scrollTo() now deprecates scrollX()
 10-Apr	player idle animations added
 10-Apr	drew & added Hotelier NPC with subparts & animation
+
+11-Apr	wired room6 to room5

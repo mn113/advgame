@@ -1704,7 +1704,7 @@ var MYGAME = (function($) {
 			});
 			_createDroppables();
 			// Tooltips:
-//			MYGAME.utils.ui.ttRefresh();
+			MYGAME.utils.ui.ttRefresh();
 
 			// jQuery ready function:
 			$(document).ready(function() {

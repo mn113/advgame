@@ -34,7 +34,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	}).placeAt([0,100]);
 	var exit2 = new M.Exit({
 		id: "exit2",
-		dest: 0,
+		dest: 6,
 		width: 120,
 		height: 220,
 		direction: "right",
@@ -43,7 +43,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	}).placeAt([1080,100]);
 	var exit3 = new M.Exit({
 		id: "exit3",
-		dest: 0,
+		dest: 7,
 		width: 115,
 		height: 116,
 		direction: "up",
@@ -66,6 +66,33 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		name: "Front desk",
 		layer: "midground"
 	});		// MIGHT NEED CUSTOM Z-INDEX
+	
+	// Items:	INSTANTIATE WITH LOOP?
+	var keys = new M.Item({
+		id: "keys",
+		name: "keys",
+		layer: "midground"
+	});
+	var bell = new M.Item({
+		id: "bell",
+		name: "bell",
+		layer: "midground"
+	});
+	var guestbook = new M.Item({
+		id: "guestbook",
+		name: "guestbook",
+		layer: "midground"
+	});
+	var phone = new M.Item({
+		id: "phone",
+		name: "phone",
+		layer: "midground"
+	});
+	var plant = new M.Item({
+		id: "plant",
+		name: "plant",
+		layer: "midground"
+	});
 
 	console.log("All objects initialised.");
 

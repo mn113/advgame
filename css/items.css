@@ -5,6 +5,9 @@
 	position: absolute;
 	z-index: 100;
 }
+body.debug .item {
+	border: 1px dotted grey;
+}
 #bread {
 	background: url(../img/props/bread.png);
 }
@@ -54,4 +57,34 @@
 }
 #inventory #chicken:hover {
 	background: url(../img/props/chicken_outline.png);
+}
+.room5 #keys {
+	left: 498px;
+	top: 56px;
+	width: 127px;
+	height: 42px;
+}
+.room5 #bell {
+	left: 502px;
+	top: 175px;
+	width: 18px;
+	height: 14px;
+}
+.room5 #guestbook {
+	left: 537px;
+	top: 178px;
+	width: 52px;
+	height: 10px;
+}
+.room5 #phone {
+	left: 652px;
+	top: 164px;
+	width: 40px;
+	height: 25px;
+}
+.room5 #plant {
+	left: 420px;
+	top: 138px;
+	width: 46px;
+	height: 100px;
 }

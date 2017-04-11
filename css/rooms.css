@@ -1,27 +1,41 @@
 /* GENERAL */
+#background {
+	xperspective: 1px;
+	xwidth: 100vw;
+}
+#background, #background div {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
 .exit {
 	border: 1px solid blue;
 	width: 24px;
 	height: 32px;
 	position: absolute;
 }
-
-#background {
-	xperspective: 1px;
-	xwidth: 100vw;
-}
-
-#background div {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-}
 .dead { pointer-events: none; }
 
 
 /* GENERAL ROOM BACKGROUNDS */
+.room4 #background, .room4 #midground, .room4 #foreground {
+	top: 0;
+	width: 1280px;
+	height: 344px;
+}
+.room5 #background, .room5 #midground, .room5 #foreground {
+	top: 0;
+	width: 1200px;
+	height: 400px;
+}
+.room6 #background, .room6 #midground, .room6 #foreground {
+	top: 0;
+	width: 800px;
+	height: 400px;
+}
 .room4 .bg1 { background: url(../img/scenes/kscumm_bg1.png); z-index: 0;   xtransform: translateZ(0); }
 .room5 .bg1	{ background: url(../img/scenes/Hotel-lobby-2x.png); z-index: 0; }
+.room6 .bg1	{ background: url(../img/scenes/Hotel-kitchen-2x.png); z-index: 0; }
 
 
 /* BACKGROUND PARALLAX LAYERS */
@@ -39,7 +53,7 @@
 .room4 .bg3 { background: url(../img/scenes/kscumm_bg3.png); z-index: -40; xtransform: translateZ(-20px) scale(21); }
 
 
-/* MID-GROUND SCENERY */
+/* MID-GROUND FIXED SCENERY */
 .scenery {
 	position: absolute;
 	z-index: 1;	
@@ -58,6 +72,22 @@
 	top: 140px;
 	left: 408px;
 	z-index: 200;	
+}
+.room6 #crates {
+	width: 220px;
+	height: 90px;
+	background: url(../img/scenes/Hotel-kitchen-fg-boxes-2x.png);
+	bottom: 0px;
+	left: 0px;
+	z-index: 400;		
+}
+.room6 #kitchen-table {
+	width: 264px;
+	height: 68px;
+	background: url(../img/scenes/Hotel-kitchen-table-fg-2x.png);
+	bottom: 0px;
+	left: 230px;
+	z-index: 400;		
 }
 
 

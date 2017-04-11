@@ -164,27 +164,7 @@ ol#saves li img:hover {
 	width: 1280px;
 	height: 256px;
 }
-/* Parallax room assets are being loaded in entities.css at this time */
-.room4 #background {
-	top: 0;
-	width: 1280px;
-	height: 344px;
-}
-.room4 #midground, .room4 #foreground {
-	top: 0;
-	width: 1280px;
-	height: 344px;
-}
-.room5 #background {
-	top: 0;
-	width: 1200px;
-	height: 400px;
-}
-.room5 #midground, .room5 #foreground {
-	top: 0;
-	width: 1200px;
-	height: 400px;
-}
+
 
 #blackout {
 	position: absolute;
