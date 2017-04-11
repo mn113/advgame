@@ -574,7 +574,7 @@ var MYGAME = (function($) {
 					else {
 						// Load from file:
 						setTimeout(function() {
-							utils.misc.loadScript("room" + dest);	// Script includes Room loading
+							utils.misc.loadScript("room" + dest);	// Script includes Room loading		// NEEDS TO SPECIFY ENTRY
 						}, 1500);
 					}
 				});
@@ -659,15 +659,15 @@ var MYGAME = (function($) {
 				var leftmost = 0,
 					rightmost = MYGAME.rooms.current.width-640,
 					currentX = -1 * parseInt($("#midground").position().left, 10),
-					scrollposX;
+					scrollposX = 0;
 				console.log(leftmost, rightmost, currentX);
 				if (origin[0] < currentX) {	// direction "L"
 					console.log("Scrolling left...");
-					scrollposX = Math.max(leftmost, origin[0]-320);
+					scrollposX = Math.max(leftmost, origin[0]);
 				}
 				else {	// direction "R"
 					console.log("Scrolling right...");
-					scrollposX = Math.min(rightmost, origin[0]-320);
+					scrollposX = Math.min(rightmost, origin[0]);
 				}
 				if (scrollposX < leftmost) scrollposX = leftmost;
 				if (scrollposX > rightmost) scrollposX = rightmost;
@@ -826,11 +826,12 @@ var MYGAME = (function($) {
 		this.defaultScroll = options.defaultScroll || [0,0];
 		this.monoscale = (typeof options.monoscale === "undefined") ? true : options.monoscale;	// Monoscale unless declared
 
+		// Geometry loaded from roomX.js:
+		this.walkboxes = options.walkboxes || {};
+		this.nodes = options.nodes || {};
 		this.spawnPoints = options.spawnPoints || {};
-		this.exits = options.exits || {};			// loaded from file the first time
-		this.nodes = options.nodes || {};			// loaded from file the first time
-		this.walkboxes = options.walkboxes || {};	// loaded from file the first time
-		//this.baseline = options.baseline || {};		// loaded from file the first time
+		//this.exits = options.exits || {};
+		//this.baseline = options.baseline || {};
 
 		// Store by id in rooms hash:
 		MYGAME.rooms[this.id] = this;
@@ -846,7 +847,8 @@ var MYGAME = (function($) {
 			if (status === "success") {
 				console.info("Room", me.id, "loaded.");
 				console.info(me);
-				utils.room.scrollTo(me.defaultScroll, 1);
+				me.entry = MYGAME.rooms.previous || 0;
+				utils.room.scrollTo(me.defaultScroll, 1);	// NEEDS DIFFERENT SCROLLPOS DEPENDING ON ENTRY USED
 				me.fadeIn();
 				me.announce();
 
@@ -861,6 +863,7 @@ var MYGAME = (function($) {
 	};
 	Room.prototype.unload = function(_callback) {
 		var me = this;
+		MYGAME.player.hide();
 		this.fadeToBlack();
 		setTimeout(function() {
 			$("#gamebox").removeClass("room" + me.id);
@@ -907,11 +910,11 @@ var MYGAME = (function($) {
 		// Place player into room:
 		if (typeof spawnPt !== "undefined") {
 			console.log(spawnPt);
-			player.placeAt([spawnPt.x, spawnPt.y]).face(spawnPt.face).show();
+			player.placeAt([spawnPt.x, spawnPt.y]).face(spawnPt.face).centre().show();
 		}
 		else {	// Default placement if data missing:
 			console.log('default sp');
-			player.placeAt([300,300]).face('ss').show();
+			player.placeAt([300,300]).face('ss').centre().show();
 		}
 
 		// Fix updateXYZ() setting correct position too soon bug:
@@ -935,7 +938,7 @@ var MYGAME = (function($) {
 		this.id = options.id;									// Everything must have an id
 		this.name = options.name;								// Everything must have a name
 		this.type = options.type;
-		this.layer = options.layer;
+		this.layer = options.layer || 'midground';
 		this.width = options.width || null;
 		this.height = options.height || null;
 		this.scale = options.scale || 1;
@@ -1067,6 +1070,11 @@ var MYGAME = (function($) {
 	_BaseObj.prototype.addSubpart = function(name) {
 		// Add a child element to the DOMnode; further details are handled with CSS:
 		this.jqDomNode.append($("<div class='"+ name +"'>"));
+		return this;
+	}
+	_BaseObj.prototype.centre = function() {
+		// Centre this object in the viewport:
+		MYGAME.utils.room.scrollTo([this.x - 320, 0], 200);
 		return this;
 	}
 
@@ -1376,7 +1384,7 @@ var MYGAME = (function($) {
 					me.face(angle);
 					console.info("Starting animation with dest:", point, "d:", distance.toFixed(3), "t:", duration.toFixed(3), "angle:", angle.toFixed(3));
 					// Scroll room all in one go:
-					utils.room.scrollTo([point[0],0], duration);
+					utils.room.scrollTo([point[0]-320,0], duration);
 				},
 				progress: function() {
 					// Do something hundreds of times per animation
@@ -1833,10 +1841,10 @@ var MYGAME = (function($) {
 					}
 /***************************************************************************************************/
 					else if (e.keyCode === 37) {									// press 'left'
-						MYGAME.utils.room.scrollTo($("#midground.position().left") - 50, 500);
+						MYGAME.utils.room.scrollTo([-1 * $("#midground").position().left - 50, 0], 500);
 					}
 					else if (e.keyCode === 39) {									// press 'right'
-						MYGAME.utils.room.scrollTo($("#midground.position().left") + 50, 500);
+						MYGAME.utils.room.scrollTo([-1 * $("#midground").position().left + 50, 0], 500);
 					}
 /***************************************************************************************************/
 					else if (e.keyCode >= 48 && e.keyCode <= 57) {					// press '0-9'

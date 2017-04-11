@@ -101,7 +101,9 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 //fix parallax foreground
 //couple of idle animations for hero
 //add a NPC
-/add static items & free items
+//do away with baseline - it can vary
+//add static items & free items
+improve look of spoken text
 highlighting of interactables
 
 player anims: crouch reach, mid reach, high reach (n,s,e,w)
@@ -113,8 +115,6 @@ use CSS for parallax effects?
 
 put each rooms js with its html?
 make central library of characters, scenery, items etc - so dont have to define each in js
-
-do away with baseline - it can vary
 
 fix autosave loop, make it global
 	

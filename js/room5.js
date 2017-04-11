@@ -7,7 +7,18 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 (function(M, $) {
 	// Define callback function for Room.load():
 	M.Room.prototype._afterLoad = function() {
-		//
+		// All descriptions for entities in this level:
+		cheese.descriptions = [
+			"Strange to find a half-eaten brie here.",
+			"It looks fresh and tasty.",
+			"Would be nice on a baguette. With grapes.",
+			"It's yellow and smelly."
+		];	// 4
+		desk.descriptions = [
+			"It's the hotel's front desk",
+			"It's made of wood.",
+			"It's the desk where guests check in."
+		];	// 3
 	};
 
 	// Create the Room object:
@@ -64,35 +75,28 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	var desk = new M.Scenery({
 		id: "desk",
 		name: "Front desk",
-		layer: "midground"
-	});		// MIGHT NEED CUSTOM Z-INDEX
+		clickable: false
+	});
 	
 	// Items:	INSTANTIATE WITH LOOP?
-	var keys = new M.Item({
-		id: "keys",
-		name: "keys",
-		layer: "midground"
-	});
-	var bell = new M.Item({
-		id: "bell",
-		name: "bell",
-		layer: "midground"
-	});
-	var guestbook = new M.Item({
-		id: "guestbook",
-		name: "guestbook",
-		layer: "midground"
-	});
-	var phone = new M.Item({
-		id: "phone",
-		name: "phone",
-		layer: "midground"
-	});
+	var keys = new M.Item({id: "keys", name: "keys"});
+	var bell = new M.Item({id: "bell", name: "bell"});
+	var guestbook = new M.Item({id: "guestbook", name: "guestbook"});
+	var phone = new M.Item({id: "phone", name: "phone"});
 	var plant = new M.Item({
 		id: "plant",
 		name: "plant",
-		layer: "midground"
+		onExamine: {
+			0: function() {
+				console.log('changed plant.name');
+				plant.name = "topiarised plant";
+			}
+		}
 	});
+	var cheese = new M.Item({
+		id: "cheese",
+		name: "Cheese"
+	}).placeAt([200,250]);
 
 	console.log("All objects initialised.");
 
@@ -110,12 +114,11 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 			3: {x: 780, y: 299, edges: [2,4]},
 			4: {x: 985, y: 337, edges: [2,3]}
 		};
-	room.baseline = 213;	// pixels from top that walkable area starts
-	room.exits = {
-		0: {dest: 4},
-		1: {dest: 6},
-		2: {dest: 7}
-	};
+//	room.exits = {
+//		0: {dest: 4},
+//		1: {dest: 6},
+//		2: {dest: 7}
+//	};
 	room.spawnPoints = {
 		4: {x: 150, y: 320, face: 'ee'},
 		6: {x: 900, y: 320, face: 'ww'},

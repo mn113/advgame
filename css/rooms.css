@@ -119,7 +119,7 @@
 .room4 .yellow {
 	width: 400px;
 	height: 400px;
-	background: url(../img/scenes/yellow_light_test.png);
+	background: url(../img/lighting/yellow_light_test.png);
 	bottom: 0;
 	left: 0;
 	z-index: 400;

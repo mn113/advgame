@@ -32,7 +32,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		visible: true,
 		active: true
 	}).placeAt([0,100]);
-	var exit1 = new M.Exit({
+	var exit2 = new M.Exit({
 		id: "exit2",
 		dest: 8,
 		width: 80,
@@ -71,12 +71,9 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 			wb1: {points: [{x:120,y:306}, {x:684,y:306}, {x:764,y:382}, {x:50,y:382}], scale: 1}
 		};
 	room.nodes = {};
-	room.baseline = 306;	// pixels from top that walkable area starts
-	room.exits = {
-		0: {dest: 5}
-	};
 	room.spawnPoints = {
-		5: {x: 150, y: 310, face: 'ee'}
+		5: {x: 150, y: 310, face: 'ee'},
+		8: {x: 650, y: 350, face: 'ww'}
 	};
 
 	room.load(M.Room.prototype._afterLoad);	// load() puts HTML entities into page, the callback wires them up
