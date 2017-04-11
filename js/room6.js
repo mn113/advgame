@@ -35,12 +35,12 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	var exit1 = new M.Exit({
 		id: "exit2",
 		dest: 8,
-		width: 120,
-		height: 220,
+		width: 80,
+		height: 170,
 		direction: "right",
 		visible: true,
 		active: false
-	}).placeAt([680,100]);
+	}).placeAt([720,150]);
 	
 	// NPCs:
 	var hotelier = new M.Character({
@@ -49,7 +49,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		colour: "red",
 		subparts: ["eyes", "mouth", "brows"],
 		facing: "ss"
-	}).placeAt([500,200]);
+	}).placeAt([500,370]);
 	
 	// Scenery:
 	var crates = new M.Scenery({

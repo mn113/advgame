@@ -116,6 +116,8 @@ make central library of characters, scenery, items etc - so dont have to define 
 
 do away with baseline - it can vary
 
+fix autosave loop, make it global
+	
 try scripting a cutscene
 	
 resolution changer: 1x, 2x, 3x, 4x (css/js)

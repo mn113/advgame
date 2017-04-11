@@ -532,15 +532,15 @@ var MYGAME = (function($) {
 			correctY: function(point) {	// Point array e.g. [0,0]
 				var newpoint = point,
 					$fg = $("#midground"),
-					bottom = parseInt($fg.css("height"), 10);
-				// Increase Y incrementally:
+					bottom = parseInt($fg.css("height"), 10);	// Generally == 400
+				// Y could be too low, try increasing incrementally:
 				while (newpoint[1] < bottom) {
 					newpoint[1] += 5;
 					if ( utils.grid.whichWalkbox(newpoint) !== false ) { return newpoint; }
 				}
-				// Reset and decrease Y incrementally;
+				// Y could be too high, reset and try decreasing incrementally;
 				newpoint = point;
-				while (newpoint[1] > MYGAME.rooms.curret.baseline) {
+				while (newpoint[1] > 0) {
 					newpoint[1] -= 5;
 					if ( utils.grid.whichWalkbox(newpoint) !== false ) { return newpoint; }
 				}
@@ -830,7 +830,7 @@ var MYGAME = (function($) {
 		this.exits = options.exits || {};			// loaded from file the first time
 		this.nodes = options.nodes || {};			// loaded from file the first time
 		this.walkboxes = options.walkboxes || {};	// loaded from file the first time
-		this.baseline = options.baseline || {};		// loaded from file the first time
+		//this.baseline = options.baseline || {};		// loaded from file the first time
 
 		// Store by id in rooms hash:
 		MYGAME.rooms[this.id] = this;
@@ -941,8 +941,8 @@ var MYGAME = (function($) {
 		this.scale = options.scale || 1;
 		this.visible = (typeof options.visible === "undefined") ? true : options.visible; // Visible unless declared
 		this.looksCtr = options.looksCtr || 0;					// Everything can be looked at 0 or more times
-		this.anchorOffset = options.anchorOffset || [0,0];		// Every sprite needs an anchor offset
 		this.anchorOffsetDefault = options.anchorOffsetDefault || [0,0];
+		this.anchorOffset = options.anchorOffset || this.anchorOffsetDefault;		// Every sprite needs an anchor offset
 		this.x = options.x || 0;								// Everything must have coordinates
 		this.y = options.y || 0;
 		this.z = options.z || 0;
@@ -1210,6 +1210,7 @@ var MYGAME = (function($) {
 	function Character(options) {	// (id, name, type, colour, layer, visible)
 		options.type = 'character';
 		options.layer = 'midground';
+		options.anchorOffsetDefault = [50,172];	// Feet position of 100x180 character sprite
 		_BaseObj.call(this, options);
 
 		// Character-specific properties:
@@ -1434,7 +1435,6 @@ var MYGAME = (function($) {
 		// Player-specific properties:
 		this.inventory = [];			// Hash of inventory item ids
 		this.anchorOffset = [50,172];	// Offset for feet of hero_2x (100x180)
-		this.anchorOffsetDefault = [50,172];
 		this.animationLoop = setInterval(function() {
 			// Face south animation:
 			if (this.animationState == 'idle' && (this.jqDomNode.hasClass('ww') || this.jqDomNode.hasClass('ee'))) {
@@ -1624,10 +1624,10 @@ var MYGAME = (function($) {
 			var path;
 			var speed = options.speed;
 
-			// Fix negative y clicks:
-			if (evxy[1] < room.baseline) {
-				evxy[1] = room.baseline;
-			}
+			// Fix negative y clicks: TODO - REMOVE?
+			//if (evxy[1] < room.baseline) {
+			//	evxy[1] = room.baseline;
+			//}
 			console.log("click @", evxy, event.target.id);
 
 			// Check for an object:

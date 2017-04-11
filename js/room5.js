@@ -58,7 +58,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		colour: "red",
 		subparts: ["eyes", "mouth", "brows"],
 		facing: "nn"
-	}).placeAt([500,110]);
+	}).placeAt([550,280]);
 	
 	// Scenery:
 	var desk = new M.Scenery({
