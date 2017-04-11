@@ -112,12 +112,14 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		};
 	room.baseline = 213;	// pixels from top that walkable area starts
 	room.exits = {
-		0: {dest: 5},
-		1: {dest: 5},
-		2: {dest: 5}
+		0: {dest: 4},
+		1: {dest: 6},
+		2: {dest: 7}
 	};
 	room.spawnPoints = {
-		0: {x: 300, y: 300, face: 'ss'}
+		4: {x: 150, y: 320, face: 'ee'},
+		6: {x: 900, y: 320, face: 'ww'},
+		7: {x: 700, y: 200, face: 'ss'}
 	};
 
 	room.load(M.Room.prototype._afterLoad);	// load() puts HTML entities into page, the callback wires them up

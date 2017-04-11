@@ -32,6 +32,15 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		visible: true,
 		active: true
 	}).placeAt([0,100]);
+	var exit1 = new M.Exit({
+		id: "exit2",
+		dest: 8,
+		width: 120,
+		height: 220,
+		direction: "right",
+		visible: true,
+		active: false
+	}).placeAt([680,100]);
 	
 	// NPCs:
 	var hotelier = new M.Character({
@@ -67,7 +76,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		0: {dest: 5}
 	};
 	room.spawnPoints = {
-		0: {x: 150, y: 310, face: 'ee'}
+		5: {x: 150, y: 310, face: 'ee'}
 	};
 
 	room.load(M.Room.prototype._afterLoad);	// load() puts HTML entities into page, the callback wires them up

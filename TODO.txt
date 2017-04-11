@@ -105,17 +105,19 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 highlighting of interactables
 
 player anims: crouch reach, mid reach, high reach (n,s,e,w)
-
-try velocity.js and/or transit
-do animations with requestAnimationFrame
 sideways talking animation
+try velocity.js and/or transit
+do animations with requestAnimationFrame?
 
 use CSS for parallax effects?
 
 put each rooms js with its html?
+make central library of characters, scenery, items etc - so dont have to define each in js
 
 do away with baseline - it can vary
 
+try scripting a cutscene
+	
 resolution changer: 1x, 2x, 3x, 4x (css/js)
 
 rewrite geometry functions to all use {x:0,y:0} point objects [DANGEROUS!]

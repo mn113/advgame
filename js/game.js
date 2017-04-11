@@ -556,27 +556,28 @@ var MYGAME = (function($) {
 				console.warn("Moving from room", current.id, "to", dest);
 				// Set current room as previous:
 				MYGAME.rooms.previous = current.id;
-				// Unload:
-				current.unload();	// NOT QUICK ENOUGH
+				// Unload, then proceed:
+				current.unload(function() {
+					// Check if dest in rooms:
+					if (typeof MYGAME.rooms[dest] === 'object' ) {
+						// Load room from existing record:
+						console.log("Room", dest, "in memory.");
+						current = MYGAME.rooms[dest];
+						var newroom = new MYGAME.Room(current);	// All saved properties are passed into the constructor
+						newroom.load();
 
-				// Check if dest in rooms:
-				if (typeof MYGAME.rooms[dest] === 'object' ) {
-					// Load room from existing record:
-					current = MYGAME.rooms[dest];
-					var newroom = new MYGAME.Room(current);	// All saved properties are passed into the constructor
-					newroom.load();
-
-					// Add room's entities back in, after a delay:
-					setTimeout(function() {
-						newroom.populate();
-					}, 1500);
-				}
-				else {
-					// Load from file:
-					setTimeout(function() {
-						utils.misc.loadScript("room" + dest);	// Script includes Room loading
-					}, 1500);
-				}
+						// Add room's entities back in, after a delay:
+						setTimeout(function() {
+							newroom.populate();
+						}, 1500);
+					}
+					else {
+						// Load from file:
+						setTimeout(function() {
+							utils.misc.loadScript("room" + dest);	// Script includes Room loading
+						}, 1500);
+					}
+				});
 			},
 			// Scroll the screen left or right by some amount:
 			/*scrollX: function(dir, amount) {		// e.g. "L", 50
@@ -845,7 +846,7 @@ var MYGAME = (function($) {
 			if (status === "success") {
 				console.info("Room", me.id, "loaded.");
 				console.info(me);
-				utils.room.scrollTo(me.defaultScroll);
+				utils.room.scrollTo(me.defaultScroll, 1);
 				me.fadeIn();
 				me.announce();
 
@@ -858,7 +859,7 @@ var MYGAME = (function($) {
 		setTimeout(this.spawnPlayer.bind(this), 1000);
 		setTimeout(utils.session.autosaveLoop, 2000);
 	};
-	Room.prototype.unload = function() {
+	Room.prototype.unload = function(_callback) {
 		var me = this;
 		this.fadeToBlack();
 		setTimeout(function() {
@@ -868,7 +869,12 @@ var MYGAME = (function($) {
 			$("#midground *").not("#player").remove();
 			$("#foreground *").remove();
 			$("#pathsvg *").remove();
-			console.info("@", new Date().getTime(), 'unload() completed for Room', this.id);
+			console.info("@", new Date().getTime(), 'unload() completed for Room', me.id);
+			
+			// Callback to announce unload complete:
+			if (_callback && typeof _callback === "function") {
+				_callback();
+			}
 		}, 800);
 		return this;
 	};
@@ -896,13 +902,16 @@ var MYGAME = (function($) {
 	Room.prototype.spawnPlayer = function() {
 		var player = MYGAME.player;
 		// Get player's spawn data for the entry used:
+		console.log("Entering from room", this.entry, "on Spawnpoint", this.spawnPoints[this.entry]);
 		var spawnPt = this.spawnPoints[this.entry];
 		// Place player into room:
 		if (typeof spawnPt !== "undefined") {
+			console.log(spawnPt);
 			player.placeAt([spawnPt.x, spawnPt.y]).face(spawnPt.face).show();
 		}
 		else {	// Default placement if data missing:
-			player.placeAt([300,200]).face('ss').show();
+			console.log('default sp');
+			player.placeAt([300,300]).face('ss').show();
 		}
 
 		// Fix updateXYZ() setting correct position too soon bug:
@@ -1429,35 +1438,35 @@ var MYGAME = (function($) {
 		this.animationLoop = setInterval(function() {
 			// Face south animation:
 			if (this.animationState == 'idle' && (this.jqDomNode.hasClass('ww') || this.jqDomNode.hasClass('ee'))) {
-				console.log('turn?');
+				//console.log('turn?');
 				if (Math.random() > 0.5) this.face('ss');
 			}
 			// Eyes idle animation:
 			if (this.animationState == 'idle' && this.jqDomNode.hasClass('ss')) {
 				var $eyes = this.jqDomNode.find(".eyes");
 				if (Math.random() > 0.75) {
-					console.log('blink eyes');
+					//console.log('blink eyes');
 					$eyes.addClass('blink');
 					setTimeout(function() { $eyes.removeClass('blink') }, 1500);
 				}
 				else if (Math.random() > 0.67) {
-					console.log('shifty eyes');
+					//console.log('shifty eyes');
 					$eyes.addClass('shifty');
 					setTimeout(function() { $eyes.removeClass('shifty') }, 2000);
 				}
 				// Foot tap animation:
 				else if (Math.random() > 0.5) {
-					console.log('foot tap');
+					//console.log('foot tap');
 					this.jqDomNode.addClass('anim-foot-tap');
 					setTimeout(function() { this.jqDomNode.removeClass('anim-foot-tap') }.bind(this), 2000);
 				}
 				// Breath animation:
 				else if (Math.random() > 0.25) {
-					console.log('breathe');
+					//console.log('breathe');
 					this.jqDomNode.addClass('anim-deep-breath');
 					setTimeout(function() { this.jqDomNode.removeClass('anim-deep-breath') }.bind(this), 2000);
 				}
-				else console.log("player noop");
+				//else console.log("player noop");
 			}
 		}.bind(this), 5000)	// runs on loop for the entire life of the player object
 	}
@@ -1614,7 +1623,6 @@ var MYGAME = (function($) {
 			var targetObj = null;
 			var path;
 			var speed = options.speed;
-			console.log("Speed1:", speed);
 
 			// Fix negative y clicks:
 			if (evxy[1] < room.baseline) {
@@ -1644,8 +1652,6 @@ var MYGAME = (function($) {
 					console.log("Not near enough. (dist: " + dist + ")");
 					player.jqDomNode.stop("walk", true, false);
 					path = utils.pf.pathFind(player.coords(), evxy, room);
-					console.log(path);
-					console.log("Speed2a:", speed);
 					if (path) { player.walkPath(path, speed); }
 
 					return;		// Will need to click targetObj again when nearer...
@@ -1654,6 +1660,7 @@ var MYGAME = (function($) {
 				if (targetObj.hasOwnProperty("dest")) {
 					var exit = targetObj;
 					if (exit.visible && exit.active) {
+						// Walk to the exit TODO
 						utils.room.change(exit.dest);
 					}
 				}
@@ -1671,7 +1678,6 @@ var MYGAME = (function($) {
 				// Try to fix click outside walkboxes:
 				if (!wb) {
 					evxy = utils.pf.correctY(evxy);
-					console.log("New evxy:", evxy);
 					if (!evxy) {
 						// Invalid click
 						console.log("Couldn't validate click.");
@@ -1681,8 +1687,6 @@ var MYGAME = (function($) {
 				// No specific object clicked, so just walk to the point:
 				player.jqDomNode.stop("walk", true, false);
 				path = utils.pf.pathFind(player.coords(), evxy, room);
-				console.log(path);
-				console.log("Speed2b:", speed);
 				if (path) { player.walkPath(path, speed); }
 			}
 		}
@@ -1730,7 +1734,6 @@ var MYGAME = (function($) {
 
 				// Inventory click handler:
 				$("#inventory").on("click", ".item", function(event) {
-
 					// What element was clicked? Set the target.
 					var targetObj;
 
