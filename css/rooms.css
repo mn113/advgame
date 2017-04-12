@@ -66,11 +66,11 @@
 	top: 80px;
 }
 .room5 #desk {
-	width: 306px;
-	height: 160px;
+	top: 190px;
+	left: 470px;
 	background: url(../img/scenes/Hotel-desk-2x.png);
-	top: 140px;
-	left: 408px;
+	width: 244px;
+	height: 110px;
 	z-index: 300;	
 }
 .room6 #crates {

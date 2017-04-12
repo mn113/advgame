@@ -82,7 +82,7 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	var keys = new M.Item({id: "keys", name: "keys"});
 	var bell = new M.Item({id: "bell", name: "bell"});
 	var guestbook = new M.Item({id: "guestbook", name: "guestbook"});
-	var phone = new M.Item({id: "phone", name: "phone"});
+	var telephone = new M.Item({id: "telephone", name: "telephone"});
 	var plant = new M.Item({
 		id: "plant",
 		name: "plant",

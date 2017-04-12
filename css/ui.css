@@ -210,7 +210,7 @@ ul#toolMenu2 li.disabled {
 
 /* DIALOGUE */
 /* above character's head */
-#dialogue {
+#dialogue, .character .dia {
 	color: white;	/* js-changed */
 	font: 18px DOS437, Helvetica;
 	font-weight: bold;
@@ -237,7 +237,7 @@ ul#toolMenu2 li.disabled {
 
 }
 
-#dialogue .dia {
+#dialogue .dia, .character .dia {
 	position: absolute;
 	width: 200px;
 	text-align: center;

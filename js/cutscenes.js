@@ -63,6 +63,33 @@ MYGAME.cutscenes = function(id) {
 				});
 			}, 500);
 			break;
-
+		
+		case 3:
+			var scene3;
+			const advance = () => scene3.next();
+			function* cueSheet() {
+				yield player.walkTo([500,350], 2, advance);
+				yield player.walkTo([600,350], 1, advance);
+				yield player.walkTo([400,350], 2, advance);
+				yield player.say("Whew!", advance);
+				yield _endCutscene(1000);
+			}
+			// Initiate scene and take first action:
+			scene3 = cueSheet();
+			advance();
+			break;
+			
+		case 4:
+			var scene4;
+			const adv = () => scene4.next();
+			function* cueSheet2() {
+				setTimeout(function() {console.log("yield1"); adv();}, 2000); yield 0;
+				player.walkTo([500,350], 2, adv); yield 0;
+				setTimeout(function() {console.log("yield3");}, 2000);
+			}
+			// Initiate scene and take first action:
+			scene4 = cueSheet2();
+			adv();
+			break;
 	}	// end switch
 };

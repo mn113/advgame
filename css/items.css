@@ -63,28 +63,37 @@ body.debug .item {
 	top: 56px;
 	width: 127px;
 	height: 42px;
+	z-index: 300;	
 }
 .room5 #bell {
-	left: 502px;
-	top: 175px;
+	left: 504px;
+	top: 178px;
+	background: url(../img/scenes/Hotel-items-2x.png) 0px -10px;
 	width: 18px;
 	height: 14px;
+	z-index: 300;	
 }
 .room5 #guestbook {
-	left: 537px;
-	top: 178px;
+	left: 536px;
+	top: 182px;
+	background: url(../img/scenes/Hotel-items-2x.png) -32px -14px;
 	width: 52px;
 	height: 10px;
+	z-index: 300;	
 }
-.room5 #phone {
-	left: 652px;
-	top: 164px;
+.room5 #telephone {
+	left: 650px;
+	top: 168px;
+	background: url(../img/scenes/Hotel-items-2x.png) -146px 0px;
 	width: 40px;
 	height: 25px;
+	z-index: 300;	
 }
 .room5 #plant {
-	left: 420px;
-	top: 138px;
-	width: 46px;
-	height: 100px;
+	left: 408px;
+	top: 140px;
+	background: url(../img/scenes/Hotel-plant-2x.png);
+	width: 62px;
+	height: 160px;
+	z-index: 300;	
 }

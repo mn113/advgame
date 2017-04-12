@@ -51,7 +51,7 @@ var MYGAME = (function($) {
 						return $(this).attr("id");
 					},
 					show: {
-						delay: 750	// a reasonable delay makes dragging/dropping/sorting a lot easier
+						delay: 250	// a reasonable delay (750ms) makes dragging/dropping/sorting a lot easier
 					},
 					tooltipClass: "tt",
 					track: true
@@ -1270,9 +1270,9 @@ var MYGAME = (function($) {
 		line = sentences[i];
 		duration = line.length * 120;
 		top = Math.max(0, (this.y - 225));		// NOT VERY SCIENTIFIC DIALOGUE V-POSITIONING
-		left = Math.max(0, (this.x - 100));			// prevent offscreen text
-		right = Math.min(640, (this.x + 100));		// prevent offscreen text
-		left = (left + right - 200) / 2;
+		left = Math.max(0, (this.x - 150));			// prevent offscreen text
+		right = Math.min(640, (this.x + 150));		// prevent offscreen text
+		left = (left + right - 300) / 2;
 
 		// Add a new text div to #dialogue:
 		$("<p class='dia'>").appendTo($("#dialogue"))
@@ -1281,7 +1281,7 @@ var MYGAME = (function($) {
 							.css("top", top)
 							.css("left", left)
 							.html(line).show()
-							.delay(duration).fadeOut(1500);
+							.delay(duration).fadeOut(1000);
 		i++;
 		// Not done? Initiate the next one:
 		if (i < sentences.length) {
@@ -1412,7 +1412,7 @@ var MYGAME = (function($) {
 
 				},
 				complete: function() {
-					me.reportLoc();
+					me.updateXYZ().reportLoc();
 					var q = $(this).queue("walk");
 					if (q.length < 1 && !$(this).is(':animated')) {
 						me.jqDomNode.removeClass("walking fast");	// only stop anim after last queue item
