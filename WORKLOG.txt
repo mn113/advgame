@@ -96,3 +96,6 @@
 11-Apr	moved autosave to top level
 11-Apr	added callback to walk functions
 
+12-Apr	talkers face each other
+12-Apr	talkers have on-off mouth animation for ss,ww,ee
+

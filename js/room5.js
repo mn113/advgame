@@ -104,7 +104,8 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	});
 	var cheese = new M.Item({
 		id: "cheese",
-		name: "cheese"
+		name: "cheese",
+		pickable: true
 	}).placeAt([200,300]);
 
 	console.log("All objects initialised.");

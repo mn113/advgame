@@ -79,7 +79,7 @@
 
 
 /* SUB-SPRITES */
-#player.ss .mouth {
+#player .mouth {
 	width: 6px;
 	height: 4px;
 	position: absolute;
@@ -88,6 +88,13 @@
 	background-image: url(../img/characters/FaceParts_2x.png);
 	background-position: -24px 0px;
 }
+#player.nn .mouth,
+#player.ww .mouth,
+#player.ee .mouth { display: none; }
+#player.ww.talking .mouth { display: block; left: 44px; top: 36px; }
+#player.ee.talking .mouth { display: block; left: 50px; top: 36px; }
+#player.walking.talking .mouth { display: none; }
+
 #player.ss .eyes {
 	width: 18px;
 	height: 6px;
@@ -103,7 +110,7 @@
 #player.ss .eyes.blink { animation: eyes-blink 0.5s steps(1, start) 1; }
 #player.ss.anim-foot-tap { animation: foot-tap 0.5s steps(1, start) 3; }
 #player.ss.anim-deep-breath { animation: deep-breath 1s steps(1, start) 1; }
-#player.ss.talking .mouth { animation: mouth-talk 0.7s steps(7, start) infinite alternate; }
+#player.talking .mouth { animation: mouth-talk 0.7s steps(7, start) infinite alternate; }
 
 @keyframes eyes-flick-left {
 	0%,100% { background-position: 0px 0px; } /* default */
@@ -155,7 +162,7 @@
 #hotelier.ee { background-position: 0 -360px; }
 #hotelier.ww { background-position: 0 -540px; }
 
-#hotelier.ss .mouth {
+#hotelier .mouth {
 	width: 7px;
 	height: 4px;
 	position: absolute;
@@ -164,6 +171,13 @@
 	background-image: url(../img/characters/FaceParts_2x.png);
 	background-position: -56px 0px;
 }
+#hotelier.nn .mouth,
+#hotelier.ww .mouth,
+#hotelier.ee .mouth { display: none; }
+#hotelier.ww.talking .mouth { display: block; left: 44px; top: 36px; }
+#hotelier.ee.talking .mouth { display: block; left: 50px; top: 36px; }
+#hotelier.walking.talking .mouth { display: none; }
+
 #hotelier.ss .eyes {
 	width: 16px;
 	height: 4px;
@@ -181,4 +195,11 @@
 	left: 42px;
 	background-image: url(../img/characters/FaceParts_2x.png);
 	background-position: -70px 0px;
+}
+
+#hotelier.talking .mouth { animation: hotelier-mouth-talk 0.7s steps(2, start) infinite alternate; }
+
+@keyframes hotelier-mouth-talk {
+	0%   { background-position: -56px 0px; }
+	100% { background-position: -56px -12px; }
 }

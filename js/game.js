@@ -1147,7 +1147,7 @@ var MYGAME = (function($) {
 		this.giveable = true;
 		this.anchorOffset = [16,28];	// corrects for 32x32 sprite
 		this.anchorOffsetDefault = [16,28];
-		this.pickable = true;
+		this.pickable = false;
 		this.pickedUp = false;
 	}
 	// Inheritance: Item extends _BaseObj
@@ -1276,6 +1276,12 @@ var MYGAME = (function($) {
 		right = Math.min(640, (this.x + 150));		// prevent offscreen text
 		left = (left + right - 300) / 2;
 
+		// Face animation:
+		this.jqDomNode.addClass("talking");
+		setTimeout(function() {
+			this.jqDomNode.removeClass("talking");
+		}.bind(this), duration);
+		
 		// Add a new text div to #dialogue:
 		$("<p class='dia'>").appendTo($("#dialogue"))
 							.addClass(this.id)
