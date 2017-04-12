@@ -1516,6 +1516,17 @@ var MYGAME = (function($) {
 		return;
 	};
 	Player.prototype.talkTo = function(character) {
+		// Walk to each other:
+		// TODO
+
+		// Face each other:
+		var dx = character.x - this.x,
+			dy = character.y - this.y,
+			angle = (360 / 6.28) * Math.atan2(dy,dx);
+		this.face(angle);
+		character.face((angle + 180) % 360);
+		
+		//
 		if (character.hasOwnProperty('name')) {
 			if (character.convos.active) {
 				// Active means NPC wants to initiate a convo:
