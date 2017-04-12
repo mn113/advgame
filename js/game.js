@@ -51,7 +51,7 @@ var MYGAME = (function($) {
 						return $(this).attr("id");
 					},
 					show: {
-						delay: 250	// a reasonable delay (750ms) makes dragging/dropping/sorting a lot easier
+						delay: 50	// a reasonable delay (750ms) makes dragging/dropping/sorting a lot easier
 					},
 					tooltipClass: "tt",
 					track: true
@@ -966,7 +966,7 @@ var MYGAME = (function($) {
 	}
 	_BaseObj.prototype.createHTML = function() {
 		// Create an interactive HTML element on the appropriate layer:
-		this.jqDomNode = $("<div>", {'id': this.id, 'class': this.type}).addClass("scale10").appendTo("#"+this.layer);
+		this.jqDomNode = $("<div>", {'id': this.id, 'name': this.name, 'class': this.type}).appendTo("#"+this.layer);
 		console.log("@", new Date().getTime(), 'HTML created for', this.id);
 
 		// Add any extra classes:
@@ -978,6 +978,8 @@ var MYGAME = (function($) {
 		if (this.height) { this.jqDomNode.css("height", this.height); }
 		// Add all requested subparts:
 		while (this.subparts.length > 0) { this.addSubpart(this.subparts.pop()); }
+		// Apply scale:
+		if (this.scale !== 1) { this.scaleBy(this.scale); }
 		// Set visibility:
 		if (!this.visible) { this.jqDomNode.hide(); }
 		
@@ -1741,7 +1743,8 @@ var MYGAME = (function($) {
 
 				// Item hover handler:
 				$(".item, .scenery, .character").on("mouseenter", function(event) {
-					MYGAME.utils.ui.addToCommand('item', event.target.name);
+					console.log(event.target.getAttribute('name'));
+					MYGAME.utils.ui.addToCommand('item', event.target.getAttribute('name'));
 				}).on("mouseleave", function() {
 					MYGAME.utils.ui.resetCommand('noun');
 				});

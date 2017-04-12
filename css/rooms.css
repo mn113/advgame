@@ -1,4 +1,7 @@
 /* GENERAL */
+#midground > div {
+	position: absolute;	
+}
 #background {
 	xperspective: 1px;
 	xwidth: 100vw;
@@ -8,7 +11,10 @@
 	height: 100%;
 	position: absolute;
 }
-.exit {
+.room1 .exit,
+.room2 .exit,
+.room3 .exit,
+.room4 .exit {
 	border: 1px solid blue;
 	width: 24px;
 	height: 32px;

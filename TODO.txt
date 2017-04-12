@@ -106,7 +106,9 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 //fix autosave loop, make it global
 //improve look of spoken text
 keep dialogue above speaker
-highlighting of interactables
+/highlighting of interactables
+capitalisation of lower case
+clicks as primary interation
 
 use Promises or Generators to simplify cutscene syntax
 	

@@ -164,7 +164,7 @@ ol#saves li img:hover {
 	width: 1280px;
 	height: 256px;
 }
-
+/* cull rooms 0-4 eventually */
 
 #blackout {
 	position: absolute;
@@ -268,6 +268,7 @@ body:not(.debug) #tablecloth, body:not(.debug) #keypress {
 body.debug .character {border: 1px dotted red;}
 body.debug .scenery {border: 1px dotted blue;}
 body.debug .item {border: 1px dotted yellow;}
-body.debug #midground {border: 1px solid fuchsia;}
-body.debug #background {border: 1px solid teal;}
+body.debug .exit {border: 1px dotted green;}
+body.debug #midground {xborder: 1px solid fuchsia;}
+body.debug #background {xborder: 1px solid teal;}
 body.debug #svgwrap {display:block;}

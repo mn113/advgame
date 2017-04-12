@@ -19,6 +19,11 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 			"It's made of wood.",
 			"It's the desk where guests check in."
 		];	// 3
+		keys.descriptions = ["They're the keys to the hotel's rooms."];
+		bell.descriptions = ["A bell you can ring to call the manager."];
+		guestbook.descriptions = ["It's a log of who has checked in and out."];
+		telephone.descriptions = ["Nice telephone."];
+		plant.descriptions = ["I like its green colour."];
 	};
 
 	// Create the Room object:
@@ -68,13 +73,17 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 		name: "Hotel Manager",
 		colour: "red",
 		subparts: ["eyes", "mouth", "brows"],
-		facing: "nn"
+		facing: "nn",
+		convos: {
+			active: [1],
+			passive: [1,5]
+		}
 	}).placeAt([550,280]);
 	
 	// Scenery:
 	var desk = new M.Scenery({
 		id: "desk",
-		name: "Front desk",
+		name: "front desk",
 		clickable: false
 	});
 	
@@ -95,8 +104,8 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 	});
 	var cheese = new M.Item({
 		id: "cheese",
-		name: "Cheese"
-	}).placeAt([200,250]);
+		name: "cheese"
+	}).placeAt([200,300]);
 
 	console.log("All objects initialised.");
 
@@ -114,11 +123,6 @@ var MYGAME = MYGAME || {};	// "get it or set it"
 			3: {x: 780, y: 299, edges: [2,4]},
 			4: {x: 985, y: 337, edges: [2,3]}
 		};
-//	room.exits = {
-//		0: {dest: 4},
-//		1: {dest: 6},
-//		2: {dest: 7}
-//	};
 	room.spawnPoints = {
 		4: {x: 150, y: 320, face: 'ee'},
 		6: {x: 900, y: 320, face: 'ww'},

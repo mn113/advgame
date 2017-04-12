@@ -145,7 +145,6 @@
 	position: absolute;
 	z-index: 1;
 	background: url(../img/characters/HotelierAnim_2x.png);
-	pointer-events: none;
 	-o-transform-origin: bottom center;
 	-webkit-transform-origin: bottom center;
 	-ms-transform-origin: bottom center;

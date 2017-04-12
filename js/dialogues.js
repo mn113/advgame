@@ -1,14 +1,14 @@
 // Dialogue use cases:
 //
-// 1. spontaneous & game-triggered			->	steve.say("My my, what was that?")							// OK
-// 2. spontaneous & random (idle remarks)	->	steve.say("I like cheese.")
-// 3. response to user interaction			->	steve.say("That doesn't seem to work.")						// OK
-// 4. talking to a NPC						->	steve.say(line, person) -> dialogueWalker(person, line)		// OK
+// 1. spontaneous & game-triggered			->	player.say("My my, what was that?")							// OK
+// 2. spontaneous & random (idle remarks)	->	player.say("I like cheese.")
+// 3. response to user interaction			->	player.say("That doesn't seem to work.")					// OK
+// 4. talking to a NPC						->	player.say(line, NPC) -> dialogueWalker(NPC, line)			// OK
 // 5. convo flows w/out choice				->	return only 1 response										// OK
 // 5. NPC-initiated convo					->	player.talkTo with convos.active set						// OK
 // 6. NPC solo remarks						->	NPC.say()
 // 7. scripted NPC-NPC convo				->	NPC1.say(); NPC2.say()										// OK
-// 8. multi-line monologue					->	steve.say() or NPC.say() handles it							// OK
+// 8. multi-line monologue					->	player.say() or NPC.say() handles it						// OK
 
 // lookupDialogueChoices() -> displayChoices() -> clickLine() -> doNPCDialogue() -> lookupDialogueChoices()
 // until [0] chosen or [null] response.
