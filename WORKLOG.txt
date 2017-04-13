@@ -99,3 +99,4 @@
 12-Apr	talkers face each other
 12-Apr	talkers have on-off mouth animation for ss,ww,ee
 
+13-Apr	keep dialogue central

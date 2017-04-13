@@ -108,8 +108,8 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 //make speakers face each other
 //animate mouth only when speaking
 //sideways talking animation
+//keep dialogue directly above speaker
 make speakers eyes look at each other
-keep dialogue directly above speaker
 
 /highlighting of interactables
 capitalisation of lower case

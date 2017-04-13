@@ -684,7 +684,7 @@ var MYGAME = (function($) {
 			}
 		},
 		misc: {
-			//
+			// Load and execute a javascript file:
 			loadScript: function(name) {
 				console.warn("Fetching script", name + ".js");
 				var script= document.createElement('script');
@@ -693,7 +693,7 @@ var MYGAME = (function($) {
 			   script.async = true;
 			   document.body.appendChild(script);
 			},
-			//
+			// Toggle Paused state:
 			pauseUnpause: function() {
 				MYGAME.state.paused = !MYGAME.state.paused;
 				console.info("Game", (MYGAME.state.paused) ? "paused." : "unpaused.");
@@ -1242,6 +1242,8 @@ var MYGAME = (function($) {
 	});
 	Character.prototype.constructor = Character;
 	Character.prototype.say = function(sentences, _callback) {	// Array or string
+		this.updateXYZ();
+		
 		// Wait for previous lines to finish:
 
 		// Clear out this Character's previous lines:
@@ -1265,16 +1267,19 @@ var MYGAME = (function($) {
 		return this;
 	};
 	Character.prototype._sayLoop = function(sentences, i) {
-		var line, duration, top, left, right;
-		console.log("loop", i);
+		console.log(this.name, "_sayLoop", i);
+		var line, duration, screenX, top, left;
 
 		// Figure out optimal duration and positioning of dialogue line:
 		line = sentences[i];
 		duration = line.length * 120;
-		top = Math.max(0, (this.y - 225));		// NOT VERY SCIENTIFIC DIALOGUE V-POSITIONING
-		left = Math.max(0, (this.x - 150));			// prevent offscreen text
-		right = Math.min(640, (this.x + 150));		// prevent offscreen text
-		left = (left + right - 300) / 2;
+		// Prevent offscreen text:
+		top = Math.max(0, (this.y - 225));
+		screenX = $("#midground").position().left;
+		console.log("ScreenX:", screenX);
+		if (screenX + this.x < 150) left = 0;
+		else if (screenX + this.x > 490) left = 340;
+		else left = screenX + this.x - 150;
 
 		// Face animation:
 		this.jqDomNode.addClass("talking");
@@ -1286,8 +1291,8 @@ var MYGAME = (function($) {
 		$("<p class='dia'>").appendTo($("#dialogue"))
 							.addClass(this.id)
 							.css("color", this.textColour)
-							.css("top", top)
-							.css("left", left)
+							.css("top", top + 'px')
+							.css("left", left + 'px')
 							.html(line).show()
 							.delay(duration).fadeOut(1000);
 		i++;
@@ -1522,18 +1527,17 @@ var MYGAME = (function($) {
 		return;
 	};
 	Player.prototype.talkTo = function(character) {
-		// Walk to each other:
-		// TODO
+		if (character instanceof Character) {
+			// Walk to each other:
+			// TODO
 
-		// Face each other:
-		var dx = character.x - this.x,
-			dy = character.y - this.y,
-			angle = (360 / 6.28) * Math.atan2(dy,dx);
-		this.face(angle);
-		character.face((angle + 180) % 360);
-		
-		//
-		if (character.hasOwnProperty('name')) {
+			// Face each other:
+			var dx = character.x - this.x,
+				dy = character.y - this.y,
+				angle = (360 / 6.28) * Math.atan2(dy,dx);
+			this.face(angle);
+			character.face((angle + 180) % 360);
+
 			if (character.convos.active) {
 				// Active means NPC wants to initiate a convo:
 				MYGAME.dialogues.doNPCDialogue(character, character.convos.active[0]);
@@ -1543,6 +1547,7 @@ var MYGAME = (function($) {
 				MYGAME.dialogues.lookupDialogueChoices(character, null, true);
 			}
 		}
+		return this;
 	};
 	Player.prototype.use = function(item1, item2, goThrough) {
 		var item2id = (item2) ? item2.id : 'itself';	// This string will be used for looking up in Item.uses

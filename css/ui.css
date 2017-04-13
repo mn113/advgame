@@ -235,6 +235,7 @@ ul#toolMenu2 li.disabled {
 	text-align: center;
 	top: 0;			/* js-changed */
 	left: 0;		/* js-changed */
+	border: 1px solid black;
 }
 /*
 .character:hover {
