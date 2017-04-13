@@ -1442,7 +1442,7 @@ var MYGAME = (function($) {
 			this.jqDomNode.dequeue("walk");	// Starts animation
 		}
 		if (_callback && typeof _callback === "function") {
-			_callback();
+			setTimeout(_callback, duration);
 		}
 		return this;
 	};

@@ -109,13 +109,13 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 //animate mouth only when speaking
 //sideways talking animation
 //keep dialogue directly above speaker
+//use Promises or Generators to simplify cutscene syntax
 make speakers eyes look at each other
 
 /highlighting of interactables
 capitalisation of lower case
 clicks as primary interation (walk to & best action)
 
-use Promises or Generators to simplify cutscene syntax
 	
 player anims: crouch reach, mid reach, high reach (n,s,e,w)
 

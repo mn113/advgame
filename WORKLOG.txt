@@ -100,3 +100,4 @@
 12-Apr	talkers have on-off mouth animation for ss,ww,ee
 
 13-Apr	keep dialogue central
+13-Apr	achieved flat ES6-generator-based cutscene code
