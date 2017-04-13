@@ -29,7 +29,7 @@ MYGAME.cutscenes = function(id) {
 	console.info("@", new Date().getTime(), 'Cutscene', id, 'started.');
 
 	// Prepare generator controller:
-	var sceneGen;
+	var sceneGen, cueSheet;
 	function advance() {
 		sceneGen.next();
 	}
@@ -37,43 +37,34 @@ MYGAME.cutscenes = function(id) {
 	// The cutscenes:
 	switch (id) {
 		case 1:
-			var room = id;	// full switch or not?
-			hotelier.say("This is a cutscene.", function() {
-				player.say("I know.", function() {
-					hotelier.walkTo([400,300], 2, function() {
-						player.walkTo([450,320], 2, function() {
-							setTimeout(function() {
-								player.say("When will it end?", function() {
-									hotelier.say("God only knows.", function() {
-										_endCutscene(1000);
-									});
-								});
-							}, 750);
-						});
-					});
-				});
-			});
+			//var room = id;	// full switch or not?
+			cueSheet = function* () {
+				hotelier.say("This is a cutscene.", advance); yield;
+				player.say("I know.", advance); yield;
+				hotelier.walkTo([400,300], 2, advance); yield;
+				player.walkTo([450,320], 2, advance); yield;
+				sleepFor(750);
+				player.say("When will it end?", advance); yield;
+				hotelier.say("God only knows.", advance); yield;
+				_endCutscene(1000);
+			};
 			break;
-
+			
 		case 2:
-			player.walkTo([500,350], 2, function() {
-				player.face('ss').say("SOUTH!", function() {
-					player.face('ww').say("WEST|STREET!", function() {
-						hotelier.say("YO!", function() {
-							player.face('nn').say("NORTH|IS|GREAT!", function() {
-								player.face('ee').say("EAST|RULES!", function() {
-									player.face('ss');
-									_endCutscene(1000);
-								});
-							});
-						});
-					});
-				});
-			});
+			cueSheet = function* () {
+				player.walkTo([500,350], 2, advance); yield;
+				player.face('ss').say("SOUTH!", advance); yield;
+				player.face('ww').say("WEST|STREET!", advance); yield;
+				hotelier.say("YO!", advance); yield;
+				player.face('nn').say("NORTH|IS|GREAT!", advance); yield;
+				player.face('ee').say("EAST|RULES!", advance); yield;
+				player.face('ss');
+				_endCutscene(1000);
+			};
 			break;
 		
 		case 3:
-			var cueSheet = function* () {
+			cueSheet = function* () {
 				player.walkTo([500,370], 2, advance); yield;
 				sleepFor(500);
 				player.walkTo([600,320], 1, advance); yield;
@@ -91,5 +82,4 @@ MYGAME.cutscenes = function(id) {
 	// Initiate scene and take first action:
 	sceneGen = cueSheet();
 	advance();
-	break;
 };
