@@ -273,3 +273,6 @@ ul#toolMenu2 li.disabled {
 	text-decoration: underline;
 }
 
+#tempthumbcanvas {
+	margin-top: 600px;
+}

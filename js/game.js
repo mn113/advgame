@@ -231,8 +231,8 @@ var MYGAME = (function($) {
 		grid: {
 			// Returns a random point on the stage (NOT NECESSARILY VALID YET):
 			randomPoint: function() {
-				var rndx = Math.random() * $("#midground").width,
-					rndy = Math.random() * $("#midground").height;
+				var rndx = Math.random() * $("#midground").scrollWidth,
+					rndy = Math.random() * $("#midground").scrollHeight;
 				return [rndx, rndy];
 			},
 			// Returns distance between two objects (closest edge each):
@@ -240,14 +240,16 @@ var MYGAME = (function($) {
 				// Get all edge coords:
 				var a = objA.jqDomNode.position(),
 					b = objB.jqDomNode.position();
+				console.log(a,b, objB);
 				var ax1 = a.left,
-					ax2 = ax1 + objA.jqDomNode.width,
+					ax2 = ax1 + objA.jqDomNode.width(),
 					bx1 = b.left,
-					bx2 = bx1 + objB.jqDomNode.width;
+					bx2 = bx1 + objB.jqDomNode.width();
 				var ay1 = a.top,
-					ay2 = ay1 + objA.jqDomNode.height,
+					ay2 = ay1 + objA.jqDomNode.height(),
 					by1 = b.top,
-					by2 = by1 + objB.jqDomNode.height;
+					by2 = by1 + objB.jqDomNode.height();
+				console.log(ax1,ax2,ay1,ay2,bx1,bx2,by1,by2);
 
 				// Find the difference in closest edges: (overlap case not considered important)
 				var dx = (ax2 <= bx1) ? bx1 - ax2 : ax1 - bx2,
@@ -706,28 +708,39 @@ var MYGAME = (function($) {
 			saveGame: function(type) {
 				// Check for localStorage:
 				if (typeof Storage !== "undefined") {
+					// Generate thumbnail:
+					MYGAME.utils.session.makeThumbnail();
+					// Create identifier:
+					var prefix = (type === 'auto') ? '[Autosave] ' : '[Usersave] ';
+					var d = new Date();
+					var timestamp = prefix + d.toDateString() + ', ' + d.toLocaleTimeString();
+					// Stringify game:
 					var s = MYGAME.state,
 						p = MYGAME.progress,
 						i = MYGAME.player.inventory,
 						r = MYGAME.rooms,
 						e = MYGAME.entities;
-					var saveObj = JSON.stringify([s,p,i,r,e]);
-					//console.log(saveObj);
+					var savegame = [s,p,i,r,e];
 					// Save:
-					var prefix = (type === 'auto') ? '[Autosave] ' : '[Usersave] ';
-					var d = new Date();
-					var ts = prefix + d.toDateString() + ', ' + d.toLocaleTimeString();
-					localStorage.setItem(ts, saveObj);
-					console.info("Game saved:", ts);
+					setTimeout(function() {
+						var thumb = $("#tempthumbcanvas").attr("src");
+						localStorage.setItem(timestamp, JSON.stringify({
+							game: savegame,
+							thumb: thumb
+						}));
+						//localStorage.setItem[timestamp].thumb = thumb;
+						console.info("Game saved:", timestamp);
+						console.info("Thumbnail saved:", thumb);
+					}, 1500);
 				}
 				else {
 					console.error("No Web Storage support.");
 				}
 			},
 			// Restore a saved game stored in browser storage:
-			loadGame: function(ts) {
-				var loadObj = JSON.parse(localStorage.getItem(ts));
-				// Restore all data:
+			loadGame: function(timestamp) {
+				var loadObj = JSON.parse(localStorage.getItem(timestamp)).game;
+				// Restore s,p,i,r,e data:
 				MYGAME.state = loadObj[0];
 				MYGAME.progress = loadObj[1];
 				MYGAME.player.inventory = loadObj[2];
@@ -747,12 +760,12 @@ var MYGAME = (function($) {
 			buildSaveScreen: function() {
 				$("#saves").html('');
 				// Access browser storage:
-				var thing;
-				for (thing in localStorage) {
+				for (var timestamp in localStorage) {
+					var thumbSrc = JSON.parse(localStorage.getItem(timestamp)).thumb;
 					// Build a basic chooser:
 					var $li = $("<li>");
-					var $thumb = MYGAME.utils.session.makeThumbnail();
-					$("<span>").html(thing).appendTo($li);
+					var $thumb = $("<img>").attr("src", thumbSrc);
+					$("<span>").html(timestamp).appendTo($li);
 					$thumb.appendTo($li);
 					$li.appendTo("#saves");
 				}
@@ -767,12 +780,21 @@ var MYGAME = (function($) {
 					return;
 				});
 			},
-			// Fetch room's background image to use as a savegame thumbnail:
+			// Create a savegame thumbnail using html2canvas:
 			makeThumbnail: function() {
-				var src = "/img/room" + MYGAME.rooms.current.id + ".png";
-				var $thumb = $("<img>");
-				$thumb.attr("src", src);
-				return $thumb;
+				html2canvas(document.querySelector('#gamebox'), {
+					background: 'undefined',
+					width: 640,
+					height: 400,
+					onrendered: function(canvas) {
+						var thumb = document.createElement('canvas');
+						thumb.width = 128;
+						thumb.height = 80;
+						// Redraw the 640x400 canvas onto smaller thumbnail one:
+						thumb.getContext('2d').drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, thumb.width, thumb.height);
+						$('#tempthumbcanvas').attr('src', thumb.toDataURL("image/png"));
+					}
+				});
 			},
 			// Save status every 60 seconds during gameplay, always overwriting last autosave:
 			autosaveLoop: function() {
@@ -984,8 +1006,8 @@ var MYGAME = (function($) {
 		if (!this.visible) { this.jqDomNode.hide(); }
 		
 		// Fill remaining properties:
-		this.width = this.jqDomNode.width;
-		this.height = this.jqDomNode.height;
+		this.width = this.jqDomNode.clientWidth;
+		this.height = this.jqDomNode.clientHeight;
 
 		return this;
 	};
@@ -1318,12 +1340,17 @@ var MYGAME = (function($) {
 	};
 	Character.prototype.walkPath = function(path, speed, _callback) {
 		
+		if (!_callback || typeof _callback !== "function") {
+			_callback = null;
+		}
 		// Traverse all coords of new fancy path (except start point!):
 		for (i = 1; i < path.length; i++) {
 			this.walkTo(path[i], speed);
-		}
-		if (_callback && typeof _callback === "function") {
-			_callback();
+			
+			// Last hop:
+			if (i+1 === path.length) {
+				this.walkTo(path[i], speed, _callback);
+			}
 		}
 		return this;
 	};
@@ -1457,11 +1484,17 @@ var MYGAME = (function($) {
 	* @param {string} options.colour
 	*/
 	function Player(options) {	// (id, name, colour, visible)
+		$.extend(options, {
+			id: "player",
+			name: "Hero Guy",
+			colour: "#96c",
+			subparts: ["eyes", "mouth"],
+			anchorOffset: [50,172]		// Offset for feet of hero_2x (100x180)
+		});
 		Character.call(this, options);
 
 		// Player-specific properties:
 		this.inventory = [];			// Hash of inventory item ids
-		this.anchorOffset = [50,172];	// Offset for feet of hero_2x (100x180)
 		this.animationLoop = setInterval(function() {
 			// Face south animation:
 			if (this.animationState == 'idle' && (this.jqDomNode.hasClass('ww') || this.jqDomNode.hasClass('ee'))) {
@@ -1498,9 +1531,7 @@ var MYGAME = (function($) {
 		}.bind(this), 5000)	// runs on loop for the entire life of the player object
 	}
 	// Inheritance: Player extends Character
-	Player.prototype = Object.create(Character.prototype, {
-		// Options
-	});
+	Player.prototype = Object.create(Character.prototype);
 	Player.prototype.constructor = Player;
 	Player.prototype.examine = function(target) {
 		if (target.hasOwnProperty('name') && target.name !== null) {
@@ -1649,8 +1680,20 @@ var MYGAME = (function($) {
 		});
 	}
 
+	// Handle clicks on exits, items & characters within reach:
+	function objectClickHandler(targetObj) {	
+		// Handle an exit when clicked:
+		if (targetObj instanceof Exit && targetObj.visible && targetObj.active) {
+			utils.room.change(targetObj.dest);
+		}
+		else {	// Character or Item or Scenery
+			utils.ui.modedClick(targetObj);
+		}
+		return;
+	}
+	
 	// Process clicks in game area:
-	function entityClickHandler(event, options) {
+	function gameboxClickHandler(event, options) {
 		var room = this.rooms.current;
 		var player = this.player;
 		// Make sure game setup is complete:
@@ -1660,57 +1703,58 @@ var MYGAME = (function($) {
 			var evxy = [event.pageX - fgOffset.left, event.pageY - fgOffset.top];
 			var targetObj = null;
 			var path;
-			var speed = options.speed;
-
-			// Fix negative y clicks: TODO - REMOVE?
-			//if (evxy[1] < room.baseline) {
-			//	evxy[1] = room.baseline;
-			//}
+			var speed = options.clicks;
 			console.log("click @", evxy, event.target.id);
+			
+			// Click target types: floor, scenery, item, exit, character
 
-			// Check for an object:
-			// Check Entities list first:
+			// Check for an object (check in Entities list):
 			if (this.entities.hasOwnProperty(event.target.id)) {
 				// Found a match:, retrieve it:
-				console.log("Clicked on", event.target.id, "(" + this.state.cursor.mode[0] + ")");
+				console.log("Clicked on", event.target.id, "(" + this.state.cursor.mode + ")");
 				targetObj = this.entities[event.target.id];
+				console.log(targetObj);
 			}
 
 			if (targetObj) {
 				// Build command line:
-				if (!MYGAME.commandObj.verb) {
-					utils.ui.addToCommand('verb', 'Walk to');
-				}
+				if (!MYGAME.commandObj.verb) utils.ui.addToCommand('verb', 'Walk to');
 				utils.ui.addToCommand('item', targetObj.name);
 
 				// Is player NEAR targetObj?
 				var dist = utils.grid.dist(player, targetObj);
+				console.log(dist);
 				if (dist > 30) {
-					// Walk to it first:
 					console.log("Not near enough. (dist: " + dist + ")");
-					player.jqDomNode.stop("walk", true, false);
-					path = utils.pf.pathFind(player.coords(), evxy, room);
-					if (path) { player.walkPath(path, speed); }
-
-					return;		// Will need to click targetObj again when nearer...
-				}
-				// Handle an exit when clicked:
-				if (targetObj.hasOwnProperty("dest")) {
-					var exit = targetObj;
-					if (exit.visible && exit.active) {
-						// Walk to the exit TODO
-						utils.room.change(exit.dest);
+					// Walk to it first:
+					// Detect walkbox:
+					var wb = utils.grid.whichWalkbox(evxy);
+					console.log("Walkbox", wb);
+					// Try to fix click outside walkboxes:
+					if (!wb) {
+						evxy = utils.pf.correctY(evxy);
+						if (!evxy) {
+							// Invalid click
+							console.log("Couldn't validate click.");
+							return;
+						}
 					}
-				}
-				else {
-					// Act, depending on mode:
-					utils.ui.modedClick(targetObj);
+					path = utils.pf.pathFind(player.coords(), evxy, room);
+					if (path) {
+						player.jqDomNode.stop("walk", true, false);
+						player.walkPath(path, speed, function() {
+							// Then act:
+							objectClickHandler(targetObj);
+						});
+					}
 				}
 			}
 			else {	// No object clicked:
+				console.log("Not an object.");
 				// Clear command line:
 				utils.ui.resetCommand('all');
 
+				// Detect walkbox:
 				var wb = utils.grid.whichWalkbox(evxy);
 				console.log("Walkbox", wb);
 				// Try to fix click outside walkboxes:
@@ -1722,26 +1766,24 @@ var MYGAME = (function($) {
 						return;
 					}
 				}
-				// No specific object clicked, so just walk to the point:
-				player.jqDomNode.stop("walk", true, false);
+				// Just walk to the point:
 				path = utils.pf.pathFind(player.coords(), evxy, room);
-				if (path) { player.walkPath(path, speed); }
+				if (path) {
+					player.jqDomNode.stop("walk", true, false);
+					player.walkPath(path, speed);
+				}
 			}
 		}
 	}
 
-	function init(room) {
+	function init(roomID) {
 		// Try to load first room:
-		utils.misc.loadScript('room' + room);	// no jQ needed
+		utils.misc.loadScript('room' + roomID);	// no jQ needed
 
 		var game = this;
 		setTimeout(function() {
 			// Initialise the player [MOST IMPORTANT!]:
 			game.player = new Player({
-				id: "player",
-				name: "Hero Guy",
-				colour: "#96c",
-				subparts: ["eyes", "mouth"],
 				visible: false		// invisible until placed via Room.spawnPlayer()
 			});
 			_createDroppables();
@@ -1750,17 +1792,17 @@ var MYGAME = (function($) {
 
 			// jQuery ready function:
 			$(document).ready(function() {
-				var clickDelay;
 
 				// Stage click handler:
+				var clickDelay;
 				$("#midground").on("click", function(event) {
 					// Delay click in case it's a double click:
 					clickDelay = setTimeout(function() {
-						MYGAME.entityClickHandler(event, {speed: 1});
+						MYGAME.gameboxClickHandler(event, {clicks: 1});
 					}, 100);
 				}).on("dblclick", function(event) {
 					clearTimeout(clickDelay);
-					MYGAME.entityClickHandler(event, {speed: 2});
+					MYGAME.gameboxClickHandler(event, {clicks: 2});
 				});
 
 				// Item hover handler:
@@ -1908,6 +1950,7 @@ var MYGAME = (function($) {
 
 					$('#keypress').html(e.keyCode);		// Show onscreen
 				});
+				
 				// Display mouse coordinates:
 				$(document).on("mousemove", "#midground", function(e) {
 					$("#mousexy").html(e.offsetX + ', ' + e.offsetY);
@@ -1934,7 +1977,8 @@ var MYGAME = (function($) {
 		utils: utils,
 		// Declared as functions:
 		init: init,
-		entityClickHandler: entityClickHandler,
+		objectClickHandler: objectClickHandler,
+		gameboxClickHandler: gameboxClickHandler,
 		// Constructors:
 		Room: Room,
 		Exit: Exit,

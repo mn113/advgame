@@ -91,8 +91,6 @@ R5 vertical walk speed < horizontal walk speed (depending on perspective) - not 
 //allow multiple dialogue texts on screen simultaneously
 //thumbnail based on background image
 //autosave feature (every 60 seconds?)
-save thumbnail of screenshot using html2canvas as base64 with savegames
-vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states?;
 //lock down to bg1 & define sizes of exit boxes
 //revert inactive player to forward-facing (unless rear-facing)
 //double speed walking	
@@ -110,22 +108,24 @@ vars to save: rooms; entities; inventory; state; progress; npc positions; dialog
 //sideways talking animation
 //keep dialogue directly above speaker
 //use Promises or Generators to simplify cutscene syntax
-make speakers eyes look at each other
+//save thumbnail of screenshot using html2canvas as base64 with savegames
+load an unfrozen savegame -> needs a revive method for every class
+vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states? -> freeze method for every class
 
-/highlighting of interactables
-capitalisation of lower case
-clicks as primary interation (walk to & best action)
-
-	
 player anims: crouch reach, mid reach, high reach (n,s,e,w)
 
-try velocity.js and/or transit
-do animations with requestAnimationFrame?
-use CSS for parallax effects?
+/highlighting of interactables
+clicks as primary interation (walk to & best action)
+
+make speakers eyes look at each other
 
 put each rooms js with its html?
 make central library of characters, scenery, items etc - so dont have to define each in js
 	
+try velocity.js and/or transit
+do animations with requestAnimationFrame?
+use CSS for parallax effects?
+
 resolution changer: 1x, 2x, 3x, 4x (css/js)
 
 rewrite geometry functions to all use {x:0,y:0} point objects [DANGEROUS!]
