@@ -109,10 +109,9 @@ R5 vertical walk speed < horizontal walk speed (depending on perspective) - not 
 //keep dialogue directly above speaker
 //use Promises or Generators to simplify cutscene syntax
 //save thumbnail of screenshot using html2canvas as base64 with savegames
+//player anims: crouch reach, mid reach, high reach (n,s,e,w)
 load an unfrozen savegame -> needs a revive method for every class
 vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states? -> freeze method for every class
-
-player anims: crouch reach, mid reach, high reach (n,s,e,w)
 
 /highlighting of interactables
 clicks as primary interation (walk to & best action)

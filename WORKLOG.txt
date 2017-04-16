@@ -104,3 +104,5 @@
 
 14-Apr	stored savegame thumbnails implemented
 14-Apr	player now walks to clicked object before interacting
+
+16-Apr	drew 12 single-frame player reach sprites and integrated reach function

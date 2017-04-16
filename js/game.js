@@ -713,7 +713,7 @@ var MYGAME = (function($) {
 					// Create identifier:
 					var prefix = (type === 'auto') ? '[Autosave] ' : '[Usersave] ';
 					var d = new Date();
-					var timestamp = prefix + d.toDateString() + ', ' + d.toLocaleTimeString();
+					var timestamp = prefix + d.toDateString() + ', ' + d.toLocaleTimeString('en-GB');
 					// Stringify game:
 					var s = MYGAME.state,
 						p = MYGAME.progress,
@@ -730,7 +730,7 @@ var MYGAME = (function($) {
 						}));
 						//localStorage.setItem[timestamp].thumb = thumb;
 						console.info("Game saved:", timestamp);
-						console.info("Thumbnail saved:", thumb);
+						//console.info("Thumbnail saved:", thumb);
 					}, 1500);
 				}
 				else {
@@ -1323,7 +1323,7 @@ var MYGAME = (function($) {
 			setTimeout(this._sayLoop(sentences, i), duration);
 		}
 	};
-	Character.prototype.face = function(angle) {
+	Character.prototype.face = function(angle, _callback) {
 		// Allow cardinal directions to be passed:
 		var dir = angle;
 		if (typeof angle === 'number') {
@@ -1335,7 +1335,13 @@ var MYGAME = (function($) {
 		this.facing = dir;
 		// Give owner the correct class:
 		this.jqDomNode.removeClass("nn ee ss ww").addClass(dir);
-
+		
+		if (_callback && typeof _callback === "function") {
+			setTimeout(function() {
+				_callback();
+		   }, 200);
+		}
+		
 		return this;
 	};
 	Character.prototype.walkPath = function(path, speed, _callback) {
@@ -1355,9 +1361,10 @@ var MYGAME = (function($) {
 		return this;
 	};
 	Character.prototype.walkTo = function(dest, speed, _callback) {
-		if (!dest) { return; }
-
-		var room = MYGAME.rooms.current,
+		if (!dest) { return this; }
+		
+		var me = this,
+			room = MYGAME.rooms.current,
 			point;
 		
 		// Nail down the {x,y} point to walk to:
@@ -1376,10 +1383,14 @@ var MYGAME = (function($) {
 		}
 
 		// Already there! check:
-		if (this.coords() === point) { return; }
+		if (this.coords() === point) { return this; }
 
 		console.log("Walk to:", point);
-		this._directWalkTo(point, speed, _callback);
+		this._directWalkTo(point, speed, function() {
+		   _callback();
+			console.log("Returning from walkTo:", me);
+			return me;
+		});
 	};
 	Character.prototype._directWalkTo = function(point, speed, _callback) {		
 		console.log(point);
@@ -1471,6 +1482,21 @@ var MYGAME = (function($) {
 		if (_callback && typeof _callback === "function") {
 			setTimeout(_callback, duration);
 		}
+		return this;
+	};
+	Character.prototype.reach = function(height, facing, _callback) {
+		height = height || 'mid';
+		facing =  facing || 'ss';
+
+		// Display the appropriate reaching sprite for a short time:
+		this.face(facing);
+		this.jqDomNode.addClass('reaching-'+height);
+		setTimeout(function() {
+			this.jqDomNode.removeClass("reaching-low reaching-mid reaching-high");	
+			if (_callback && typeof _callback === "function") {
+				_callback();
+			}
+		}.bind(this), 1000);
 		return this;
 	};
 

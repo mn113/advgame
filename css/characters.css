@@ -145,6 +145,19 @@
 	100% { background-position: -24px -42px; }
 }
 
+#player.ss.reaching-low  { background-position: -900px 0px; }
+#player.ss.reaching-mid  { background-position: -1000px 0px; }
+#player.ss.reaching-high { background-position: -1100px 0px; }
+#player.nn.reaching-low  { background-position: -900px -180px; }
+#player.nn.reaching-mid  { background-position: -1000px -180px; }
+#player.nn.reaching-high { background-position: -1100px -180px; }
+#player.ee.reaching-low  { background-position: -900px -360px; }
+#player.ee.reaching-mid  { background-position: -1000px -360px; }
+#player.ee.reaching-high { background-position: -1100px -360px; }
+#player.ww.reaching-low  { background-position: -900px -540px; }
+#player.ww.reaching-mid  { background-position: -1000px -540px; }
+#player.ww.reaching-high { background-position: -1100px -540px; }
+
 
 #hotelier {
 	width: 100px;

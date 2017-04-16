@@ -77,6 +77,23 @@ MYGAME.cutscenes = function(id) {
 				_endCutscene(1000);
 			};
 			break;
+
+		case 4:
+			cueSheet = function* () {
+				player.walkTo([550,370], 2, advance); yield;	// can no longer chain after walkTo
+				player.face('ss', advance); yield;
+				hotelier.walkTo([600,370], 1, advance); yield;
+				hotelier.face('ww', advance); yield;
+				sleepFor(500);
+				hotelier.say("Here's the secret file.", advance); yield;
+				player.reach('mid', 'ee', advance); yield;
+				sleepFor(500);
+				player.say("Thanks.", advance); yield;
+				sleepFor(500);
+				hotelier.walkTo([800,310], 1, advance); yield;
+				_endCutscene(1000);
+			};
+			break;
 	}	// end switch
 
 	// Initiate scene and take first action:
