@@ -17,27 +17,27 @@
 #player.ee { background-position: 0 -360px; }
 #player.ww { background-position: 0 -540px; }
 
-#player.walking.ss { animation: walk-arg-ss 1s steps(8) infinite; }
-#player.walking.nn { animation: walk-arg-nn 1s steps(8) infinite; }
-#player.walking.ee { animation: walk-arg-ee 1s steps(8) infinite; }
-#player.walking.ww { animation: walk-arg-ww 1s steps(8) infinite; }
+#player.walking.ss { animation: walk-arg-ss 1s steps(7) infinite; }
+#player.walking.nn { animation: walk-arg-nn 1s steps(7) infinite; }
+#player.walking.ee { animation: walk-arg-ee 1s steps(7) infinite; }
+#player.walking.ww { animation: walk-arg-ww 1s steps(7) infinite; }
 #player.walking.fast { animation-duration: .5s}
 
-@keyframes walk-arg-ww {
-	from { background-position: -900px -540px; }
-	to   { background-position: -100px -540px; }
-}
-@keyframes walk-arg-ee {
-	from { background-position: -100px -360px; }
-	to   { background-position: -900px -360px; }
+@keyframes walk-arg-ss {
+	from { background-position: -100px 0px; }
+	to   { background-position: -800px 0px; }
 }
 @keyframes walk-arg-nn {
 	from { background-position: -100px -180px; }
-	to   { background-position: -900px -180px; }
+	to   { background-position: -800px -180px; }
 }
-@keyframes walk-arg-ss {
-	from { background-position: -100px 0px; }
-	to   { background-position: -900px 0px; }
+@keyframes walk-arg-ee {
+	from { background-position: -100px -360px; }
+	to   { background-position: -800px -360px; }
+}
+@keyframes walk-arg-ww {	/* reverse frame direction */
+	from { background-position: -800px -540px; }
+	to   { background-position: -100px -540px; }
 }
 
 /* This sprite scaling method won't be pixel-perfect */

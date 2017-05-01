@@ -113,16 +113,18 @@ R5 vertical walk speed < horizontal walk speed (depending on perspective) - not 
 load an unfrozen savegame -> needs a revive method for every class
 vars to save: rooms; entities; inventory; state; progress; npc positions; dialogue states? -> freeze method for every class
 
-/highlighting of interactables
+make walking animation stop promptly
+
+/highlighting of interactables (tooltip)
 clicks as primary interation (walk to & best action)
 
 make speakers eyes look at each other
+make speakers stand apart
 
 put each rooms js with its html?
 make central library of characters, scenery, items etc - so dont have to define each in js
 	
 try velocity.js and/or transit
-do animations with requestAnimationFrame?
 use CSS for parallax effects?
 
 resolution changer: 1x, 2x, 3x, 4x (css/js)

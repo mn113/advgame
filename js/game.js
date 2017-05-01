@@ -1094,12 +1094,12 @@ var MYGAME = (function($) {
 		// Add a child element to the DOMnode; further details are handled with CSS:
 		this.jqDomNode.append($("<div class='"+ name +"'>"));
 		return this;
-	}
+	};
 	_BaseObj.prototype.centre = function() {
 		// Centre this object in the viewport:
 		MYGAME.utils.room.scrollTo([this.x - 320, 0], 200);
 		return this;
-	}
+	};
 
 
 	/**
@@ -1119,7 +1119,7 @@ var MYGAME = (function($) {
 
 		// Item-specific properties:
 		this.dest = options.dest || null;		// Another room id
-		this.active = options.active || true;	// Can it currently be used?
+		this.active = (typeof options.active === "undefined") ? true : options.active; // Active unless declared not
 		this.jqDomNode.addClass(options.direction);
 	}
 	// Inheritance: Exit extends _BaseObj
@@ -1350,11 +1350,12 @@ var MYGAME = (function($) {
 			_callback = null;
 		}
 		// Traverse all coords of new fancy path (except start point!):
-		for (i = 1; i < path.length; i++) {
-			this.walkTo(path[i], speed);
-			
-			// Last hop:
-			if (i+1 === path.length) {
+		for (i = 1; i < path.length; i++) {			
+			if (i+1 < path.length) {
+				this.walkTo(path[i], speed);
+			}
+			else {
+				// Last hop:
 				this.walkTo(path[i], speed, _callback);
 			}
 		}
@@ -1387,7 +1388,9 @@ var MYGAME = (function($) {
 
 		console.log("Walk to:", point);
 		this._directWalkTo(point, speed, function() {
-		   _callback();
+			if (_callback && typeof _callback === "function") {
+				_callback();
+			}
 			console.log("Returning from walkTo:", me);
 			return me;
 		});
@@ -1415,7 +1418,7 @@ var MYGAME = (function($) {
 			dir = dx < 0 ? 'L' : 'R';
 		var el_dest = [point[0] - me.anchorOffsetDefault[0], point[1] - me.anchorOffsetDefault[1]];
 
-				// Start walking, boots!
+		// Start walking, boots!
 		if (speed === 2) this.jqDomNode.addClass("fast");
 		this.jqDomNode.addClass("walking");
 		this.jqDomNode.queue("walk", function(next) {
@@ -1444,10 +1447,7 @@ var MYGAME = (function($) {
 					// Do something hundreds of times per animation
 					me.updateXYZ();
 					console.log("progress");
-					// Start regular check if scrolling is needed:
-					if (isScrollingRoom) {
-//						utils.room.keepPlayerCentral(dir);
-					}
+					// Update sprite scale if necessary:
 					if (!isMonoscaleRoom) {
 						var wbname = utils.grid.whichWalkbox([me.x, me.y]);
 						// Scale sprite on walkbox change:
@@ -1460,7 +1460,6 @@ var MYGAME = (function($) {
 							}
 						}
 					}
-
 				},
 				complete: function() {
 					me.updateXYZ().reportLoc();
@@ -1533,28 +1532,28 @@ var MYGAME = (function($) {
 				if (Math.random() > 0.75) {
 					//console.log('blink eyes');
 					$eyes.addClass('blink');
-					setTimeout(function() { $eyes.removeClass('blink') }, 1500);
+					setTimeout(function() { $eyes.removeClass('blink'); }, 1500);
 				}
 				else if (Math.random() > 0.67) {
 					//console.log('shifty eyes');
 					$eyes.addClass('shifty');
-					setTimeout(function() { $eyes.removeClass('shifty') }, 2000);
+					setTimeout(function() { $eyes.removeClass('shifty'); }, 2000);
 				}
 				// Foot tap animation:
 				else if (Math.random() > 0.5) {
 					//console.log('foot tap');
 					this.jqDomNode.addClass('anim-foot-tap');
-					setTimeout(function() { this.jqDomNode.removeClass('anim-foot-tap') }.bind(this), 2000);
+					setTimeout(function() { this.jqDomNode.removeClass('anim-foot-tap'); }.bind(this), 2000);
 				}
 				// Breath animation:
 				else if (Math.random() > 0.25) {
 					//console.log('breathe');
 					this.jqDomNode.addClass('anim-deep-breath');
-					setTimeout(function() { this.jqDomNode.removeClass('anim-deep-breath') }.bind(this), 2000);
+					setTimeout(function() { this.jqDomNode.removeClass('anim-deep-breath'); }.bind(this), 2000);
 				}
 				//else console.log("player noop");
 			}
-		}.bind(this), 5000)	// runs on loop for the entire life of the player object
+		}.bind(this), 5000);	// runs on loop for the entire life of the player object
 	}
 	// Inheritance: Player extends Character
 	Player.prototype = Object.create(Character.prototype);
@@ -1773,6 +1772,11 @@ var MYGAME = (function($) {
 							objectClickHandler(targetObj);
 						});
 					}
+				}
+				else {
+					// Already near obj:
+					// TODO: face it, judge height, etc
+					objectClickHandler(targetObj);
 				}
 			}
 			else {	// No object clicked:
