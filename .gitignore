@@ -1,6 +1,7 @@
 .DS_Store
 .gitignore
 .brackets.json
+.htaccess
 *.graffle
 artists.rtf
 STORY.txt
